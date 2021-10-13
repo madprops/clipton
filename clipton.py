@@ -33,15 +33,17 @@ def show_picker() -> None:
     diff = int((date_now - item["date"]) / 60)
 
     if diff >= 1440:
-      if diff == 1440:
-        sdiff = "day"
+      d = int(diff / 1440)
+      if d == 1:
+        sdiff = "1 day"
       else:
-        sdiff = f"{diff} days"
+        sdiff = f"{d} days"
     elif diff >= 60:
-      if diff == 60:
-        sdiff = f"{diff} hour"
+      d = int(diff / 60)
+      if d == 1:
+        sdiff = "1 hour"
       else:
-        sdiff = f"{diff} hours"
+        sdiff = f"{d} hours"
     elif diff >= 1:
       if diff == 1:
         sdiff = f"{diff} minute"
