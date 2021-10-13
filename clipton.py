@@ -20,6 +20,9 @@ items: List[Item]
 # Path to the json file
 filepath: Path
 
+# Color used for information
+color_1 = "#1BBFFF"
+
 # Get timeago string based on minutes
 def get_timeago(mins):
   if mins >= 1440:
@@ -41,7 +44,7 @@ def get_timeago(mins):
       timeago = f"{mins} minutes"
   elif mins == 0:
     timeago = "just now" 
-    
+
   return timeago 
 
 # Show the rofi menu with the items
@@ -50,14 +53,15 @@ def show_picker() -> None:
   date_now = get_seconds()
 
   for item in items:
-    line = item["text"].replace("\n", " ")
+    line = item["text"]
     line = re.sub(" +", " ", line)
     line = re.sub("<", "&lt;", line)
+    line = line.replace("\n", f"<span color='{color_1}'> *</span>")
     num_lines = item["num_lines"]
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
 
-    opts.append(f"<span color='#1BBFFF'>({num_lines}) ({timeago})</span> {line}")
+    opts.append(f"<span color='{color_1}'>({num_lines}) ({timeago})</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
