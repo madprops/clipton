@@ -4,14 +4,18 @@ import sys
 import json
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import List, Dict
+from typing import List, Dict, Union
 from datetime import datetime
+from typing_extensions import TypedDict
+
+# Item typed dictionary
+Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int})
 
 # How many items to store in the file
 max_items = 500
 
 # Items are held here internally
-items: List[Dict[str, any]]
+items: List[Item]
 
 # Path to the json file
 filepath: Path
@@ -52,22 +56,22 @@ def show_picker() -> None:
 
     opts.append(f"({num_lines} {slines}) ({sdiff}) {line}")
   
-  p1 = Popen('rofi -dmenu -p "Select Item" -format i \
+  proc = Popen('rofi -dmenu -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
     "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
-  ans = p1.communicate("\n".join(opts))[0].strip()
+  ans = proc.communicate("\n".join(opts))[0].strip()
 
   if ans != "":
     on_selection(int(ans))
 
 # When an item is selected through the rofi menu
 def on_selection(index: int) -> None:
-    oitem = items[index]
-    item = oitem.encode("unicode_escape").decode("utf-8")
-    os.popen(f"echo '{item}' | xclip -sel clip")
+    text = items[index]["text"]
+    proc = Popen('xclip -sel clip', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+    proc.communicate(text)
     del items[index]
-    add_item(oitem)
+    add_item(text)
 
 def get_seconds() -> int:
   return int(datetime.now().timestamp())
