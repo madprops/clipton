@@ -102,6 +102,8 @@ def add_item(text: str) -> None:
   text = text.strip()
   if text == "":
     return
+  if text.startswith("file://"):
+    return
   if len(items) > 0 and items[0] == text:
     return
   items = list(filter(lambda x: x["text"] != text, items))
