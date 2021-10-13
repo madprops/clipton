@@ -4,16 +4,73 @@ import sys
 import json
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import List
+from typing import List, Dict
+from datetime import datetime
 
 # How many items to store in the file
 max_items = 500
 
 # Items are held here internally
-items: List[str]
+items: List[Dict[str, any]]
 
 # Path to the json file
 filepath: Path
+
+# Show the rofi menu with the items
+def show_picker() -> None:
+  opts: List[str] = []
+  date_now = get_seconds()
+  
+  for item in items:
+    line = item["text"].replace("\n", " ")
+    line = re.sub(" +", " ", line)
+    num_lines = item["num_lines"]
+    diff = int((date_now - item["date"]) / 60)
+
+    if diff >= 1440:
+      if diff == 1440:
+        sdiff = "day ago"
+      else:
+        sdiff = f"{diff} days ago"
+    elif diff >= 60:
+      if diff == 60:
+        sdiff = f"{diff} hour ago"
+      else:
+        sdiff = f"{diff} hours ago"
+    elif diff >= 1:
+      if diff == 1:
+        sdiff = f"{diff} minute ago"
+      else:
+        sdiff = f"{diff} minutes ago"
+    elif diff == 0:
+      sdiff = "just now"
+
+    if num_lines == 1:
+      slines = "line"
+    else:
+      slines = "lines"
+
+    opts.append(f"({num_lines} {slines}) ({sdiff}) {line}")
+  
+  p1 = Popen('rofi -dmenu -p "Select Item" -format i \
+    -selected-row 0 -me-select-entry "" -me-accept-entry \
+    "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+
+  ans = p1.communicate("\n".join(opts))[0].strip()
+
+  if ans != "":
+    on_selection(int(ans))
+
+# When an item is selected through the rofi menu
+def on_selection(index: int) -> None:
+    oitem = items[index]
+    item = oitem.encode("unicode_escape").decode("utf-8")
+    os.popen(f"echo '{item}' | xclip -sel clip")
+    del items[index]
+    add_item(oitem)
+
+def get_seconds() -> int:
+  return int(datetime.now().timestamp())
 
 # Read the items file and parse it to json
 def get_items() -> None:
@@ -38,46 +95,18 @@ def update_file() -> None:
 # Add an item to the items array
 # It performs some checks
 # It removes duplicates
-def add_item(content: str) -> None:
+def add_item(text: str) -> None:
   global items
-  content = content.strip()
-  if content == "":
+  text = text.strip()
+  if text == "":
     return
-  if len(items) > 0 and items[0] == content:
+  if len(items) > 0 and items[0] == text:
     return
-  items = list(filter(lambda x: x != content, items))
-  items.insert(0, content)
+  items = list(filter(lambda x: x["text"] != text, items))
+  num_lines = text.count("\n") + 1
+  items.insert(0, {"date": get_seconds(), "text": text, "num_lines": num_lines})
   items = items[0:max_items]
-  update_file()
-
-# Show the rofi menu with the items
-def show_picker() -> None:
-  opts: List[str] = []
-  
-  for item in items:
-    nlines = item.count("\n") + 1
-    line = item.replace("\n", " ")
-    line = re.sub(" +", " ", line)
-    opts.append(f"({nlines}) {line}")
-  
-  options = "\n".join(opts)
-
-  p1 = Popen('rofi -dmenu -p "Select Item" -format i \
-    -selected-row 0 -me-select-entry "" -me-accept-entry \
-    "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
-
-  ans = p1.communicate(options)[0].strip()
-
-  if ans != "":
-    on_selection(int(ans))
-
-# When an item is selected through the rofi menu
-def on_selection(index: int) -> None:
-    oitem = items[index]
-    item = oitem.encode("unicode_escape").decode("utf-8")
-    os.popen(f"echo '{item}' | xclip -sel clip")
-    del items[index]
-    add_item(oitem)  
+  update_file()  
 
 # Main function
 def main() -> None:
