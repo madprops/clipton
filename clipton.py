@@ -28,6 +28,7 @@ def show_picker() -> None:
   for item in items:
     line = item["text"].replace("\n", " ")
     line = re.sub(" +", " ", line)
+    line = re.sub("<", "&lt;", line)
     num_lines = item["num_lines"]
     diff = int((date_now - item["date"]) / 60)
 
@@ -54,9 +55,9 @@ def show_picker() -> None:
     else:
       slines = "lines"
 
-    opts.append(f"({num_lines} {slines}) ({sdiff}) {line}")
+    opts.append(f"<span color='#1BBFFF'>({num_lines} {slines}) ({sdiff})</span> {line}")
 
-  proc = Popen('rofi -dmenu -i -p "Select Item" -format i \
+  proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
     "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
