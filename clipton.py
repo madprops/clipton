@@ -124,7 +124,7 @@ def main() -> None:
 
   if mode == "watcher":
     while True:
-      os.popen(f"./clipnotify").read()
+      os.popen("./clipnotify").read()
       add_item(os.popen("xclip -o").read())
   elif mode == "show":
     show_picker()
