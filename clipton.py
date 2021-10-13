@@ -34,28 +34,23 @@ def show_picker() -> None:
 
     if diff >= 1440:
       if diff == 1440:
-        sdiff = "day ago"
+        sdiff = "day"
       else:
-        sdiff = f"{diff} days ago"
+        sdiff = f"{diff} days"
     elif diff >= 60:
       if diff == 60:
-        sdiff = f"{diff} hour ago"
+        sdiff = f"{diff} hour"
       else:
-        sdiff = f"{diff} hours ago"
+        sdiff = f"{diff} hours"
     elif diff >= 1:
       if diff == 1:
-        sdiff = f"{diff} minute ago"
+        sdiff = f"{diff} minute"
       else:
-        sdiff = f"{diff} minutes ago"
+        sdiff = f"{diff} minutes"
     elif diff == 0:
       sdiff = "just now"
 
-    if num_lines == 1:
-      slines = "line"
-    else:
-      slines = "lines"
-
-    opts.append(f"<span color='#1BBFFF'>({num_lines} {slines}) ({sdiff})</span> {line}")
+    opts.append(f"<span color='#1BBFFF'>({num_lines}) ({sdiff})</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
