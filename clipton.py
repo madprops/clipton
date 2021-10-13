@@ -57,10 +57,7 @@ def show_picker() -> None:
   for item in items:
     nlines = item.count("\n") + 1
     line = item.replace("\n", " ")
-    line = repr(line)[1:-1]
     line = re.sub(" +", " ", line)
-
-    line = line.encode("unicode_escape").decode("utf-8")
     opts.append(f"({nlines}) {line}")
   
   options = "\n".join(opts)
