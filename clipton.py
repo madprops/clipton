@@ -68,11 +68,11 @@ def show_picker() -> None:
 
 # When an item is selected through the rofi menu
 def on_selection(index: int) -> None:
-    text = items[index]["text"]
-    proc = Popen('xclip -sel clip', stdout=PIPE, stdin=PIPE, shell=True, text=True)
-    proc.communicate(text)
-    del items[index]
-    add_item(text)
+  text = items[index]["text"]
+  proc = Popen('xsel --clipboard', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc.communicate(text)
+  del items[index]
+  add_item(text)
 
 def get_seconds() -> int:
   return int(datetime.now().timestamp())
@@ -125,7 +125,7 @@ def main() -> None:
   if mode == "watcher":
     while True:
       os.popen("./clipnotify").read()
-      add_item(os.popen("xclip -o").read())
+      add_item(os.popen("xsel --clipboard").read())
   elif mode == "show":
     show_picker()
 
