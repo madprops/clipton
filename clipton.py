@@ -20,6 +20,30 @@ items: List[Item]
 # Path to the json file
 filepath: Path
 
+# Get timeago string based on minutes
+def get_timeago(mins):
+  if mins >= 1440:
+    d = round(mins / 1440)
+    if d == 1:
+      timeago = "1 day"
+    else:
+      timeago = f"{d} days"
+  elif mins >= 60:
+    d = round(mins / 60)
+    if d == 1:
+      timeago = "1 hour"
+    else:
+      timeago = f"{d} hours"
+  elif mins >= 1:
+    if mins == 1:
+      timeago = "1 minute"
+    else:
+      timeago = f"{mins} minutes"
+  elif mins == 0:
+    timeago = "just now" 
+    
+  return timeago 
+
 # Show the rofi menu with the items
 def show_picker() -> None:
   opts: List[str] = []
@@ -31,26 +55,7 @@ def show_picker() -> None:
     line = re.sub("<", "&lt;", line)
     num_lines = item["num_lines"]
     mins = round((date_now - item["date"]) / 60)
-
-    if mins >= 1440:
-      d = round(mins / 1440)
-      if d == 1:
-        timeago = "1 day"
-      else:
-        timeago = f"{d} days"
-    elif mins >= 60:
-      d = round(mins / 60)
-      if d == 1:
-        timeago = "1 hour"
-      else:
-        timeago = f"{d} hours"
-    elif mins >= 1:
-      if mins == 1:
-        timeago = "1 minute"
-      else:
-        timeago = f"{mins} minutes"
-    elif mins == 0:
-      timeago = "just now"
+    timeago = get_timeago(mins)
 
     opts.append(f"<span color='#1BBFFF'>({num_lines}) ({timeago})</span> {line}")
 
