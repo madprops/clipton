@@ -56,7 +56,7 @@ def show_picker() -> None:
 
     opts.append(f"({num_lines} {slines}) ({sdiff}) {line}")
 
-  proc = Popen('rofi -dmenu -p "Select Item" -format i \
+  proc = Popen('rofi -dmenu -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
     "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
