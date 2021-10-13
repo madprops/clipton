@@ -54,9 +54,10 @@ def show_picker() -> None:
 
   for item in items:
     line = item["text"]
-    line = re.sub(" +", " ", line)
     line = re.sub("<", "&lt;", line)
-    line = line.replace("\n", f"<span color='{color_1}'> *</span>")
+    line = line.replace("\n", f"<span color='{color_1}'> * </span>")
+    line = re.sub(" +", " ", line)
+    line = re.sub("</span> +", "</span>", line)
     num_lines = item["num_lines"]
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
