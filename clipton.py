@@ -30,29 +30,29 @@ def show_picker() -> None:
     line = re.sub(" +", " ", line)
     line = re.sub("<", "&lt;", line)
     num_lines = item["num_lines"]
-    diff = int((date_now - item["date"]) / 60)
+    mins = round((date_now - item["date"]) / 60)
 
-    if diff >= 1440:
-      d = int(diff / 1440)
+    if mins >= 1440:
+      d = round(mins / 1440)
       if d == 1:
-        sdiff = "1 day"
+        timeago = "1 day"
       else:
-        sdiff = f"{d} days"
-    elif diff >= 60:
-      d = int(diff / 60)
+        timeago = f"{d} days"
+    elif mins >= 60:
+      d = round(mins / 60)
       if d == 1:
-        sdiff = "1 hour"
+        timeago = "1 hour"
       else:
-        sdiff = f"{d} hours"
-    elif diff >= 1:
-      if diff == 1:
-        sdiff = f"{diff} minute"
+        timeago = f"{d} hours"
+    elif mins >= 1:
+      if mins == 1:
+        timeago = "1 minute"
       else:
-        sdiff = f"{diff} minutes"
-    elif diff == 0:
-      sdiff = "just now"
+        timeago = f"{mins} minutes"
+    elif mins == 0:
+      timeago = "just now"
 
-    opts.append(f"<span color='#1BBFFF'>({num_lines}) ({sdiff})</span> {line}")
+    opts.append(f"<span color='#1BBFFF'>({num_lines}) ({timeago})</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
