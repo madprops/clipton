@@ -4,7 +4,7 @@ import sys
 import json
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import List, Dict, Union
+from typing import List
 from datetime import datetime
 from typing_extensions import TypedDict
 
@@ -24,7 +24,7 @@ filepath: Path
 def show_picker() -> None:
   opts: List[str] = []
   date_now = get_seconds()
-  
+
   for item in items:
     line = item["text"].replace("\n", " ")
     line = re.sub(" +", " ", line)
@@ -55,7 +55,7 @@ def show_picker() -> None:
       slines = "lines"
 
     opts.append(f"({num_lines} {slines}) ({sdiff}) {line}")
-  
+
   proc = Popen('rofi -dmenu -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
     "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
@@ -110,7 +110,7 @@ def add_item(text: str) -> None:
   num_lines = text.count("\n") + 1
   items.insert(0, {"date": get_seconds(), "text": text, "num_lines": num_lines})
   items = items[0:max_items]
-  update_file()  
+  update_file()
 
 # Main function
 def main() -> None:
