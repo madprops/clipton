@@ -1,8 +1,10 @@
-This is a python-based clipboard manager with no extra dependencies needed.
+This is a python-based clipboard manager that uses Rofi as the frontend.
 
 A small c program called clipnotify is used to detect copy events.
 
 Run `compile.sh` to compile it.
+
+`xclip` is required to read and write to the clipboard.
 
 To start a daemon that listens to copy events and update the json file run the script with the `watcher` argument.
 
