@@ -54,7 +54,7 @@ def show_picker() -> None:
   asterisk = f"<span color='{color_1}'> * </span>"
 
   for item in items:
-    line = item["text"]
+    line = item["text"].strip()
     line = re.sub("<", "&lt;", line)
     line = re.sub("&", "&amp;", line)
     line = re.sub("(\s*\n\s*)+", "\n", line)
