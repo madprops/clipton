@@ -129,9 +129,10 @@ def start_watcher():
   clipath = Path(herepath) / Path("clipnotify")
 
   while True:
+    # clipnotify exits on a copy event
     os.popen(str(clipath)).read()
-    content = os.popen("xclip -o").read()
-    add_item(content)  
+    content = os.popen("xclip -o -sel clip").read()
+    add_item(content)
 
 # Main function
 def main() -> None:
