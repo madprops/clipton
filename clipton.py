@@ -51,12 +51,14 @@ def get_timeago(mins):
 def show_picker() -> None:
   opts: List[str] = []
   date_now = get_seconds()
+  asterisk = f"<span color='{color_1}'> * </span>"
 
   for item in items:
     line = item["text"]
     line = re.sub("<", "&lt;", line)
     line = re.sub("&", "&amp;", line)
-    line = line.replace("\n", f"<span color='{color_1}'> * </span>")
+    line = re.sub("[\s*\n\s*]+", "\n", line)
+    line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
     num_lines = item["num_lines"]
