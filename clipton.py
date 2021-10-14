@@ -57,7 +57,7 @@ def show_picker() -> None:
     line = item["text"]
     line = re.sub("<", "&lt;", line)
     line = re.sub("&", "&amp;", line)
-    line = re.sub("[\s*\n\s*]+", "\n", line)
+    line = re.sub("(\s*\n\s*)+", "\n", line)
     line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
