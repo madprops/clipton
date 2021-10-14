@@ -132,9 +132,14 @@ def main() -> None:
   get_items()
 
   if mode == "watcher":
+    herepath = Path(__file__).parent.resolve()
+    clipath = Path(herepath) / Path("clipnotify")
+    print(clipath)
+
     while True:
-      os.popen("./clipnotify").read()
+      os.popen(str(clipath)).read()
       add_item(os.popen("xsel --clipboard").read())
+
   elif mode == "show":
     show_picker()
 
