@@ -55,6 +55,7 @@ def show_picker() -> None:
   for item in items:
     line = item["text"]
     line = re.sub("<", "&lt;", line)
+    line = re.sub("&", "&amp;", line)
     line = line.replace("\n", f"<span color='{color_1}'> * </span>")
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
@@ -76,7 +77,7 @@ def show_picker() -> None:
 # When an item is selected through the rofi menu
 def on_selection(index: int) -> None:
   text = items[index]["text"]
-  proc = Popen('xsel --clipboard', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   proc.communicate(text)
   del items[index]
   add_item(text)
@@ -109,7 +110,7 @@ def update_file() -> None:
 # It removes duplicates
 def add_item(text: str) -> None:
   global items
-  text = text.strip()
+  text = text.rstrip()
   if text == "":
     return
   if text.startswith("file://"):
@@ -134,11 +135,10 @@ def main() -> None:
   if mode == "watcher":
     herepath = Path(__file__).parent.resolve()
     clipath = Path(herepath) / Path("clipnotify")
-    print(clipath)
 
     while True:
       os.popen(str(clipath)).read()
-      add_item(os.popen("xsel --clipboard").read())
+      add_item(os.popen("xclip -o").read())
 
   elif mode == "show":
     show_picker()
