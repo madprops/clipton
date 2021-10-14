@@ -81,8 +81,6 @@ def on_selection(index: int) -> None:
   text = items[index]["text"]
   proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   proc.communicate(text)
-  del items[index]
-  add_item(text)
 
 def get_seconds() -> int:
   return int(datetime.now().timestamp())
@@ -125,6 +123,16 @@ def add_item(text: str) -> None:
   items = items[0:max_items]
   update_file()
 
+# Start the clipboard watcher
+def start_watcher():
+  herepath = Path(__file__).parent.resolve()
+  clipath = Path(herepath) / Path("clipnotify")
+
+  while True:
+    os.popen(str(clipath)).read()
+    content = os.popen("xclip -o").read()
+    add_item(content)  
+
 # Main function
 def main() -> None:
   mode = "show"
@@ -135,13 +143,7 @@ def main() -> None:
   get_items()
 
   if mode == "watcher":
-    herepath = Path(__file__).parent.resolve()
-    clipath = Path(herepath) / Path("clipnotify")
-
-    while True:
-      os.popen(str(clipath)).read()
-      add_item(os.popen("xclip -o").read())
-
+    start_watcher()
   elif mode == "show":
     show_picker()
 
