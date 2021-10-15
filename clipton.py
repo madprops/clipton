@@ -24,7 +24,7 @@ filepath: Path
 color_1 = "#1BBFFF"
 
 # Get timeago string based on minutes
-def get_timeago(mins):
+def get_timeago(mins: int) -> str:
   if mins >= 1440:
     d = round(mins / 1440)
     if d == 1:
@@ -124,7 +124,7 @@ def add_item(text: str) -> None:
   update_file()
 
 # Start the clipboard watcher
-def start_watcher():
+def start_watcher() -> None:
   herepath = Path(__file__).parent.resolve()
   clipath = Path(herepath) / Path("clipnotify")
 
