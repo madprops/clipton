@@ -70,11 +70,11 @@ def show_picker() -> None:
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
 
-    opts.append(f"<span color='{color_1}'>{num_lines} {sline}, {char_length} length ({timeago})</span> {line}")
+    opts.append(f"<span color='{color_1}'>({timeago}) {num_lines} {sline} {char_length} length</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
-    "MousePrimary" -theme-str "window {width: 80%;}"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+    "MousePrimary" -theme-str "window {width: 66.6%;}"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
   ans = proc.communicate("\n".join(opts))[0].strip()
 
