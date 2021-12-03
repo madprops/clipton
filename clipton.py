@@ -55,6 +55,7 @@ def show_picker() -> None:
 
   for item in items:
     line = item["text"].strip()
+    char_length = len(line)
     line = re.sub("<", "&lt;", line)
     line = re.sub("&", "&amp;", line)
     line = re.sub("(\s*\n\s*)+", "\n", line)
@@ -62,14 +63,18 @@ def show_picker() -> None:
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
     num_lines = item["num_lines"]
+    if num_lines == 1:
+      sline = "line"
+    else:
+      sline = "lines"
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
 
-    opts.append(f"<span color='{color_1}'>({num_lines}) ({timeago})</span> {line}")
+    opts.append(f"<span color='{color_1}'>{num_lines} {sline}, {char_length} length ({timeago})</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
-    "MousePrimary"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+    "MousePrimary" -theme-str "window {width: 80%;}"', stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
   ans = proc.communicate("\n".join(opts))[0].strip()
 
