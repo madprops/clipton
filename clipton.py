@@ -63,14 +63,10 @@ def show_picker() -> None:
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
     num_lines = item["num_lines"]
-    if num_lines == 1:
-      sline = "line"
-    else:
-      sline = "lines"
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
 
-    opts.append(f"<span color='{color_1}'>({timeago}) {num_lines} {sline} {char_length} length</span> {line}")
+    opts.append(f"<span color='{color_1}'>({timeago}) Lines: {num_lines}, Length: {char_length}</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry \
