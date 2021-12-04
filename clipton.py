@@ -14,7 +14,7 @@ Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int})
 # How many items to store in the file
 max_items = 500
 
-# Don't save to file if this many chars or more
+# Don't save to file if char length exceeds this
 heavy_paste = 2000
 
 # Items are held here internally
