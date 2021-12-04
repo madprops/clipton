@@ -122,7 +122,7 @@ def add_item(text: str) -> None:
     return
   if len(items) > 0 and items[0] == text:
     return
-  if len(text) >= heavy_paste:
+  if len(text) > heavy_paste:
     return
 
   items = list(filter(lambda x: x["text"] != text, items))
