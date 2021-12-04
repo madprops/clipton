@@ -14,6 +14,9 @@ Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int})
 # How many items to store in the file
 max_items = 500
 
+# Don't save to file if this many chars or more
+heavy_paste = 2000
+
 # Items are held here internally
 items: List[Item]
 
@@ -112,12 +115,16 @@ def update_file() -> None:
 def add_item(text: str) -> None:
   global items
   text = text.rstrip()
+
   if text == "":
     return
   if text.startswith("file://"):
     return
   if len(items) > 0 and items[0] == text:
     return
+  if len(text) >= heavy_paste:
+    return
+
   items = list(filter(lambda x: x["text"] != text, items))
   num_lines = text.count("\n") + 1
   items.insert(0, {"date": get_seconds(), "text": text, "num_lines": num_lines})
