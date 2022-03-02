@@ -2,6 +2,7 @@ import re
 import os
 import sys
 import json
+import html
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List
@@ -59,8 +60,7 @@ def show_picker() -> None:
   for item in items:
     line = item["text"].strip()
     char_length = len(line)
-    line = re.sub("<", "&lt;", line)
-    line = re.sub("&", "&amp;", line)
+    line = html.escape(line)
     line = re.sub(" *\n *", "\n", line)
     line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
