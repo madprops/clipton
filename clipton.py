@@ -85,7 +85,7 @@ def show_picker() -> None:
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
-    -theme-str "window {width: 50%;}" \
+    -theme-str "window {width: 56%;}" \
     -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
     -theme-str "#element.selected.normal {border: 2px 2px 2px;}"'
     , stdout=PIPE, stdin=PIPE, shell=True, text=True)
