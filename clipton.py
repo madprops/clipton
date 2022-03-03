@@ -53,11 +53,11 @@ def get_timeago(mins: int) -> str:
 
 # Get a description of the size of the paste
 def get_sizestring(size: int) -> str:
-  if size <= 100:
+  if size <= 140:
     return "Small"
-  elif size > 100 and size <= 500:
+  elif size > 140 and size <= 1000:
     return "Normal"
-  elif size > 500 and size <= 2000:
+  elif size > 1000 and size <= 2000:
     return "Big"
   elif size > 2000:
     return "Huge"
