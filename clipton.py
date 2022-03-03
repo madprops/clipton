@@ -13,10 +13,10 @@ from typing_extensions import TypedDict
 Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int})
 
 # How many items to store in the file
-max_items = 500
+max_items = 1000
 
 # Don't save to file if char length exceeds this
-heavy_paste = 2000
+heavy_paste = 5000
 
 # Items are held here internally
 items: List[Item]
@@ -49,7 +49,18 @@ def get_timeago(mins: int) -> str:
   elif mins == 0:
     timeago = "just now" 
 
-  return timeago 
+  return timeago
+
+# Get a description of the size of the paste
+def get_sizestring(size: int) -> str:
+  if size <= 100:
+    return "Small"
+  elif size > 100 and size <= 500:
+    return "Normal"
+  elif size > 500 and size <= 2000:
+    return "Big"
+  elif size > 2000:
+    return "Huge"
 
 # Show the rofi menu with the items
 def show_picker() -> None:
@@ -68,12 +79,13 @@ def show_picker() -> None:
     num_lines = item["num_lines"]
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
+    size = get_sizestring(char_length)
 
-    opts.append(f"<span color='{color_1}'>({timeago}) Lines: {num_lines}, Length: {char_length}</span> {line}")
+    opts.append(f"<span color='{color_1}'>({timeago}) Ln: {num_lines} ({size})</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
-    -theme-str "window {width: 66.6%;}" \
+    -theme-str "window {width: 50%;}" \
     -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
     -theme-str "#element.selected.normal {border: 2px 2px 2px;}"'
     , stdout=PIPE, stdin=PIPE, shell=True, text=True)
