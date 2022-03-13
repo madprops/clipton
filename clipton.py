@@ -30,29 +30,25 @@ color_1 = "#1BBFFF"
 # If enabled the title is fetched with yt-dlp
 enable_youtube = True
 
+# Convert a number into a filled string
+def fillnum(num: int) -> str:
+  snum = str(num)
+  return snum.rjust(2, "0")
+
 # Get timeago string based on minutes
 def get_timeago(mins: int) -> str:
   if mins >= 1440:
     d = round(mins / 1440)
-    if d == 1:
-      timeago = "1 day"
-    else:
-      timeago = f"{d} days"
+    timeago = f"{fillnum(d)} days"
   elif mins >= 60:
     d = round(mins / 60)
-    if d == 1:
-      timeago = "1 hour"
-    else:
-      timeago = f"{d} hours"
+    timeago = f"{fillnum(d)} hours"
   elif mins >= 1:
-    if mins == 1:
-      timeago = "1 minute"
-    else:
-      timeago = f"{mins} minutes"
+    timeago = f"{fillnum(mins)} mins"
   elif mins == 0:
     timeago = "just now" 
 
-  return f"({timeago})".ljust(14, " ")
+  return f"({timeago})".ljust(11, " ")
 
 # Get a description of the size of the paste
 def get_sizestring(size: int) -> str:
