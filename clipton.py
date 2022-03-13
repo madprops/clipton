@@ -71,7 +71,6 @@ def show_picker() -> None:
 
   for item in items:
     line = item["text"].strip()
-    char_length = len(line)
     line = html.escape(line)
     line = re.sub(" *\n *", "\n", line)
     line = line.replace("\n", asterisk)
@@ -81,7 +80,7 @@ def show_picker() -> None:
     num_lines = num_lines.ljust(3, " ")
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
-    size = get_sizestring(char_length)
+    size = get_sizestring(len(line))
     title = ""
     
     if "title" in item:
