@@ -10,7 +10,7 @@ from datetime import datetime
 from typing_extensions import TypedDict
 
 # Item typed dictionary
-Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int})
+Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int, "title": str})
 
 # How many items to store in the file
 max_items = 1000
@@ -80,12 +80,17 @@ def show_picker() -> None:
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
     size = get_sizestring(char_length)
+    title = ""
+    
+    if "title" in item:
+      title = item["title"]
+      line += f" ({title})"
 
     opts.append(f"<span color='{color_1}'>({timeago}) Ln: {num_lines} ({size})</span> {line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
-    -theme-str "window {width: 56%;}" \
+    -theme-str "window {width: 66%;}" \
     -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
     -theme-str "#element.selected.normal {border: 2px 2px 2px;}"'
     , stdout=PIPE, stdin=PIPE, shell=True, text=True)
@@ -139,10 +144,28 @@ def add_item(text: str) -> None:
     return
   if len(text) > heavy_paste:
     return
+  
+  item_exists = False
+  
+  for item in items:
+    if item["text"] == text:
+      the_item = item
+      item_exists = True
+      items.remove(the_item)
+      break
+  
+  if not item_exists:
+    title = ""
 
-  items = list(filter(lambda x: x["text"] != text, items))
-  num_lines = text.count("\n") + 1
-  items.insert(0, {"date": get_seconds(), "text": text, "num_lines": num_lines})
+    if text.startswith("https://www.youtube.com/watch?") or text.startswith("https://youtu.be/"):
+      print("Fetching YouTube title...")
+      title = os.popen(f"yt-dlp --get-title '{text}'").read().strip()
+      print(title)
+    
+    num_lines = text.count("\n") + 1
+    the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
+
+  items.insert(0, the_item)
   items = items[0:max_items]
   update_file()
 
