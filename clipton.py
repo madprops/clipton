@@ -27,6 +27,9 @@ filepath: Path
 # Color used for information
 color_1 = "#1BBFFF"
 
+# If enabled the title is fetched with yt-dlp
+enable_youtube = True
+
 # Get timeago string based on minutes
 def get_timeago(mins: int) -> str:
   if mins >= 1440:
@@ -157,10 +160,11 @@ def add_item(text: str) -> None:
   if not item_exists:
     title = ""
 
-    if text.startswith("https://www.youtube.com/watch?") or text.startswith("https://youtu.be/"):
-      print("Fetching YouTube title...")
-      title = os.popen(f"yt-dlp --get-title '{text}'").read().strip()
-      print(title)
+    if enable_youtube:
+      if text.startswith("https://www.youtube.com/watch?") or text.startswith("https://youtu.be/"):
+        print("Fetching YouTube title...")
+        title = os.popen(f"yt-dlp --get-title '{text}'").read().strip()
+        print(title)
     
     num_lines = text.count("\n") + 1
     the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
