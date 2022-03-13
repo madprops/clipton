@@ -86,7 +86,7 @@ def show_picker() -> None:
     title = ""
     
     if "title" in item:
-      title = item["title"]
+      title = html.escape(item["title"])
       line += f" ({title})"
 
     opts.append(f"<span color='{color_1}'>({timeago}) Ln: {num_lines} ({size})</span> {line}")
