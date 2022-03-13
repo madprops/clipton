@@ -52,18 +52,20 @@ def get_timeago(mins: int) -> str:
   elif mins == 0:
     timeago = "just now" 
 
-  return timeago
+  return f"({timeago})".ljust(14, " ")
 
 # Get a description of the size of the paste
 def get_sizestring(size: int) -> str:
   if size <= 140:
-    return "Small"
+    sizestring = "Small"
   elif size > 140 and size <= 1000:
-    return "Normal"
+    sizestring = "Normal"
   elif size > 1000 and size <= 2000:
-    return "Big"
+    sizestring = "Big"
   elif size > 2000:
-    return "Huge"
+    sizestring = "Huge"
+  
+  return f"({sizestring})".ljust(9, " ")
 
 # Show the rofi menu with the items
 def show_picker() -> None:
@@ -79,7 +81,8 @@ def show_picker() -> None:
     line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
-    num_lines = item["num_lines"]
+    num_lines = str(item["num_lines"])
+    num_lines = num_lines.ljust(3, " ")
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
     size = get_sizestring(char_length)
@@ -91,7 +94,7 @@ def show_picker() -> None:
         title = html.escape(title)
         line += f" ({title})"
 
-    opts.append(f"<span color='{color_1}'>({timeago}) Ln: {num_lines} ({size})</span> {line}")
+    opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
