@@ -86,9 +86,10 @@ def show_picker() -> None:
     if "title" in item:
       title = item["title"]
       if title != "":
+        title = title.replace("\n", "").strip()
         title = html.escape(title)
         line += f" ({title})"
-
+    
     opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
 
   proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
@@ -105,6 +106,7 @@ def show_picker() -> None:
 
 # When an item is selected through the rofi menu
 def on_selection(index: int) -> None:
+  print(index)
   text = items[index]["text"]
   proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   proc.communicate(text)
