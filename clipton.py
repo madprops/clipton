@@ -8,6 +8,8 @@ from subprocess import Popen, PIPE
 from typing import List
 from datetime import datetime
 from typing_extensions import TypedDict
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 # Item typed dictionary
 Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int, "title": str})
@@ -27,8 +29,8 @@ filepath: Path
 # Color used for information
 color_1 = "#1BBFFF"
 
-# If enabled the title is fetched with yt-dlp
-enable_youtube = True
+# If enabled the url titles are fetched 
+enable_title_fetch = True
 
 # Convert a number into a filled string
 def fillnum(num: int) -> str:
@@ -162,10 +164,12 @@ def add_item(text: str) -> None:
   if not item_exists:
     title = ""
 
-    if enable_youtube:
-      if text.startswith("https://www.youtube.com/watch?") or text.startswith("https://youtu.be/"):
-        print("Fetching YouTube title...")
-        title = os.popen(f"yt-dlp --get-title '{text}'").read().strip()
+    if enable_title_fetch:
+      if text.startswith("https://") and len(text.split(" ")) == 1:
+        print("Fetching title...")
+        html = urlopen(text)
+        soup = BeautifulSoup(html, 'lxml')
+        title = soup.title.string
         print(title)
     
     num_lines = text.count("\n") + 1
