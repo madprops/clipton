@@ -166,11 +166,14 @@ def add_item(text: str) -> None:
 
     if enable_title_fetch:
       if text.startswith("https://") and len(text.split(" ")) == 1:
-        print("Fetching title...")
-        html = urlopen(text)
-        soup = BeautifulSoup(html, 'lxml')
-        title = soup.title.string
-        print(title)
+        try:
+          print("Fetching title...")
+          html = urlopen(text)
+          soup = BeautifulSoup(html, 'lxml')
+          title = soup.title.string
+          print(title)
+        except:
+          pass
     
     num_lines = text.count("\n") + 1
     the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
