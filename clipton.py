@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import html
+import mimetypes
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List
@@ -36,6 +37,12 @@ enable_title_fetch = True
 def fillnum(num: int) -> str:
   snum = str(num)
   return snum.rjust(2, "0")
+
+# Get the content type of a URL
+def get_url_type(url: str) -> str:
+  r = urlopen(url)
+  header = r.headers
+  return header.get_content_type()  
 
 # Get timeago string based on minutes
 def get_timeago(mins: int) -> str:
@@ -166,15 +173,18 @@ def add_item(text: str) -> None:
 
     if enable_title_fetch:
       if text.startswith("https://") and len(text.split(" ")) == 1:
-        try:
-          print("Fetching title...")
-          html = urlopen(text)
-          soup = BeautifulSoup(html, 'lxml')
-          title = soup.title.string
-          print(title)
-        except:
-          pass
-    
+        if not get_url_type(text) == "text/html":
+          print("Non HTML URL")
+        else:
+          try:
+            print("Fetching title...")
+            html = urlopen(text)
+            soup = BeautifulSoup(html, 'lxml')
+            title = soup.title.string
+            print(title)
+          except:
+            pass
+
     num_lines = text.count("\n") + 1
     the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
 
