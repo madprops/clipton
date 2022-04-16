@@ -94,7 +94,7 @@ def show_picker() -> None:
     
     if "title" in item:
       title = item["title"]
-      if title != "":
+      if title and title != "":
         title = title.replace("\n", "").strip()
         title = html.escape(title)
         line += f" ({title})"
@@ -173,8 +173,11 @@ def add_item(text: str) -> None:
 
     if enable_title_fetch:
       if text.startswith("https://") and len(text.split(" ")) == 1:
-        if not get_url_type(text) == "text/html":
-          print("Non HTML URL")
+        try:
+          if not get_url_type(text) == "text/html":
+            print("Non HTML URL")
+        except:
+          pass
         else:
           try:
             print("Fetching title...")
