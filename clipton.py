@@ -40,9 +40,12 @@ def fillnum(num: int) -> str:
 
 # Get the content type of a URL
 def get_url_type(url: str) -> str:
-  r = urlopen(url)
-  header = r.headers
-  return header.get_content_type()  
+  try:
+    r = urlopen(url)
+    header = r.headers
+    return header.get_content_type()
+  except:
+    return "none"
 
 # Get timeago string based on minutes
 def get_timeago(mins: int) -> str:
@@ -173,11 +176,8 @@ def add_item(text: str) -> None:
 
     if enable_title_fetch:
       if text.startswith("https://") and len(text.split(" ")) == 1:
-        try:
-          if not get_url_type(text) == "text/html":
-            print("Non HTML URL")
-        except:
-          pass
+        if not get_url_type(text) == "text/html":
+          print("Non HTML URL")
         else:
           try:
             print("Fetching title...")
