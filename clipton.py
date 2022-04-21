@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int, "title": str})
 
 # How many items to store in the file
-max_items = 1000
+max_items = 2000
 
 # Don't save to file if char length exceeds this
 heavy_paste = 5000
