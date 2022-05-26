@@ -118,7 +118,6 @@ def show_picker() -> None:
 
 # When an item is selected through the rofi menu
 def on_selection(index: int) -> None:
-  print(index)
   text = items[index]["text"]
   proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   proc.communicate(text)
@@ -130,9 +129,15 @@ def get_seconds() -> int:
 def get_items() -> None:
   global items
   global filepath
-  thispath = Path(__file__).parent.resolve()
-  filepath = Path(thispath) / Path("items.json")
+
+  configdir = Path("~/.config/clipton").expanduser()
+  
+  if not configdir.exists():
+    configdir.mkdir(parents=True)
+
+  filepath = configdir / Path("items.json")
   filepath.touch(exist_ok=True)
+
   file = open(filepath, "r")
   content = file.read().strip()
   if content == "":
