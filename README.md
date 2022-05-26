@@ -1,5 +1,11 @@
 ![](https://i.imgur.com/ZZYmqXd.jpg)
 
+---
+
+News: items.json is now in ~/.config/clipton
+
+---
+
 This is a python-based clipboard manager that uses Rofi as the frontend.
 
 A small c program called clipnotify is used to detect copy events.
