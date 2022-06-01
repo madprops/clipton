@@ -104,7 +104,7 @@ def show_picker() -> None:
     
     opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
 
-  proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item" -format i \
+  proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item (Alt+1 To Delete)" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
     -theme-str "window {width: 66%;}" \
     -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
@@ -112,15 +112,25 @@ def show_picker() -> None:
     , stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
   ans = proc.communicate("\n".join(opts))[0].strip()
+  code = proc.returncode
 
   if ans != "":
-    on_selection(int(ans))
+    index = int(ans)
+    if code == 10:
+      delete_item(index)
+    else:
+      select_item(index)
 
 # When an item is selected through the rofi menu
-def on_selection(index: int) -> None:
+def select_item(index: int) -> None:
   text = items[index]["text"]
   proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   proc.communicate(text)
+
+# Delete an item from the item list
+def delete_item(index: int) -> None:
+  del items[index]
+  update_file()
 
 def get_seconds() -> int:
   return int(datetime.now().timestamp())
