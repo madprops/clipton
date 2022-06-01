@@ -112,10 +112,11 @@ def show_picker() -> None:
     , stdout=PIPE, stdin=PIPE, shell=True, text=True)
 
   ans = proc.communicate("\n".join(opts))[0].strip()
-  code = proc.returncode
 
   if ans != "":
+    code = proc.returncode
     index = int(ans)
+    
     if code == 10:
       delete_item(index)
     else:
