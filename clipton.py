@@ -77,6 +77,8 @@ def get_sizestring(size: int) -> str:
 
 # Show the rofi menu with the items
 def show_picker() -> None:
+  get_items()
+
   opts: List[str] = []
   date_now = get_seconds()
   asterisk = f"<span color='{color_1}'> * </span>"
@@ -104,7 +106,7 @@ def show_picker() -> None:
     
     opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
 
-  proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item (Alt+1 To Delete)" -format i \
+  proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item (Alt+1 To Delete | Alt+(2 to 9) To Join)" -format i \
     -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
     -theme-str "window {width: 66%;}" \
     -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
@@ -119,22 +121,36 @@ def show_picker() -> None:
     
     if code == 10:
       delete_item(index)
+    elif code >= 11 and code <= 18:
+      join_items(code - 9)
     else:
       select_item(index)
+
+# Copy text to clipboar
+def copy_text(text: str) -> None:
+  proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc.communicate(text)      
 
 # When an item is selected through the rofi menu
 def select_item(index: int) -> None:
   text = items[index]["text"]
-  proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
-  proc.communicate(text)
+  copy_text(text)
 
 # Delete an item from the item list
 def delete_item(index: int) -> None:
   del items[index]
   update_file()
 
+# Get unix seconts
 def get_seconds() -> int:
   return int(datetime.now().timestamp())
+
+# Join 2 or more items into one
+def join_items(num: int) -> None:
+  s = " ".join(item["text"].strip() for item in reversed(items[0:num]))
+  del items[0:num]
+  update_file()
+  copy_text(s)
 
 # Read the items file and parse it to json
 def get_items() -> None:
@@ -172,8 +188,6 @@ def add_item(text: str) -> None:
   if text == "":
     return
   if text.startswith("file://"):
-    return
-  if len(items) > 0 and items[0] == text:
     return
   if len(text) > heavy_paste:
     return
@@ -220,6 +234,7 @@ def start_watcher() -> None:
     # clipnotify exits on a copy event
     os.popen(str(clipath)).read()
     content = os.popen("xclip -o -sel clip").read()
+    get_items()
     add_item(content)
 
 # Main function
@@ -228,8 +243,6 @@ def main() -> None:
 
   if len(sys.argv) > 1:
     mode = sys.argv[1]
-
-  get_items()
 
   if mode == "watcher":
     start_watcher()
