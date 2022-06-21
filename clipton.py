@@ -33,6 +33,16 @@ color_1 = "#1BBFFF"
 # If enabled the url titles are fetched 
 enable_title_fetch = True
 
+# Style for rofi windows
+rofi_style = '-selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
+  -theme-str "window {width: 66%;}" \
+  -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
+  -theme-str "#element.selected.normal {border: 2px 2px 2px;}"'
+
+# Get a rofi prompt
+def rofi_prompt(s: str) -> str:
+  return f'rofi -dmenu -markup-rows -i -p "{s}"'
+
 # Convert a number into a filled string
 def fillnum(num: int) -> str:
   snum = str(num)
@@ -106,13 +116,8 @@ def show_picker() -> None:
     
     opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
 
-  proc = Popen('rofi -dmenu -markup-rows -i -p "Select Item (Alt+1 To Delete | Alt+(2 to 9) To Join)" -format i \
-    -selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
-    -theme-str "window {width: 66%;}" \
-    -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
-    -theme-str "#element.selected.normal {border: 2px 2px 2px;}"'
-    , stdout=PIPE, stdin=PIPE, shell=True, text=True)
-
+  prompt = rofi_prompt("(Alt+1 To Delete | Alt+(2 to 9) To Join) | Alt+0 To Clear")
+  proc = Popen(f'{prompt} -format i {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
 
   if ans != "":
@@ -123,6 +128,8 @@ def show_picker() -> None:
       delete_item(index)
     elif code >= 11 and code <= 18:
       join_items(code - 9)
+    elif code == 19:
+      confirm_delete_items()
     else:
       select_item(index)
 
@@ -139,6 +146,21 @@ def select_item(index: int) -> None:
 # Delete an item from the item list
 def delete_item(index: int) -> None:
   del items[index]
+  update_file()
+
+# Delete all items
+def confirm_delete_items() -> None:
+  opts = ["No", "Yes"]
+  prompt = rofi_prompt("Delete all items?")
+  proc = Popen(f'{prompt} {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  ans = proc.communicate("\n".join(opts))[0].strip()
+  if ans == "Yes":
+    delete_items()
+
+# Delete all the items
+def delete_items() -> None:
+  global items
+  items = []
   update_file()
 
 # Get unix seconts
