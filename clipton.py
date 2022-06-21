@@ -116,7 +116,7 @@ def show_picker() -> None:
     
     opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
 
-  prompt = rofi_prompt("(Alt+1 To Delete | Alt+(2 to 9) To Join) | Alt+0 To Clear")
+  prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
   proc = Popen(f'{prompt} -format i {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
 
