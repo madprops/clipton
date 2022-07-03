@@ -1,0 +1,9 @@
+[Unit]
+Description=Daemon for clipton (clipboard manager)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/clipton watcher
+
+[Install]
+WantedBy=default.target

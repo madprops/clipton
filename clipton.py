@@ -1,19 +1,30 @@
+#!/usr/bin/env python
+
 import re
 import os
 import sys
 import json
 import html
-import mimetypes
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List
 from datetime import datetime
-from typing_extensions import TypedDict
 from urllib.request import urlopen
-from bs4 import BeautifulSoup
+from html.parser import HTMLParser
 
-# Item typed dictionary
-Item = TypedDict("Item", {"date": int, "text": str, "num_lines": int, "title": str})
+class TitleParser(HTMLParser):
+  def __init__(self):
+    HTMLParser.__init__(self)
+    self.match = False
+    self.title = ''
+
+  def handle_starttag(self, tag, attributes):
+    self.match = tag == 'title'
+
+  def handle_data(self, data):
+    if self.match:
+      self.title = data
+      self.match = False
 
 # How many items to store in the file
 max_items = 2000
@@ -22,7 +33,7 @@ max_items = 2000
 heavy_paste = 5000
 
 # Items are held here internally
-items: List[Item]
+items: []
 
 # Path to the json file
 filepath: Path
@@ -233,9 +244,10 @@ def add_item(text: str) -> None:
         else:
           try:
             print("Fetching title...")
-            html = urlopen(text)
-            soup = BeautifulSoup(html, 'lxml')
-            title = soup.title.string
+            html = str(urlopen(text).read())
+            parser = TitleParser()
+            parser.feed(html)
+            title = parser.title
             print(title)
           except:
             pass
@@ -250,11 +262,10 @@ def add_item(text: str) -> None:
 # Start the clipboard watcher
 def start_watcher() -> None:
   herepath = Path(__file__).parent.resolve()
-  clipath = Path(herepath) / Path("clipnotify")
 
   while True:
     # clipnotify exits on a copy event
-    os.popen(str(clipath)).read()
+    os.popen("clipnotify").read()
     content = os.popen("xclip -o -sel clip").read()
     get_items()
     add_item(content)

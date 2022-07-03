@@ -1,10 +1,6 @@
 ![](https://i.imgur.com/ZZYmqXd.jpg)
 
----
-
-News: items.json is now in ~/.config/clipton
-
----
+## Info
 
 This is a python-based clipboard manager that uses Rofi as the frontend.
 
@@ -23,3 +19,13 @@ The number displayed on the left of items refer to the number of linebreaks the 
 It also displays how long ago the item was copied.
 
 It can fetch titles from urls, which is enabled by default (it requires pip install bs4).
+
+## Installation
+
+There is an aur package called clipton-git
+
+After installing, enable the user service:
+
+`systemctl --user enable clipton.service`
+
+`systemctl --user start clipton.service`
