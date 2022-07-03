@@ -46,9 +46,7 @@ enable_title_fetch = True
 
 # Style for rofi windows
 rofi_style = '-selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
-  -theme-str "window {width: 66%;}" \
-  -theme-str "#element.selected.normal {background-color: rgba(0, 0, 0, 0%);}" \
-  -theme-str "#element.selected.normal {border: 2px 2px 2px;}"'
+  -theme-str "window {width: 66%;}"'
 
 # Get a rofi prompt
 def rofi_prompt(s: str) -> str:
