@@ -38,9 +38,6 @@ items: []
 # Path to the json file
 filepath: Path
 
-# Color used for information
-color_1 = "#1BBFFF"
-
 # If enabled the url titles are fetched 
 enable_title_fetch = True
 
@@ -100,7 +97,7 @@ def show_picker() -> None:
 
   opts: List[str] = []
   date_now = get_seconds()
-  asterisk = f"<span color='{color_1}'> * </span>"
+  asterisk = f"<span> * </span>"
 
   for item in items:
     line = item["text"].strip()
@@ -123,7 +120,7 @@ def show_picker() -> None:
         title = html.escape(title)
         line += f" ({title})"
     
-    opts.append(f"<span color='{color_1}'>{timeago}Ln: {num_lines}{size}</span>{line}")
+    opts.append(f"<span>{timeago}Ln: {num_lines}{size}</span>{line}")
 
   prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
   proc = Popen(f'{prompt} -format i {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
