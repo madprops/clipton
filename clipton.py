@@ -172,9 +172,6 @@ def get_items() -> None:
   global items
   global filepath
 
-  if len(items) != 0: 
-    return
-
   configdir = Path("~/.config/clipton").expanduser()
   
   if not configdir.exists():
