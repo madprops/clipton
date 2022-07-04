@@ -78,29 +78,27 @@ def get_timeago(mins: int) -> str:
 
   return f"({timeago})".ljust(12, " ")
 
-# Show the rofi menu with the items
-def show_picker(selected: int = 0) -> None:
-  get_items()
-
+# Show the rofi menu with the rows
+def show_picker(rows: list, selected: int = 0) -> None:
   opts: List[str] = []
   date_now = get_seconds()
   asterisk = f"<span> * </span>"
 
-  for item in items:
-    line = item["text"].strip()
+  for row in rows:
+    line = row["text"].strip()
     line = html.escape(line)
     line = re.sub(" *\n *", "\n", line)
     line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
-    num_lines = str(item["num_lines"]) + ")"
+    num_lines = str(row["num_lines"]) + ")"
     num_lines = num_lines.ljust(5, " ")
-    mins = round((date_now - item["date"]) / 60)
+    mins = round((date_now - row["date"]) / 60)
     timeago = get_timeago(mins)
     title = ""
     
-    if "title" in item:
-      title = item["title"]
+    if "title" in row:
+      title = row["title"]
       if title and title != "":
         title = title.replace("\n", "").strip()
         title = html.escape(title)
@@ -118,7 +116,7 @@ def show_picker(selected: int = 0) -> None:
     
     if code == 10:
       delete_item(index)
-      show_picker(index)
+      show_picker(items, index)
     elif code >= 11 and code <= 18:
       join_items(code - 9)
     elif code == 19:
@@ -189,6 +187,7 @@ def get_items() -> None:
 
 # Stringify the json object and save it into the file
 def update_file() -> None:
+  print(1)
   file = open(filepath, "w")
   file.write(json.dumps(items))
   file.close()
@@ -247,10 +246,13 @@ def start_watcher() -> None:
 
   while True:
     # clipnotify exits on a copy event
+    original = os.popen("xclip -o -sel clip").read()
     os.popen("clipnotify").read()
     content = os.popen("xclip -o -sel clip").read()
-    get_items()
-    add_item(content)
+    # Ignore alt clipboard event
+    if content != original:
+      get_items()
+      add_item(content)
 
 # Main function
 def main() -> None:
@@ -262,7 +264,8 @@ def main() -> None:
   if mode == "watcher":
     start_watcher()
   elif mode == "show":
-    show_picker()
+    get_items()
+    show_picker(items, 0)
 
 if __name__ == "__main__":
   main()
