@@ -33,7 +33,7 @@ max_items = 2000
 heavy_paste = 5000
 
 # Items are held here internally
-items: []
+items = []
 
 # Path to the json file
 filepath: Path
@@ -76,20 +76,7 @@ def get_timeago(mins: int) -> str:
   elif mins == 0:
     timeago = "just now" 
 
-  return f"({timeago})".ljust(11, " ")
-
-# Get a description of the size of the paste
-def get_sizestring(size: int) -> str:
-  if size <= 140:
-    sizestring = "Small"
-  elif size > 140 and size <= 1000:
-    sizestring = "Normal"
-  elif size > 1000 and size <= 2000:
-    sizestring = "Big"
-  elif size > 2000:
-    sizestring = "Huge"
-  
-  return f"({sizestring})".ljust(9, " ")
+  return f"({timeago})".ljust(12, " ")
 
 # Show the rofi menu with the items
 def show_picker() -> None:
@@ -106,11 +93,10 @@ def show_picker() -> None:
     line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
-    num_lines = str(item["num_lines"])
-    num_lines = num_lines.ljust(3, " ")
+    num_lines = str(item["num_lines"]) + ")"
+    num_lines = num_lines.ljust(5, " ")
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
-    size = get_sizestring(len(line))
     title = ""
     
     if "title" in item:
@@ -120,7 +106,7 @@ def show_picker() -> None:
         title = html.escape(title)
         line += f" ({title})"
     
-    opts.append(f"<span>{timeago}Ln: {num_lines}{size}</span>{line}")
+    opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
   prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
   proc = Popen(f'{prompt} -format i {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
@@ -132,6 +118,7 @@ def show_picker() -> None:
     
     if code == 10:
       delete_item(index)
+      show_picker()
     elif code >= 11 and code <= 18:
       join_items(code - 9)
     elif code == 19:
@@ -184,6 +171,9 @@ def join_items(num: int) -> None:
 def get_items() -> None:
   global items
   global filepath
+
+  if len(items) != 0: 
+    return
 
   configdir = Path("~/.config/clipton").expanduser()
   
