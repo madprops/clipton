@@ -42,7 +42,7 @@ filepath: Path
 enable_title_fetch = True
 
 # Style for rofi windows
-rofi_style = '-selected-row 0 -me-select-entry "" -me-accept-entry "MousePrimary" \
+rofi_style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
   -theme-str "window {width: 66%;}"'
 
 # Get a rofi prompt
@@ -79,7 +79,7 @@ def get_timeago(mins: int) -> str:
   return f"({timeago})".ljust(12, " ")
 
 # Show the rofi menu with the items
-def show_picker() -> None:
+def show_picker(selected: int = 0) -> None:
   get_items()
 
   opts: List[str] = []
@@ -109,7 +109,7 @@ def show_picker() -> None:
     opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
   prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-  proc = Popen(f'{prompt} -format i {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc = Popen(f'{prompt} -format i {rofi_style} -selected-row {selected}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
 
   if ans != "":
@@ -118,7 +118,7 @@ def show_picker() -> None:
     
     if code == 10:
       delete_item(index)
-      show_picker()
+      show_picker(index)
     elif code >= 11 and code <= 18:
       join_items(code - 9)
     elif code == 19:
@@ -145,7 +145,7 @@ def delete_item(index: int) -> None:
 def confirm_delete_items() -> None:
   opts = ["No", "Yes"]
   prompt = rofi_prompt("Delete all items?")
-  proc = Popen(f'{prompt} {rofi_style}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc = Popen(f'{prompt} {rofi_style} -selected-row 0', stdout=PIPE, stdin=PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
   if ans == "Yes":
     delete_items()
