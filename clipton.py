@@ -187,7 +187,6 @@ def get_items() -> None:
 
 # Stringify the json object and save it into the file
 def update_file() -> None:
-  print(1)
   file = open(filepath, "w")
   file.write(json.dumps(items))
   file.close()
