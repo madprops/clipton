@@ -78,27 +78,27 @@ def get_timeago(mins: int) -> str:
 
   return f"({timeago})".ljust(12, " ")
 
-# Show the rofi menu with the rows
-def show_picker(rows: list, selected: int = 0) -> None:
+# Show the rofi menu with the items
+def show_picker(rselected: int = 0) -> None:
   opts: List[str] = []
   date_now = get_seconds()
   asterisk = f"<span> * </span>"
 
-  for row in rows:
-    line = row["text"].strip()
+  for item in items:
+    line = item["text"].strip()
     line = html.escape(line)
     line = re.sub(" *\n *", "\n", line)
     line = line.replace("\n", asterisk)
     line = re.sub(" +", " ", line)
     line = re.sub("</span> +", "</span>", line)
-    num_lines = str(row["num_lines"]) + ")"
+    num_lines = str(item["num_lines"]) + ")"
     num_lines = num_lines.ljust(5, " ")
-    mins = round((date_now - row["date"]) / 60)
+    mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
     title = ""
     
-    if "title" in row:
-      title = row["title"]
+    if "title" in item:
+      title = item["title"]
       if title and title != "":
         title = title.replace("\n", "").strip()
         title = html.escape(title)
@@ -116,7 +116,7 @@ def show_picker(rows: list, selected: int = 0) -> None:
     
     if code == 10:
       delete_item(index)
-      show_picker(items, index)
+      show_picker(index)
     elif code >= 11 and code <= 18:
       join_items(code - 9)
     elif code == 19:
@@ -264,7 +264,7 @@ def main() -> None:
     start_watcher()
   elif mode == "show":
     get_items()
-    show_picker(items, 0)
+    show_picker()
 
 if __name__ == "__main__":
   main()
