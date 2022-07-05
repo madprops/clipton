@@ -4,7 +4,7 @@
 
 This is a python-based clipboard manager that uses Rofi as the frontend.
 
-`clipnotify` is required to detect copy events.
+`copyevent` is required to detect copy events.
 
 `xclip` is required to read and write to the clipboard.
 

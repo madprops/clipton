@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import html
+import shutil
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List
@@ -79,7 +80,7 @@ def get_timeago(mins: int) -> str:
   return f"({timeago})".ljust(12, " ")
 
 # Show the rofi menu with the items
-def show_picker(rselected: int = 0) -> None:
+def show_picker(selected: int = 0) -> None:
   opts: List[str] = []
   date_now = get_seconds()
   asterisk = f"<span> * </span>"
@@ -241,17 +242,19 @@ def add_item(text: str) -> None:
 
 # Start the clipboard watcher
 def start_watcher() -> None:
+  if shutil.which("copyevent") is None:
+    print("The watcher needs 'copyevent' to be installed.")
+    exit(1)
+
   herepath = Path(__file__).parent.resolve()
 
   while True:
-    # clipnotify exits on a copy event
-    original = os.popen("xclip -o -sel clip").read()
-    os.popen("clipnotify").read()
-    content = os.popen("xclip -o -sel clip").read()
-    # Ignore alt clipboard event
-    if content != original:
-      get_items()
-      add_item(content)
+    # copyevent exits on a copy event
+    os.popen("copyevent -s clipboard").read()
+    clip = os.popen("xclip -o -sel clip").read()
+    print(f"clip: {clip}")
+    get_items()
+    add_item(clip)
 
 # Main function
 def main() -> None:
