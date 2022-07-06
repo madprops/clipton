@@ -6,4 +6,4 @@ Type=simple
 ExecStart=/usr/bin/clipton watcher
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical.target
