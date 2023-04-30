@@ -39,7 +39,7 @@ items = []
 # Path to the json file
 filepath: Path
 
-# If enabled the url titles are fetched 
+# If enabled the url titles are fetched
 enable_title_fetch = True
 
 # Style for rofi windows
@@ -75,7 +75,7 @@ def get_timeago(mins: int) -> str:
   elif mins >= 1:
     timeago = f"{fillnum(mins)} mins"
   elif mins == 0:
-    timeago = "just now" 
+    timeago = "just now"
 
   return f"({timeago})".ljust(12, " ")
 
@@ -97,14 +97,14 @@ def show_picker(selected: int = 0) -> None:
     mins = round((date_now - item["date"]) / 60)
     timeago = get_timeago(mins)
     title = ""
-    
+
     if "title" in item:
       title = item["title"]
       if title and title != "":
         title = title.replace("\n", "").strip()
         title = html.escape(title)
         line += f" ({title})"
-    
+
     opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
   prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
@@ -114,7 +114,7 @@ def show_picker(selected: int = 0) -> None:
   if ans != "":
     code = proc.returncode
     index = int(ans)
-    
+
     if code == 10:
       delete_item(index)
       show_picker(index)
@@ -128,7 +128,7 @@ def show_picker(selected: int = 0) -> None:
 # Copy text to clipboar
 def copy_text(text: str) -> None:
   proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
-  proc.communicate(text)      
+  proc.communicate(text)
 
 # When an item is selected through the rofi menu
 def select_item(index: int) -> None:
@@ -172,7 +172,7 @@ def get_items() -> None:
   global filepath
 
   configdir = Path("~/.config/clipton").expanduser()
-  
+
   if not configdir.exists():
     configdir.mkdir(parents=True)
 
@@ -205,16 +205,16 @@ def add_item(text: str) -> None:
     return
   if len(text) > heavy_paste:
     return
-  
+
   item_exists = False
-  
+
   for item in items:
     if item["text"] == text:
       the_item = item
       item_exists = True
       items.remove(the_item)
       break
-  
+
   if not item_exists:
     title = ""
 
@@ -251,10 +251,14 @@ def start_watcher() -> None:
   while True:
     # copyevent exits on a copy event
     os.popen("copyevent -s clipboard").read()
-    clip = os.popen("xclip -o -sel clip").read()
-    print(f"clip: {clip}")
-    get_items()
-    add_item(clip)
+
+    try:
+      clip = os.popen("xclip -o -sel clip").read()
+      print(f"clip: {clip}")
+      get_items()
+      add_item(clip)
+    except Exception as err:
+      print(err)
 
 # Main function
 def main() -> None:
