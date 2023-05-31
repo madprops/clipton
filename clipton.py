@@ -182,7 +182,6 @@ def join_items(num: int) -> None:
 def get_items() -> None:
   global items
   global filepath
-  global configdir
 
   configdir = Path("~/.config/clipton").expanduser()
 
