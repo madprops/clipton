@@ -268,7 +268,7 @@ def start_watcher() -> None:
         exit(1)
 
       print(f"Watcher Iteration: #{iterations}")
-      ans = subprocess.run("ocopyevent -s clipboard", capture_output = True, shell = True)
+      ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
 
       if ans.returncode == 0:
         ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True)
