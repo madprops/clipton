@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import re
-import os
 import sys
 import json
 import html
 import shutil
+import logging
 from pathlib import Path
-from subprocess import Popen, PIPE
+import subprocess
 from typing import List
 from datetime import datetime
 from urllib.request import urlopen
@@ -33,6 +33,9 @@ max_items = 2000
 # Don't save to file if char length exceeds this
 heavy_paste = 5000
 
+# Max log items
+max_log = 3
+
 # Items are held here internally
 items = []
 
@@ -49,6 +52,15 @@ rofi_style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
 # Get a rofi prompt
 def rofi_prompt(s: str) -> str:
   return f'rofi -dmenu -markup-rows -i -p "{s}"'
+
+def log(text):
+  logger = logging.getLogger(__name__)
+  logger.setLevel(logging.INFO)
+  formatter = logging.Formatter(fmt="%(asctime)s %(name)s.%(levelname)s: %(message)s", datefmt="%Y.%m.%d %H:%M:%S")
+  handler = logging.StreamHandler(stream=sys.stdout)
+  handler.setFormatter(formatter)
+  logger.addHandler(handler)
+  logger.info(text)
 
 # Convert a number into a filled string
 def fillnum(num: int) -> str:
@@ -108,7 +120,7 @@ def show_picker(selected: int = 0) -> None:
     opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
   prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-  proc = Popen(f'{prompt} -format i {rofi_style} -selected-row {selected}', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc = subprocess.Popen(f'{prompt} -format i {rofi_style} -selected-row {selected}', stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
 
   if ans != "":
@@ -127,7 +139,7 @@ def show_picker(selected: int = 0) -> None:
 
 # Copy text to clipboar
 def copy_text(text: str) -> None:
-  proc = Popen('xclip -sel clip -f', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc = subprocess.Popen('xclip -sel clip -f', stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
   proc.communicate(text)
 
 # When an item is selected through the rofi menu
@@ -144,7 +156,7 @@ def delete_item(index: int) -> None:
 def confirm_delete_items() -> None:
   opts = ["No", "Yes"]
   prompt = rofi_prompt("Delete all items?")
-  proc = Popen(f'{prompt} {rofi_style} -selected-row 0', stdout=PIPE, stdin=PIPE, shell=True, text=True)
+  proc = subprocess.Popen(f'{prompt} {rofi_style} -selected-row 0', stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
   if ans == "Yes":
     delete_items()
@@ -170,6 +182,7 @@ def join_items(num: int) -> None:
 def get_items() -> None:
   global items
   global filepath
+  global configdir
 
   configdir = Path("~/.config/clipton").expanduser()
 
@@ -247,18 +260,34 @@ def start_watcher() -> None:
     exit(1)
 
   herepath = Path(__file__).parent.resolve()
+  max_iterations = 100
+  iterations = 0
 
   while True:
-    # copyevent exits on a copy event
-    os.popen("copyevent -s clipboard").read()
-
     try:
-      clip = os.popen("xclip -o -sel clip").read()
-      print(f"clip: {clip}")
-      get_items()
-      add_item(clip)
+      iterations += 1
+
+      print(f"Watcher Iteration: #{iterations}")
+
+      if iterations >= max_iterations:
+        log("Too many iterations")
+        exit(1)
+
+      ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
+
+      if ans.returncode == 0:
+        ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True)
+
+        if ans.returncode == 0:
+          clip = ans.stdout.decode().strip()
+
+          if clip:
+            print(f"clip: {clip}")
+            get_items()
+            add_item(clip)
+            iterations = 0
     except Exception as err:
-      print(err)
+      log(err)
 
 # Main function
 def main() -> None:
