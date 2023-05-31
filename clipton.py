@@ -263,13 +263,12 @@ def start_watcher() -> None:
     try:
       iterations += 1
 
-      print(f"Watcher Iteration: #{iterations}")
-
-      if iterations >= max_iterations:
+      if iterations > max_iterations:
         log("Too many iterations")
         exit(1)
 
-      ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
+      print(f"Watcher Iteration: #{iterations}")
+      ans = subprocess.run("ocopyevent -s clipboard", capture_output = True, shell = True)
 
       if ans.returncode == 0:
         ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True)
