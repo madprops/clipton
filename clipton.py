@@ -33,9 +33,6 @@ max_items = 2000
 # Don't save to file if char length exceeds this
 heavy_paste = 5000
 
-# Max log items
-max_log = 3
-
 # Items are held here internally
 items = []
 
