@@ -274,7 +274,7 @@ def start_watcher() -> None:
         ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True)
 
         if ans.returncode == 0:
-          clip = ans.stdout.decode().strip()
+          clip = ans.stdout.decode()
 
           if clip:
             print(f"clip: {clip}")
