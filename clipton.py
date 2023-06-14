@@ -232,15 +232,12 @@ def add_item(text: str) -> None:
         if not get_url_type(text) == "text/html":
           print("Non HTML URL")
         else:
-          try:
-            print("Fetching title...")
-            html = str(urlopen(text).read())
-            parser = TitleParser()
-            parser.feed(html)
-            title = parser.title
-            print(title)
-          except:
-            pass
+          print("Fetching title...")
+          html = str(urlopen(text).read())
+          parser = TitleParser()
+          parser.feed(html)
+          title = parser.title
+          print(title)
 
     num_lines = text.count("\n") + 1
     the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
