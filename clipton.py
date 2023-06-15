@@ -268,7 +268,7 @@ def start_watcher() -> None:
       ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
 
       if ans.returncode == 0:
-        ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True)
+        ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True, timeout = 3)
 
         if ans.returncode == 0:
           clip = ans.stdout.decode()
