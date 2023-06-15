@@ -136,8 +136,8 @@ def show_picker(selected: int = 0) -> None:
 
 # Copy text to clipboar
 def copy_text(text: str) -> None:
-  proc = subprocess.Popen('xclip -sel clip -f', stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True, timeout = 3)
-  proc.communicate(text)
+  proc = subprocess.Popen('xclip -sel clip -f', stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
+  proc.communicate(text, timeout = 3)
 
 # When an item is selected through the rofi menu
 def select_item(index: int) -> None:
