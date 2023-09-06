@@ -17,10 +17,10 @@ class TitleParser(HTMLParser):
   def __init__(self):
     HTMLParser.__init__(self)
     self.match = False
-    self.title = ''
+    self.title = ""
 
   def handle_starttag(self, tag, attributes):
-    self.match = tag == 'title'
+    self.match = tag == "title"
 
   def handle_data(self, data):
     if self.match:
@@ -117,7 +117,7 @@ def show_picker(selected: int = 0) -> None:
     opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
   prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-  proc = subprocess.Popen(f'{prompt} -format i {rofi_style} -selected-row {selected}', stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
+  proc = subprocess.Popen(f"{prompt} -format i {rofi_style} -selected-row {selected}", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
 
   if ans != "":
@@ -136,7 +136,7 @@ def show_picker(selected: int = 0) -> None:
 
 # Copy text to clipboar
 def copy_text(text: str) -> None:
-  proc = subprocess.Popen('xclip -sel clip -f', stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
+  proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
   proc.communicate(text, timeout = 3)
 
 # When an item is selected through the rofi menu
@@ -153,7 +153,7 @@ def delete_item(index: int) -> None:
 def confirm_delete_items() -> None:
   opts = ["No", "Yes"]
   prompt = rofi_prompt("Delete all items?")
-  proc = subprocess.Popen(f'{prompt} {rofi_style} -selected-row 0', stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
+  proc = subprocess.Popen(f"{prompt} {rofi_style} -selected-row 0", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
   if ans == "Yes":
     delete_items()
@@ -233,7 +233,7 @@ def add_item(text: str) -> None:
           print("Non HTML URL")
         else:
           print("Fetching title...")
-          html = str(urlopen(text).read())
+          html = str(urlopen(text).read().decode("utf-8"))
           parser = TitleParser()
           parser.feed(html)
           title = parser.title
