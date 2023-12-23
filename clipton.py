@@ -21,7 +21,7 @@ class Globals:
   # Items are held here internally
   items = []
 
-  # Path to the json file
+  # Path to the JSON file
   filepath: Path
 
 #----------
@@ -349,7 +349,7 @@ class File:
     Globals.items = json.loads(content)
     file.close()
 
-  # Stringify the json object and save it into the file
+  # Stringify the JSON object and save it into the file
   @staticmethod
   def write() -> None:
     file = open(Globals.filepath, "w")
