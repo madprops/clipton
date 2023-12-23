@@ -17,6 +17,7 @@ from datetime import datetime
 # SETTINGS
 #----------
 
+# Settings dictionary
 settings = {}
 
 # How many items to store in the file
@@ -40,6 +41,7 @@ settings["converts"] = {
 # UTILS
 #----------
 
+# HTML parser to get the title from a URL
 class TitleParser(HTMLParser):
   def __init__(self):
     HTMLParser.__init__(self)
@@ -119,6 +121,7 @@ def get_title(text: str) -> str:
 # CONVERTS
 #----------
 
+# Convert text into something else
 def convert_text(text: str) -> str:
   if space(text): return text
 
@@ -360,5 +363,6 @@ def main() -> None:
     get_items()
     show_picker()
 
+# Start program
 if __name__ == "__main__":
   main()
