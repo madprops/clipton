@@ -17,11 +17,12 @@ from datetime import datetime
 # GLOBALS
 #----------
 
-# Items are held here internally
-items = []
+class Globals:
+  # Items are held here internally
+  items = []
 
-# Path to the json file
-filepath: Path
+  # Path to the json file
+  filepath: Path
 
 #----------
 # SETTINGS
@@ -144,10 +145,24 @@ class Utils:
 #----------
 
 class Converts:
+
   # Convert text into something else
   @staticmethod
-  def convert(text: str) -> str:
+  def check_convert(text: str) -> str:
+    if Settings.converts["youtube_music"]:
+      new_text = Converts.youtube_music(text)
+
+    if new_text:
+      Utils.copy_text(new_text)
+      return new_text
+
+    return text
+
+  # Convert a Youtube Music URL into a Youtube URL
+  @staticmethod
+  def youtube_music(text: str) -> str:
     if Utils.space(text): return text
+
     new_text = ""
 
     if Settings.converts["youtube_music"]:
@@ -162,11 +177,7 @@ class Converts:
         playlist_id = match.group(3)
         new_text = f'https://www.youtube.com/playlist?list={playlist_id}'
 
-    if new_text:
-      Utils.copy_text(new_text)
-      return new_text
-
-    return text
+    return new_text
 
 #----------
 # ROFI
@@ -189,7 +200,7 @@ class Rofi:
     date_now = Utils.get_seconds()
     asterisk = f"<span> * </span>"
 
-    for item in items:
+    for item in Globals.items:
       line = item["text"].strip()
       line = html.escape(line)
       line = re.sub(" *\n *", "\n", line)
@@ -238,20 +249,19 @@ class Items:
   # When an item is selected through the rofi menu
   @staticmethod
   def select(index: int) -> None:
-    text = items[index]["text"]
+    text = Globals.items[index]["text"]
     Utils.copy_text(text)
 
   # Delete an item from the item list
   @staticmethod
   def delete(index: int) -> None:
-    del items[index]
+    del Globals.items[index]
     update_file()
 
   # Delete all the items
   @staticmethod
   def delete_all() -> None:
-    global items
-    items = []
+    Globals.items = []
     update_file()
 
   # Delete all items
@@ -268,32 +278,29 @@ class Items:
   # Join 2 or more items into one
   @staticmethod
   def join(num: int) -> None:
-    s = " ".join(item["text"].strip() for item in reversed(items[0:num]))
-    del items[0:num]
+    s = " ".join(item["text"].strip() for item in reversed(Globals.items[0:num]))
+    del Globals.items[0:num]
     update_file()
     Utils.copy_text(s)
 
   # Read the items file and parse it to json
   @staticmethod
   def get() -> None:
-    global items
-    global filepath
-
     configdir = Path("~/.config/clipton").expanduser()
 
     if not configdir.exists():
       configdir.mkdir(parents=True)
 
-    filepath = configdir / Path("items.json")
-    filepath.touch(exist_ok=True)
+    Globals.filepath = configdir / Path("items.json")
+    Globals.filepath.touch(exist_ok=True)
 
-    file = open(filepath, "r")
+    file = open(Globals.filepath, "r")
     content = file.read().strip()
 
     if content == "":
       content = "[]"
 
-    items = json.loads(content)
+    Globals.items = json.loads(content)
     file.close()
 
   # Add an item to the items array
@@ -301,7 +308,6 @@ class Items:
   # It removes duplicates
   @staticmethod
   def add(text: str) -> None:
-    global items
     text = text.rstrip()
 
     if text == "":
@@ -314,15 +320,15 @@ class Items:
       return
 
     if Settings.enable_converts:
-      text = Converts.convert(text)
+      text = Converts.check_convert(text)
 
     item_exists = False
 
-    for item in items:
+    for item in Globals.items:
       if item["text"] == text:
         the_item = item
         item_exists = True
-        items.remove(the_item)
+        Globals.items.remove(the_item)
         break
 
     if not item_exists:
@@ -334,8 +340,8 @@ class Items:
       num_lines = text.count("\n") + 1
       the_item = {"date": Utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
 
-    items.insert(0, the_item)
-    items = items[0:Settings.max_items]
+    Globals.items.insert(0, the_item)
+    Globals.items = Globals.items[0:Settings.max_items]
     update_file()
 
 #----------
@@ -344,8 +350,8 @@ class Items:
 
 # Stringify the json object and save it into the file
 def update_file() -> None:
-  file = open(filepath, "w")
-  file.write(json.dumps(items))
+  file = open(Globals.filepath, "w")
+  file.write(json.dumps(Globals.items))
   file.close()
 
 # Start the clipboard watcher
