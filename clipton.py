@@ -36,9 +36,6 @@ settings["converts"] = {
   "youtube_music": True,
 }
 
-def setting(key: str) -> any:
-  return settings[key]
-
 #----------
 # UTILS
 #----------
@@ -125,7 +122,7 @@ def get_title(text: str) -> str:
 def convert_text(text: str) -> str:
   if space(text): return text
 
-  if setting("converts")["youtube_music"]:
+  if settings["converts"]["youtube_music"]:
     regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
     match = regex.search(text)
 
@@ -285,10 +282,10 @@ def add_item(text: str) -> None:
   if text.startswith("file://"):
     return
 
-  if len(text) > setting("heavy_paste"):
+  if len(text) > settings["heavy_paste"]:
     return
 
-  if setting("enable_converts"):
+  if settings["enable_converts"]:
     text = convert_text(text)
 
   item_exists = False
@@ -303,14 +300,14 @@ def add_item(text: str) -> None:
   if not item_exists:
     title = ""
 
-    if setting("enable_titles"):
+    if settings["enable_titles"]:
       title = get_title(text)
 
     num_lines = text.count("\n") + 1
     the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
 
   items.insert(0, the_item)
-  items = items[0:setting("max_items")]
+  items = items[0:settings["max_items"]]
   update_file()
 
 # Start the clipboard watcher
