@@ -283,26 +283,6 @@ class Items:
     update_file()
     Utils.copy_text(s)
 
-  # Read the items file and parse it to json
-  @staticmethod
-  def get() -> None:
-    configdir = Path("~/.config/clipton").expanduser()
-
-    if not configdir.exists():
-      configdir.mkdir(parents=True)
-
-    Globals.filepath = configdir / Path("items.json")
-    Globals.filepath.touch(exist_ok=True)
-
-    file = open(Globals.filepath, "r")
-    content = file.read().strip()
-
-    if content == "":
-      content = "[]"
-
-    Globals.items = json.loads(content)
-    file.close()
-
   # Add an item to the items array
   # It performs some checks
   # It removes duplicates
@@ -342,17 +322,43 @@ class Items:
 
     Globals.items.insert(0, the_item)
     Globals.items = Globals.items[0:Settings.max_items]
-    update_file()
+    File.update()
+
+#----------
+# FILE
+#----------
+
+class File:
+  # Read the items file and parse it to JSON
+  @staticmethod
+  def read() -> None:
+    configdir = Path("~/.config/clipton").expanduser()
+
+    if not configdir.exists():
+      configdir.mkdir(parents=True)
+
+    Globals.filepath = configdir / Path("items.json")
+    Globals.filepath.touch(exist_ok=True)
+
+    file = open(Globals.filepath, "r")
+    content = file.read().strip()
+
+    if content == "":
+      content = "[]"
+
+    Globals.items = json.loads(content)
+    file.close()
+
+  # Stringify the json object and save it into the file
+  @staticmethod
+  def update() -> None:
+    file = open(Globals.filepath, "w")
+    file.write(json.dumps(Globals.items))
+    file.close()
 
 #----------
 # MAIN
 #----------
-
-# Stringify the json object and save it into the file
-def update_file() -> None:
-  file = open(Globals.filepath, "w")
-  file.write(json.dumps(Globals.items))
-  file.close()
 
 # Start the clipboard watcher
 def start_watcher() -> None:
@@ -381,7 +387,7 @@ def start_watcher() -> None:
           clip = ans.stdout.decode()
 
           if clip:
-            Items.get()
+            File.read()
             Items.add(clip)
             iterations = 0
     except Exception as err:
@@ -401,7 +407,7 @@ def main() -> None:
       exit(0)
 
   elif mode == "show":
-    Items.get()
+    File.read()
     Rofi.show()
 
 # Start program
