@@ -109,6 +109,7 @@ def show_picker(selected: int = 0) -> None:
 
     if "title" in item:
       title = item["title"]
+
       if title and title != "":
         title = title.replace("\n", "").strip()
         title = html.escape(title)
@@ -155,6 +156,7 @@ def confirm_delete_items() -> None:
   prompt = rofi_prompt("Delete all items?")
   proc = subprocess.Popen(f"{prompt} {rofi_style} -selected-row 0", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
   ans = proc.communicate("\n".join(opts))[0].strip()
+
   if ans == "Yes":
     delete_items()
 
@@ -190,8 +192,10 @@ def get_items() -> None:
 
   file = open(filepath, "r")
   content = file.read().strip()
+
   if content == "":
     content = "[]"
+
   items = json.loads(content)
   file.close()
 
@@ -232,13 +236,14 @@ def add_item(text: str) -> None:
 
   if text == "":
     return
+
   if text.startswith("file://"):
     return
+
   if len(text) > heavy_paste:
     return
 
   text = check_text(text)
-
   item_exists = False
 
   for item in items:
@@ -311,7 +316,11 @@ def main() -> None:
     mode = sys.argv[1]
 
   if mode == "watcher":
-    start_watcher()
+    try:
+      start_watcher()
+    except KeyboardInterrupt:
+      exit(0)
+
   elif mode == "show":
     get_items()
     show_picker()
