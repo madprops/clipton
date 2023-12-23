@@ -10,27 +10,14 @@ from pathlib import Path
 from typing import List
 
 import utils
+from settings import setting
 from converts import convert_text
-
-# How many items to store in the file
-max_items = 2000
-
-# Don't save to file if char length exceeds this
-heavy_paste = 5000
 
 # Items are held here internally
 items = []
 
 # Path to the json file
 filepath: Path
-
-# If enabled the url titles are fetched
-enable_title_fetch = True
-
-# Which converts to enable
-converts = {
-  "youtube_music": True,
-}
 
 # Style for rofi windows
 rofi_style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
@@ -166,10 +153,12 @@ def add_item(text: str) -> None:
   if text.startswith("file://"):
     return
 
-  if len(text) > heavy_paste:
+  if len(text) > setting("heavy_paste"):
     return
 
-  text = convert_text(text, converts)
+  if setting("enable_converts"):
+    text = convert_text(text)
+
   item_exists = False
 
   for item in items:
@@ -182,14 +171,14 @@ def add_item(text: str) -> None:
   if not item_exists:
     title = ""
 
-    if enable_title_fetch:
+    if setting("enable_titles"):
       title = utils.get_title(text)
 
     num_lines = text.count("\n") + 1
     the_item = {"date": utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
 
   items.insert(0, the_item)
-  items = items[0:max_items]
+  items = items[0:setting("max_items")]
   update_file()
 
 # Start the clipboard watcher

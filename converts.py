@@ -1,10 +1,12 @@
 import re
 import utils
+from settings import setting
 
-def convert_text(text: str, converts: dict[str, bool]) -> str:
+# Convert something to another thing automatically when copied to clipboard
+def convert_text(text: str) -> str:
   if utils.space(text): return text
 
-  if converts["youtube_music"]:
+  if setting("converts")["youtube_music"]:
     regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
     match = regex.search(text)
 
