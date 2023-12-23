@@ -145,7 +145,6 @@ class Utils:
 #----------
 
 class Converts:
-
   # Convert text into something else
   @staticmethod
   def check_convert(text: str) -> str:
@@ -356,42 +355,44 @@ class File:
     file.write(json.dumps(Globals.items))
     file.close()
 
+class Watcher:
+  # Start the clipboard watcher
+  @staticmethod
+  def start() -> None:
+    if shutil.which("copyevent") is None:
+      print("The watcher needs 'copyevent' to be installed.")
+      exit(1)
+
+    herepath = Path(__file__).parent.resolve()
+    max_iterations = 100
+    iterations = 0
+
+    while True:
+      try:
+        iterations += 1
+
+        if iterations > max_iterations:
+          Utils.log("Too many iterations")
+          exit(1)
+
+        ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
+
+        if ans.returncode == 0:
+          ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True, timeout = 3)
+
+          if ans.returncode == 0:
+            clip = ans.stdout.decode()
+
+            if clip:
+              File.read()
+              Items.add(clip)
+              iterations = 0
+      except Exception as err:
+        Utils.log(err)
+
 #----------
 # MAIN
 #----------
-
-# Start the clipboard watcher
-def start_watcher() -> None:
-  if shutil.which("copyevent") is None:
-    print("The watcher needs 'copyevent' to be installed.")
-    exit(1)
-
-  herepath = Path(__file__).parent.resolve()
-  max_iterations = 100
-  iterations = 0
-
-  while True:
-    try:
-      iterations += 1
-
-      if iterations > max_iterations:
-        Utils.log("Too many iterations")
-        exit(1)
-
-      ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
-
-      if ans.returncode == 0:
-        ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True, timeout = 3)
-
-        if ans.returncode == 0:
-          clip = ans.stdout.decode()
-
-          if clip:
-            File.read()
-            Items.add(clip)
-            iterations = 0
-    except Exception as err:
-      Utils.log(err)
 
 # Main function
 def main() -> None:
@@ -402,7 +403,7 @@ def main() -> None:
 
   if mode == "watcher":
     try:
-      start_watcher()
+      Watcher.start()
     except KeyboardInterrupt:
       exit(0)
 
