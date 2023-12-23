@@ -17,132 +17,140 @@ from datetime import datetime
 # SETTINGS
 #----------
 
-# Settings dictionary
-settings = {}
+class Settings:
+  # How many items to store in the file
+  max_items = 2000
 
-# How many items to store in the file
-settings["max_items"] = 2000
+  # Don't save to file if char length exceeds this
+  heavy_paste = 5000
 
-# Don't save to file if char length exceeds this
-settings["heavy_paste"] = 5000
+  # If enabled the URL titles are fetched
+  enable_titles = True
 
-# If enabled the URL titles are fetched
-settings["enable_titles"] = True
+  # If enabled the text can be converted
+  enable_converts = True
 
-# If enabled the text can be converted
-settings["enable_converts"] = True
-
-# The specific converts to enable
-settings["converts"] = {
-  "youtube_music": True,
-}
+  # The specific converts to enable
+  converts = {
+    "youtube_music": True,
+  }
 
 #----------
 # UTILS
 #----------
 
-# HTML parser to get the title from a URL
-class TitleParser(HTMLParser):
-  def __init__(self):
-    HTMLParser.__init__(self)
-    self.match = False
-    self.title = ""
-
-  def handle_starttag(self, tag, attributes):
-    self.match = tag == "title"
-
-  def handle_data(self, data):
-    if self.match:
-      self.title = data
+class Utils:
+  # HTML parser to get the title from a URL
+  class TitleParser(HTMLParser):
+    def __init__(self):
+      HTMLParser.__init__(self)
       self.match = False
+      self.title = ""
 
-# Log something for debugging
-def log(text):
-  logger = logging.getLogger(__name__)
-  logger.setLevel(logging.INFO)
-  formatter = logging.Formatter(fmt="%(asctime)s %(name)s.%(levelname)s: %(message)s", datefmt="%Y.%m.%d %H:%M:%S")
-  handler = logging.StreamHandler(stream=sys.stdout)
-  handler.setFormatter(formatter)
-  logger.addHandler(handler)
-  logger.info(text)
+    def handle_starttag(self, tag, attributes):
+      self.match = tag == "title"
 
-# Check if a string contains a space
-def space(text: str) -> str:
-  return any(char.isspace() for char in text)
+    def handle_data(self, data):
+      if self.match:
+        self.title = data
+        self.match = False
 
-# Convert a number into a filled string
-def fillnum(num: int) -> str:
-  snum = str(num)
-  return snum.rjust(2, "0")
+  # Log something for debugging
+  @staticmethod
+  def log(text: str) -> None:
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    formatter = logging.Formatter(fmt="%(asctime)s %(name)s.%(levelname)s: %(message)s", datefmt="%Y.%m.%d %H:%M:%S")
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.info(text)
 
-# Get unix seconts
-def get_seconds() -> int:
-  return int(datetime.now().timestamp())
+  # Check if a string contains a space
+  @staticmethod
+  def space(text: str) -> str:
+    return any(char.isspace() for char in text)
 
-# Get timeago string based on minutes
-def get_timeago(mins: int) -> str:
-  if mins >= 1440:
-    d = round(mins / 1440)
-    timeago = f"{fillnum(d)} days"
-  elif mins >= 60:
-    d = round(mins / 60)
-    timeago = f"{fillnum(d)} hours"
-  elif mins >= 1:
-    timeago = f"{fillnum(mins)} mins"
-  elif mins == 0:
-    timeago = "just now"
+  # Convert a number into a filled string
+  @staticmethod
+  def fillnum(num: int) -> str:
+    snum = str(num)
+    return snum.rjust(2, "0")
 
-  return f"({timeago})".ljust(12, " ")
+  # Get unix seconts
+  @staticmethod
+  def get_seconds() -> int:
+    return int(datetime.now().timestamp())
 
-# Get the content type of a URL
-def get_url_type(url: str) -> str:
-  try:
-    r = urlopen(url)
-    header = r.headers
-    return header.get_content_type()
-  except:
-    return "none"
+  # Get timeago string based on minutes
+  @staticmethod
+  def get_timeago(mins: int) -> str:
+    if mins >= 1440:
+      d = round(mins / 1440)
+      timeago = f"{Utils.fillnum(d)} days"
+    elif mins >= 60:
+      d = round(mins / 60)
+      timeago = f"{Utils.fillnum(d)} hours"
+    elif mins >= 1:
+      timeago = f"{Utils.fillnum(mins)} mins"
+    elif mins == 0:
+      timeago = "just now"
 
-# Get the title from a URL
-def get_title(text: str) -> str:
-  if text.startswith("https://") and not space(text):
-    if not get_url_type(text) == "text/html":
-      print("Non HTML URL")
-    else:
-      print("Fetching title...")
-      html = str(urlopen(text).read().decode("utf-8"))
-      parser = TitleParser()
-      parser.feed(html)
-      return parser.title
+    return f"({timeago})".ljust(12, " ")
 
-  return ""
+  # Get the content type of a URL
+  @staticmethod
+  def get_url_type(url: str) -> str:
+    try:
+      r = urlopen(url)
+      header = r.headers
+      return header.get_content_type()
+    except:
+      return "none"
+
+  # Get the title from a URL
+  @staticmethod
+  def get_title(text: str) -> str:
+    if text.startswith("https://") and not Utils.space(text):
+      if not Utils.get_url_type(text) == "text/html":
+        print("Non HTML URL")
+      else:
+        print("Fetching title...")
+        html = str(urlopen(text).read().decode("utf-8"))
+        parser = Utils.TitleParser()
+        parser.feed(html)
+        return parser.title
+
+    return ""
 
 #----------
 # CONVERTS
 #----------
 
-# Convert text into something else
-def convert_text(text: str) -> str:
-  if space(text): return text
-  new_text = ""
+class Converts:
+  # Convert text into something else
+  @staticmethod
+  def convert(text: str) -> str:
+    if Utils.space(text): return text
+    new_text = ""
 
-  if settings["converts"]["youtube_music"]:
-    regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
-    match = regex.search(text)
+    if Settings.converts["youtube_music"]:
+      regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
+      match = regex.search(text)
 
-    if match and match.group(2):
-      video_id = match.group(2)
-      new_text = f'https://www.youtube.com/watch?v={video_id}'
+      if match and match.group(2):
+        video_id = match.group(2)
+        new_text = f'https://www.youtube.com/watch?v={video_id}'
 
-    if match and match.group(3):
-      playlist_id = match.group(3)
-      new_text = f'https://www.youtube.com/playlist?list={playlist_id}'
+      if match and match.group(3):
+        playlist_id = match.group(3)
+        new_text = f'https://www.youtube.com/playlist?list={playlist_id}'
 
-  if new_text:
-    copy_text(new_text)
-    return new_text
+    if new_text:
+      copy_text(new_text)
+      return new_text
 
-  return text
+    return text
 
 #----------
 # MAIN
@@ -165,7 +173,7 @@ def rofi_prompt(s: str) -> str:
 # Show the rofi menu with the items
 def show_picker(selected: int = 0) -> None:
   opts: List[str] = []
-  date_now = get_seconds()
+  date_now = Utils.get_seconds()
   asterisk = f"<span> * </span>"
 
   for item in items:
@@ -178,7 +186,7 @@ def show_picker(selected: int = 0) -> None:
     num_lines = str(item["num_lines"]) + ")"
     num_lines = num_lines.ljust(5, " ")
     mins = round((date_now - item["date"]) / 60)
-    timeago = get_timeago(mins)
+    timeago = Utils.get_timeago(mins)
     title = ""
 
     if "title" in item:
@@ -288,11 +296,11 @@ def add_item(text: str) -> None:
   if text.startswith("file://"):
     return
 
-  if len(text) > settings["heavy_paste"]:
+  if len(text) > Settings.heavy_paste:
     return
 
-  if settings["enable_converts"]:
-    text = convert_text(text)
+  if Settings.enable_converts:
+    text = Converts.convert(text)
 
   item_exists = False
 
@@ -306,14 +314,14 @@ def add_item(text: str) -> None:
   if not item_exists:
     title = ""
 
-    if settings["enable_titles"]:
-      title = get_title(text)
+    if Settings.enable_titles:
+      title = Utils.get_title(text)
 
     num_lines = text.count("\n") + 1
-    the_item = {"date": get_seconds(), "text": text, "num_lines": num_lines, "title": title}
+    the_item = {"date": Utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
 
   items.insert(0, the_item)
-  items = items[0:settings["max_items"]]
+  items = items[0:Settings.max_items]
   update_file()
 
 # Start the clipboard watcher
@@ -331,7 +339,7 @@ def start_watcher() -> None:
       iterations += 1
 
       if iterations > max_iterations:
-        log("Too many iterations")
+        Utils.log("Too many iterations")
         exit(1)
 
       ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
@@ -347,7 +355,7 @@ def start_watcher() -> None:
             add_item(clip)
             iterations = 0
     except Exception as err:
-      log(err)
+      Utils.log(err)
 
 # Main function
 def main() -> None:
