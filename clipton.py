@@ -322,7 +322,7 @@ class Items:
 
     Globals.items.insert(0, the_item)
     Globals.items = Globals.items[0:Settings.max_items]
-    File.update()
+    File.write()
 
 #----------
 # FILE
@@ -351,7 +351,7 @@ class File:
 
   # Stringify the json object and save it into the file
   @staticmethod
-  def update() -> None:
+  def write() -> None:
     file = open(Globals.filepath, "w")
     file.write(json.dumps(Globals.items))
     file.close()
