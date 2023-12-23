@@ -214,13 +214,11 @@ def check_text(text: str) -> str:
   if match and match.group(2):
     vid = match.group(2)
     new_text = f'https://www.youtube.com/watch?v={vid}'
-    print("Converted: " + new_text)
     return new_text
 
   if match and match.group(3):
     pid = match.group(3)
     new_text = f'https://www.youtube.com/playlist?list={pid}'
-    print("Converted: " + new_text)
     return new_text
 
   return text
