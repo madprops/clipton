@@ -201,6 +201,30 @@ def update_file() -> None:
   file.write(json.dumps(items))
   file.close()
 
+def space(text: str) -> str:
+  return any(char.isspace() for char in text)
+
+# Do text conversions
+def check_text(text: str) -> str:
+  if space(text): return text
+
+  yt_music = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
+  match = yt_music.search(text)
+
+  if match and match.group(2):
+      vid = match.group(2)
+      new_text = f'https://www.youtube.com/watch?v={vid}'
+      print("Converted: " + new_text)
+      return new_text
+
+  if match and match.group(3):
+      pid = match.group(3)
+      new_text = f'https://www.youtube.com/playlist?list={pid}'
+      print("Converted: " + new_text)
+      return new_text
+
+  return text
+
 # Add an item to the items array
 # It performs some checks
 # It removes duplicates
@@ -215,6 +239,8 @@ def add_item(text: str) -> None:
   if len(text) > heavy_paste:
     return
 
+  text = check_text(text)
+
   item_exists = False
 
   for item in items:
@@ -228,7 +254,7 @@ def add_item(text: str) -> None:
     title = ""
 
     if enable_title_fetch:
-      if text.startswith("https://") and len(text.split(" ")) == 1:
+      if text.startswith("https://") and not space(text):
         if not get_url_type(text) == "text/html":
           print("Non HTML URL")
         else:
@@ -264,7 +290,6 @@ def start_watcher() -> None:
         log("Too many iterations")
         exit(1)
 
-      print(f"Watcher Iteration: #{iterations}")
       ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
 
       if ans.returncode == 0:
@@ -274,7 +299,6 @@ def start_watcher() -> None:
           clip = ans.stdout.decode()
 
           if clip:
-            print(f"clip: {clip}")
             get_items()
             add_item(clip)
             iterations = 0
