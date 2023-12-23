@@ -14,6 +14,16 @@ from html.parser import HTMLParser
 from datetime import datetime
 
 #----------
+# GLOBALS
+#----------
+
+# Items are held here internally
+items = []
+
+# Path to the json file
+filepath: Path
+
+#----------
 # SETTINGS
 #----------
 
@@ -123,6 +133,12 @@ class Utils:
 
     return ""
 
+  # Copy text to clipboard
+  @staticmethod
+  def copy_text(text: str) -> None:
+    proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
+    proc.communicate(text, timeout = 3)
+
 #----------
 # CONVERTS
 #----------
@@ -147,182 +163,190 @@ class Converts:
         new_text = f'https://www.youtube.com/playlist?list={playlist_id}'
 
     if new_text:
-      copy_text(new_text)
+      Utils.copy_text(new_text)
       return new_text
 
     return text
 
 #----------
-# MAIN
+# ROFI
 #----------
 
-# Items are held here internally
-items = []
+class Rofi:
+  # Style for rofi windows
+  style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
+    -theme-str "window {width: 66%;}"'
 
-# Path to the json file
-filepath: Path
+  # Get a rofi prompt
+  @staticmethod
+  def prompt(s: str) -> str:
+    return f'rofi -dmenu -markup-rows -i -p "{s}"'
 
-# Style for rofi windows
-rofi_style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
-  -theme-str "window {width: 66%;}"'
+  # Show the rofi menu with the items
+  @staticmethod
+  def show(selected: int = 0) -> None:
+    opts: List[str] = []
+    date_now = Utils.get_seconds()
+    asterisk = f"<span> * </span>"
 
-# Get a rofi prompt
-def rofi_prompt(s: str) -> str:
-  return f'rofi -dmenu -markup-rows -i -p "{s}"'
+    for item in items:
+      line = item["text"].strip()
+      line = html.escape(line)
+      line = re.sub(" *\n *", "\n", line)
+      line = line.replace("\n", asterisk)
+      line = re.sub(" +", " ", line)
+      line = re.sub("</span> +", "</span>", line)
+      num_lines = str(item["num_lines"]) + ")"
+      num_lines = num_lines.ljust(5, " ")
+      mins = round((date_now - item["date"]) / 60)
+      timeago = Utils.get_timeago(mins)
+      title = ""
 
-# Show the rofi menu with the items
-def show_picker(selected: int = 0) -> None:
-  opts: List[str] = []
-  date_now = Utils.get_seconds()
-  asterisk = f"<span> * </span>"
+      if "title" in item:
+        title = item["title"]
 
-  for item in items:
-    line = item["text"].strip()
-    line = html.escape(line)
-    line = re.sub(" *\n *", "\n", line)
-    line = line.replace("\n", asterisk)
-    line = re.sub(" +", " ", line)
-    line = re.sub("</span> +", "</span>", line)
-    num_lines = str(item["num_lines"]) + ")"
-    num_lines = num_lines.ljust(5, " ")
-    mins = round((date_now - item["date"]) / 60)
-    timeago = Utils.get_timeago(mins)
-    title = ""
+        if title and title != "":
+          title = title.replace("\n", "").strip()
+          title = html.escape(title)
+          line += f" ({title})"
 
-    if "title" in item:
-      title = item["title"]
+      opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
-      if title and title != "":
-        title = title.replace("\n", "").strip()
-        title = html.escape(title)
-        line += f" ({title})"
+    prompt = Rofi.prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+    proc = subprocess.Popen(f"{prompt} -format i {Rofi.style} -selected-row {selected}", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
+    ans = proc.communicate("\n".join(opts))[0].strip()
 
-    opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
+    if ans != "":
+      code = proc.returncode
+      index = int(ans)
 
-  prompt = rofi_prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-  proc = subprocess.Popen(f"{prompt} -format i {rofi_style} -selected-row {selected}", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
-  ans = proc.communicate("\n".join(opts))[0].strip()
+      if code == 10:
+        Items.delete(index)
+        Rofi.show(index)
+      elif code >= 11 and code <= 18:
+        Items.join(code - 9)
+      elif code == 19:
+        Items.confirm_delete()
+      else:
+        Items.select(index)
 
-  if ans != "":
-    code = proc.returncode
-    index = int(ans)
+#----------
+# Items
+#----------
 
-    if code == 10:
-      delete_item(index)
-      show_picker(index)
-    elif code >= 11 and code <= 18:
-      join_items(code - 9)
-    elif code == 19:
-      confirm_delete_items()
-    else:
-      select_item(index)
+class Items:
+  # When an item is selected through the rofi menu
+  @staticmethod
+  def select(index: int) -> None:
+    text = items[index]["text"]
+    Utils.copy_text(text)
 
-# Copy text to clipboar
-def copy_text(text: str) -> None:
-  proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
-  proc.communicate(text, timeout = 3)
+  # Delete an item from the item list
+  @staticmethod
+  def delete(index: int) -> None:
+    del items[index]
+    update_file()
 
-# When an item is selected through the rofi menu
-def select_item(index: int) -> None:
-  text = items[index]["text"]
-  copy_text(text)
+  # Delete all the items
+  @staticmethod
+  def delete_all() -> None:
+    global items
+    items = []
+    update_file()
 
-# Delete an item from the item list
-def delete_item(index: int) -> None:
-  del items[index]
-  update_file()
+  # Delete all items
+  @staticmethod
+  def confirm_delete() -> None:
+    opts = ["No", "Yes"]
+    prompt = Rofi.prompt("Delete all items?")
+    proc = subprocess.Popen(f"{prompt} {Rofi.style} -selected-row 0", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
+    ans = proc.communicate("\n".join(opts))[0].strip()
 
-# Delete all items
-def confirm_delete_items() -> None:
-  opts = ["No", "Yes"]
-  prompt = rofi_prompt("Delete all items?")
-  proc = subprocess.Popen(f"{prompt} {rofi_style} -selected-row 0", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
-  ans = proc.communicate("\n".join(opts))[0].strip()
+    if ans == "Yes":
+      Items.delete_all()
 
-  if ans == "Yes":
-    delete_items()
+  # Join 2 or more items into one
+  @staticmethod
+  def join(num: int) -> None:
+    s = " ".join(item["text"].strip() for item in reversed(items[0:num]))
+    del items[0:num]
+    update_file()
+    Utils.copy_text(s)
 
-# Delete all the items
-def delete_items() -> None:
-  global items
-  items = []
-  update_file()
+  # Read the items file and parse it to json
+  @staticmethod
+  def get() -> None:
+    global items
+    global filepath
 
-# Join 2 or more items into one
-def join_items(num: int) -> None:
-  s = " ".join(item["text"].strip() for item in reversed(items[0:num]))
-  del items[0:num]
-  update_file()
-  copy_text(s)
+    configdir = Path("~/.config/clipton").expanduser()
 
-# Read the items file and parse it to json
-def get_items() -> None:
-  global items
-  global filepath
+    if not configdir.exists():
+      configdir.mkdir(parents=True)
 
-  configdir = Path("~/.config/clipton").expanduser()
+    filepath = configdir / Path("items.json")
+    filepath.touch(exist_ok=True)
 
-  if not configdir.exists():
-    configdir.mkdir(parents=True)
+    file = open(filepath, "r")
+    content = file.read().strip()
 
-  filepath = configdir / Path("items.json")
-  filepath.touch(exist_ok=True)
+    if content == "":
+      content = "[]"
 
-  file = open(filepath, "r")
-  content = file.read().strip()
+    items = json.loads(content)
+    file.close()
 
-  if content == "":
-    content = "[]"
+  # Add an item to the items array
+  # It performs some checks
+  # It removes duplicates
+  @staticmethod
+  def add(text: str) -> None:
+    global items
+    text = text.rstrip()
 
-  items = json.loads(content)
-  file.close()
+    if text == "":
+      return
+
+    if text.startswith("file://"):
+      return
+
+    if len(text) > Settings.heavy_paste:
+      return
+
+    if Settings.enable_converts:
+      text = Converts.convert(text)
+
+    item_exists = False
+
+    for item in items:
+      if item["text"] == text:
+        the_item = item
+        item_exists = True
+        items.remove(the_item)
+        break
+
+    if not item_exists:
+      title = ""
+
+      if Settings.enable_titles:
+        title = Utils.get_title(text)
+
+      num_lines = text.count("\n") + 1
+      the_item = {"date": Utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
+
+    items.insert(0, the_item)
+    items = items[0:Settings.max_items]
+    update_file()
+
+#----------
+# MAIN
+#----------
 
 # Stringify the json object and save it into the file
 def update_file() -> None:
   file = open(filepath, "w")
   file.write(json.dumps(items))
   file.close()
-
-# Add an item to the items array
-# It performs some checks
-# It removes duplicates
-def add_item(text: str) -> None:
-  global items
-  text = text.rstrip()
-
-  if text == "":
-    return
-
-  if text.startswith("file://"):
-    return
-
-  if len(text) > Settings.heavy_paste:
-    return
-
-  if Settings.enable_converts:
-    text = Converts.convert(text)
-
-  item_exists = False
-
-  for item in items:
-    if item["text"] == text:
-      the_item = item
-      item_exists = True
-      items.remove(the_item)
-      break
-
-  if not item_exists:
-    title = ""
-
-    if Settings.enable_titles:
-      title = Utils.get_title(text)
-
-    num_lines = text.count("\n") + 1
-    the_item = {"date": Utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
-
-  items.insert(0, the_item)
-  items = items[0:Settings.max_items]
-  update_file()
 
 # Start the clipboard watcher
 def start_watcher() -> None:
@@ -351,8 +375,8 @@ def start_watcher() -> None:
           clip = ans.stdout.decode()
 
           if clip:
-            get_items()
-            add_item(clip)
+            Items.get()
+            Items.add(clip)
             iterations = 0
     except Exception as err:
       Utils.log(err)
@@ -371,8 +395,8 @@ def main() -> None:
       exit(0)
 
   elif mode == "show":
-    get_items()
-    show_picker()
+    Items.get()
+    Rofi.show()
 
 # Start program
 if __name__ == "__main__":
