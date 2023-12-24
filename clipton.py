@@ -39,13 +39,10 @@ from html.parser import HTMLParser
 from datetime import datetime
 
 #----------
-# GLOBALS
+# CONFIG
 #----------
 
-class Globals:
-  # List with all the items
-  items = []
-
+class Config:
   # Path to the config directory
   config_path = Path("~/.config/clipton").expanduser()
 
@@ -55,18 +52,13 @@ class Globals:
   # Path to the settings file
   settings_path = config_path / Path("settings.json")
 
-#----------
-# CONFIG
-#----------
-
-class Config:
   # Create the config directory and files
   def setup():
-    if not Globals.config_path.exists():
-      Globals.config_path.mkdir(parents = True)
+    if not Config.config_path.exists():
+      Config.config_path.mkdir(parents = True)
 
-    Globals.items_path.touch(exist_ok = True)
-    Globals.settings_path.touch(exist_ok = True)
+    Config.items_path.touch(exist_ok = True)
+    Config.settings_path.touch(exist_ok = True)
 
 #----------
 # SETTINGS
@@ -76,7 +68,7 @@ class Settings:
   # Read the settings file
   # Fill the settings class with the values
   def read():
-    file = open(Globals.settings_path, "r")
+    file = open(Config.settings_path, "r")
     content = file.read().strip()
 
     if not content:
@@ -251,21 +243,21 @@ class Rofi:
     date_now = Utils.get_seconds()
     asterisk = f"<span> * </span>"
 
-    for item in Globals.items:
-      line = item["text"].strip()
+    for item in Items.items:
+      line = item.text.strip()
       line = html.escape(line)
       line = re.sub(" *\n *", "\n", line)
       line = line.replace("\n", asterisk)
       line = re.sub(" +", " ", line)
       line = re.sub("</span> +", "</span>", line)
-      num_lines = str(item["num_lines"]) + ")"
+      num_lines = str(item.num_lines) + ")"
       num_lines = num_lines.ljust(5, " ")
-      mins = round((date_now - item["date"]) / 60)
+      mins = round((date_now - item.date) / 60)
       timeago = Utils.get_timeago(mins)
       title = ""
 
-      if "title" in item:
-        title = item["title"]
+      if item.title:
+        title = item.title
 
         if title and title != "":
           title = title.replace("\n", "").strip()
@@ -297,43 +289,58 @@ class Rofi:
 # ITEMS
 #----------
 
-class Items:
+class Item:
   # An item has these properties:
   # text: The text that was copied
   # date: The date when the text was copied
   # num_lines: The number of lines in the text
   # title: The title of the URL (if any)
 
+  def load(obj):
+    item = Item()
+    item.text = obj["text"]
+    item.date = obj["date"]
+    item.num_lines = obj["num_lines"]
+    item.title = obj["title"]
+    return item
+
+  def dump(obj):
+    return obj.__dict__
+
+class Items:
+  # List with all the items
+  items: List[Item] = []
+
   # Read the items file and fill the items array
   def read() -> None:
-    file = open(Globals.items_path, "r")
+    file = open(Config.items_path, "r")
     content = file.read().strip()
 
     if content == "":
       content = "[]"
 
-    Globals.items = json.loads(content)
+    Items.items = json.loads(content, object_hook = Item.load)
     file.close()
 
   # Stringify the JSON object and save it in the items file
   def write() -> None:
-    file = open(Globals.items_path, "w")
-    file.write(json.dumps(Globals.items))
+    file = open(Config.items_path, "w")
+    file.write(json.dumps(Items.items, default = Item.dump, indent = 2))
     file.close()
 
   # When an item is selected through the Rofi menu
   def select(index: int) -> None:
-    text = Globals.items[index]["text"]
+    text = Items.items[index]["text"]
     Utils.copy_text(text)
 
   # Delete an item from the item list
   def delete(index: int) -> None:
-    del Globals.items[index]
+    del Items.items[index]
     update_file()
 
   # Delete all the items
   def delete_all() -> None:
-    Globals.items = []
+    Items.items = []
     update_file()
 
   # Delete all items
@@ -349,8 +356,8 @@ class Items:
 
   # Join 2 or more items into one
   def join(num: int) -> None:
-    s = " ".join(item["text"].strip() for item in reversed(Globals.items[0:num]))
-    del Globals.items[0:num]
+    s = " ".join(item.text.strip() for item in reversed(Items.items[0:num]))
+    del Items.items[0:num]
     update_file()
     Utils.copy_text(s)
 
@@ -374,11 +381,11 @@ class Items:
 
     item_exists = False
 
-    for item in Globals.items:
-      if item["text"] == text:
+    for item in Items.items:
+      if item.text == text:
         the_item = item
         item_exists = True
-        Globals.items.remove(the_item)
+        Items.items.remove(the_item)
         break
 
     if not item_exists:
@@ -390,8 +397,8 @@ class Items:
       num_lines = text.count("\n") + 1
       the_item = {"date": Utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
 
-    Globals.items.insert(0, the_item)
-    Globals.items = Globals.items[0:Settings.max_items]
+    Items.items.insert(0, the_item)
+    Items.items = Items.items[0:Settings.max_items]
     Items.write()
 
 #----------
