@@ -45,7 +45,7 @@ from datetime import datetime
 #----------
 
 class Globals:
-  # Items are held here internally
+  # List with all the items
   items = []
 
   # Path to the config directory
@@ -62,6 +62,7 @@ class Globals:
 #----------
 
 class Config:
+  # Create the config directory
   def setup():
     if not Globals.config_path.exists():
       Globals.config_path.mkdir(parents = True)
@@ -74,6 +75,8 @@ class Config:
 #----------
 
 class Settings:
+  # Read the settings file
+  # Fill the settings object with the values
   def read():
     file = open(Globals.settings_path, "r")
     content = file.read().strip()
@@ -296,6 +299,7 @@ class Rofi:
 #----------
 
 class Items:
+  # Read the items file
   def read() -> None:
     file = open(Globals.items_path, "r")
     content = file.read().strip()
@@ -306,7 +310,7 @@ class Items:
     Globals.items = json.loads(content)
     file.close()
 
-  # Stringify the JSON object and save it into the file
+  # Stringify the JSON object and save it in the items file
   def write() -> None:
     file = open(Globals.items_path, "w")
     file.write(json.dumps(Globals.items))
