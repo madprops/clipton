@@ -193,9 +193,9 @@ class Utils:
     stdin = subprocess.PIPE, shell = True, text = True)
     proc.communicate(text, timeout = 3)
 
-#----------
-# CONVERTS
-#----------
+#-----------
+# CONVERTERS
+#-----------
 
 class Converters:
   # Convert text into something else
