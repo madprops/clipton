@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 # Clipton is a clipboard manager for Linux
-# It has 2 components, the Rofi menu and the clipboard watcher
-# The clipboard watcher is used to add items to the list
+# It has 2 functions, the Rofi menu and the clipboard watcher
+# The clipboard watcher is used to save copied text
 # It works by using 'copyevent' to detect a clipboard change
 # The list is saved to a JSON file in the config directory
 # The Rofi menu is used to select previous items from the list
@@ -11,6 +11,7 @@
 # You need to install 'xclip' and 'rofi' for this to work
 # You also need to install 'copyevent' for the watcher to work
 # Then start the watcher with 'python clipton.py watcher'
+# To launch the Rofi menu use 'python clipton.py'
 # Add a keyboard shortcut to show the Rofi menu
 
 import re
