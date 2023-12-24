@@ -62,7 +62,7 @@ class Globals:
 #----------
 
 class Config:
-  # Create the config directory
+  # Create the config directory and files
   def setup():
     if not Globals.config_path.exists():
       Globals.config_path.mkdir(parents = True)
