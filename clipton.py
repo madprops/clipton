@@ -427,6 +427,6 @@ def main() -> None:
     File.read()
     Rofi.show()
 
-# Start program
+# Start the program
 if __name__ == "__main__":
   main()
