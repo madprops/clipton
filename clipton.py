@@ -304,7 +304,7 @@ class Item:
     item.title = obj["title"]
     return item
 
-  def dump(obj):
+  def to_dict(obj):
     return obj.__dict__
 
 class Items:
@@ -325,7 +325,7 @@ class Items:
   # Stringify the JSON object and save it in the items file
   def write() -> None:
     file = open(Config.items_path, "w")
-    file.write(json.dumps(Items.items, default = Item.dump, indent = 2))
+    file.write(json.dumps(Items.items, default = Item.to_dict, indent = 2))
     file.close()
 
   # When an item is selected through the Rofi menu
