@@ -296,6 +296,7 @@ class Item:
   # num_lines: The number of lines in the text
   # title: The title of the URL (if any)
 
+  # Load an item from a JSON object
   def load(obj):
     item = Item()
     item.text = obj["text"]
@@ -304,6 +305,7 @@ class Item:
     item.title = obj["title"]
     return item
 
+  # Convert an item to a dictionary
   def to_dict(self):
     return self.__dict__
 
