@@ -183,16 +183,16 @@ class Converts:
 #----------
 
 class Rofi:
-  # Style for rofi windows
+  # Style for Rofi windows
   style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
     -theme-str "window {width: 66%;}"'
 
-  # Get a rofi prompt
+  # Get a Rofi prompt
   @staticmethod
   def prompt(s: str) -> str:
     return f'rofi -dmenu -markup-rows -i -p "{s}"'
 
-  # Show the rofi menu with the items
+  # Show the Rofi menu with the items
   @staticmethod
   def show(selected: int = 0) -> None:
     opts: List[str] = []
@@ -245,7 +245,7 @@ class Rofi:
 #----------
 
 class Items:
-  # When an item is selected through the rofi menu
+  # When an item is selected through the Rofi menu
   @staticmethod
   def select(index: int) -> None:
     text = Globals.items[index]["text"]
