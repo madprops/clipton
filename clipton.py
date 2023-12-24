@@ -296,7 +296,7 @@ class Item:
   # num_lines: The number of lines in the text
   # title: The title of the URL (if any)
 
-  # Load an item from a JSON object
+  # Create an item from a JSON object
   def load(obj):
     item = Item()
     item.text = obj["text"]
