@@ -76,7 +76,7 @@ class Config:
 
 class Settings:
   # Read the settings file
-  # Fill the settings object with the values
+  # Fill the settings class with the values
   def read():
     file = open(Globals.settings_path, "r")
     content = file.read().strip()
