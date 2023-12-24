@@ -38,9 +38,9 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-#----------
+#-----------------
 # CONFIG
-#----------
+#-----------------
 
 class Config:
   # Path to the config directory
@@ -60,9 +60,9 @@ class Config:
     Config.items_path.touch(exist_ok = True)
     Config.settings_path.touch(exist_ok = True)
 
-#----------
+#-----------------
 # SETTINGS
-#----------
+#-----------------
 
 class Settings:
   # Read the settings file
@@ -98,9 +98,9 @@ class Settings:
     if not "youtube_music" in Settings.converters:
       Settings.converters["youtube_music"] = True
 
-#----------
+#-----------------
 # UTILS
-#----------
+#-----------------
 
 class Utils:
   # HTML parser to get the title from a URL
@@ -185,9 +185,9 @@ class Utils:
     stdin = subprocess.PIPE, shell = True, text = True)
     proc.communicate(text, timeout = 3)
 
-#-----------
+#-----------------
 # CONVERTERS
-#-----------
+#-----------------
 
 class Converters:
   # Convert text into something else
@@ -224,9 +224,9 @@ class Converters:
 
     return new_text
 
-#----------
+#-----------------
 # ROFI
-#----------
+#-----------------
 
 class Rofi:
   # Style for Rofi windows
@@ -285,9 +285,9 @@ class Rofi:
       else:
         Items.select(index)
 
-#----------
+#-----------------
 # ITEMS
-#----------
+#-----------------
 
 class Item:
   # An item has these properties:
@@ -401,9 +401,9 @@ class Items:
     Items.items = Items.items[0:Settings.max_items]
     Items.write()
 
-#----------
+#-----------------
 # WATCHER
-#----------
+#-----------------
 
 class Watcher:
   # Start the clipboard watcher
@@ -440,9 +440,9 @@ class Watcher:
       except Exception as err:
         Utils.log(err)
 
-#----------
+#-----------------
 # MAIN
-#----------
+#-----------------
 
 # Main function
 def main() -> None:
