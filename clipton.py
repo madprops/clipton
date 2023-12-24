@@ -304,8 +304,8 @@ class Item:
     item.title = obj["title"]
     return item
 
-  def to_dict(obj):
-    return obj.__dict__
+  def to_dict(self):
+    return self.__dict__
 
 class Items:
   # List with all the items
