@@ -4,7 +4,8 @@
 # It has 2 functions, the Rofi menu and the clipboard watcher
 # The clipboard watcher is used to save copied text
 # It works by using 'copyevent' to detect a clipboard change
-# The list is saved to a JSON file in the config directory
+# The list is saved in a JSON file in the config directory
+# The items file path is '~/.config/clipton/items.json'
 # The Rofi menu is used to select previous items from the list
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
@@ -13,6 +14,18 @@
 # Then start the watcher with 'python clipton.py watcher'
 # To launch the Rofi menu use 'python clipton.py'
 # Add a keyboard shortcut to show the Rofi menu
+
+# The settings file path is '~/.config/clipton/settings.json'
+# The settings file can look like:
+
+# {
+# 	"enable_titles": false,
+# 	"converts": {
+# 		"youtube_music": false
+# 	}
+# }
+
+# Just override the settings you want to change
 
 import re
 import sys
@@ -35,30 +48,63 @@ class Globals:
   # Items are held here internally
   items = []
 
-  # Path to the JSON file
-  filepath: Path
+  # Path to the config directory
+  config_path = Path("~/.config/clipton").expanduser()
+
+  # Path to the items file
+  items_path = config_path / Path("items.json")
+
+  # Path to the settings file
+  settings_path = config_path / Path("settings.json")
+
+#----------
+# CONFIG
+#----------
+
+class Config:
+  def setup():
+    if not Globals.config_path.exists():
+      Globals.config_path.mkdir(parents = True)
+
+    Globals.items_path.touch(exist_ok = True)
+    Globals.settings_path.touch(exist_ok = True)
 
 #----------
 # SETTINGS
 #----------
 
 class Settings:
+  @staticmethod
+  def read():
+    file = open(Globals.settings_path, "r")
+    content = file.read().strip()
+
+    if not content:
+      content = "{}"
+
+    settings = json.loads(content)
+    file.close()
+
   # How many items to store in the file
-  max_items = 2000
+    Settings.max_items = settings.get("max_items", 2000)
 
   # Don't save to file if char length exceeds this
-  heavy_paste = 5000
+    Settings.heavy_paste = settings.get("heavy_paste", 5000)
 
   # If enabled the URL titles are fetched
-  enable_titles = True
+    Settings.enable_titles = settings.get("enable_titles", True)
 
   # If enabled the text can be converted
-  enable_converts = True
+    Settings.enable_converts = settings.get("enable_converts", True)
 
   # The specific converts to enable
-  converts = {
-    "youtube_music": True,
-  }
+    Settings.converts = settings.get("converts", {})
+
+    if not Settings.converts:
+      Settings.converts = {}
+
+    if not "youtube_music" in Settings.converts:
+      Settings.converts["youtube_music"] = True
 
 #----------
 # UTILS
@@ -86,7 +132,7 @@ class Utils:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter(fmt="%(asctime)s %(name)s.%(levelname)s: %(message)s", datefmt="%Y.%m.%d %H:%M:%S")
-    handler = logging.StreamHandler(stream=sys.stdout)
+    handler = logging.StreamHandler(stream = sys.stdout)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.info(text)
@@ -151,7 +197,8 @@ class Utils:
   # Copy text to the clipboard
   @staticmethod
   def copy_text(text: str) -> None:
-    proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
+    proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, \
+    stdin = subprocess.PIPE, shell = True, text = True)
     proc.communicate(text, timeout = 3)
 
 #----------
@@ -239,7 +286,8 @@ class Rofi:
       opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
     prompt = Rofi.prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-    proc = subprocess.Popen(f"{prompt} -format i {Rofi.style} -selected-row {selected}", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
+    proc = subprocess.Popen(f"{prompt} -format i {Rofi.style} -selected-row {selected}", \
+    stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
     ans = proc.communicate("\n".join(opts))[0].strip()
 
     if ans != "":
@@ -284,7 +332,8 @@ class Items:
   def confirm_delete() -> None:
     opts = ["No", "Yes"]
     prompt = Rofi.prompt("Delete all items?")
-    proc = subprocess.Popen(f"{prompt} {Rofi.style} -selected-row 0", stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True, text=True)
+    proc = subprocess.Popen(f"{prompt} {Rofi.style} -selected-row 0", \
+    stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
     ans = proc.communicate("\n".join(opts))[0].strip()
 
     if ans == "Yes":
@@ -347,15 +396,7 @@ class File:
   # Read the items file and parse it to JSON
   @staticmethod
   def read() -> None:
-    configdir = Path("~/.config/clipton").expanduser()
-
-    if not configdir.exists():
-      configdir.mkdir(parents=True)
-
-    Globals.filepath = configdir / Path("items.json")
-    Globals.filepath.touch(exist_ok=True)
-
-    file = open(Globals.filepath, "r")
+    file = open(Globals.items_path, "r")
     content = file.read().strip()
 
     if content == "":
@@ -367,7 +408,7 @@ class File:
   # Stringify the JSON object and save it into the file
   @staticmethod
   def write() -> None:
-    file = open(Globals.filepath, "w")
+    file = open(Globals.items_path, "w")
     file.write(json.dumps(Globals.items))
     file.close()
 
@@ -412,6 +453,8 @@ class Watcher:
 
 # Main function
 def main() -> None:
+  Config.setup()
+  Settings.read()
   mode = "show"
 
   if len(sys.argv) > 1:
