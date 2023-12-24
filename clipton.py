@@ -338,12 +338,12 @@ class Items:
   # Delete an item from the item list
   def delete(index: int) -> None:
     del Items.items[index]
-    update_file()
+    Items.write()
 
   # Delete all the items
   def delete_all() -> None:
     Items.items = []
-    update_file()
+    Items.write()
 
   # Delete all items
   def confirm_delete() -> None:
@@ -360,7 +360,7 @@ class Items:
   def join(num: int) -> None:
     s = " ".join(item.text.strip() for item in reversed(Items.items[0:num]))
     del Items.items[0:num]
-    update_file()
+    Items.write()
     Utils.copy_text(s)
 
   # Add an item to the items array
