@@ -385,6 +385,10 @@ class Items:
     Globals.items = Globals.items[0:Settings.max_items]
     Items.write()
 
+#----------
+# WATCHER
+#----------
+
 class Watcher:
   # Start the clipboard watcher
   def start() -> None:
