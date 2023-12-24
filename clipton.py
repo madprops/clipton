@@ -16,7 +16,7 @@
 # Add a keyboard shortcut to show the Rofi menu
 
 # The settings file path is '~/.config/clipton/settings.json'
-# The settings file can look like:
+# Just override the settings you want to change:
 
 # {
 # 	"enable_titles": false,
@@ -25,7 +25,6 @@
 # 	}
 # }
 
-# Just override the settings you want to change
 
 import re
 import sys
