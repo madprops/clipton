@@ -257,7 +257,7 @@ class Rofi:
         Items.select(index)
 
 #----------
-# Items
+# ITEMS
 #----------
 
 class Items:
