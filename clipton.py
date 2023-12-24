@@ -20,7 +20,7 @@
 
 # {
 # 	"enable_titles": false,
-# 	"converts": {
+# 	"converters": {
 # 		"youtube_music": false
 # 	}
 # }
@@ -97,16 +97,16 @@ class Settings:
     Settings.enable_titles = settings.get("enable_titles", True)
 
   # If enabled the text can be converted
-    Settings.enable_converts = settings.get("enable_converts", True)
+    Settings.enable_converters = settings.get("enable_converters", True)
 
-  # The specific converts to enable
-    Settings.converts = settings.get("converts", {})
+  # The specific converters to enable
+    Settings.converters = settings.get("converters", {})
 
-    if not Settings.converts:
-      Settings.converts = {}
+    if not Settings.converters:
+      Settings.converters = {}
 
-    if not "youtube_music" in Settings.converts:
-      Settings.converts["youtube_music"] = True
+    if not "youtube_music" in Settings.converters:
+      Settings.converters["youtube_music"] = True
 
 #----------
 # UTILS
@@ -199,13 +199,13 @@ class Utils:
 # CONVERTS
 #----------
 
-class Converts:
+class Converters:
   # Convert text into something else
   def check(text: str) -> str:
     new_text = ""
 
-    if Settings.converts["youtube_music"]:
-      new_text = Converts.youtube_music(text)
+    if Settings.converters["youtube_music"]:
+      new_text = Converters.youtube_music(text)
 
     if new_text:
       Utils.copy_text(new_text)
@@ -219,7 +219,7 @@ class Converts:
 
     new_text = ""
 
-    if Settings.converts["youtube_music"]:
+    if Settings.converters["youtube_music"]:
       regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
       match = regex.search(text)
 
@@ -364,8 +364,8 @@ class Items:
     if len(text) > Settings.heavy_paste:
       return
 
-    if Settings.enable_converts:
-      text = Converts.check(text)
+    if Settings.enable_converters:
+      text = Converters.check(text)
 
     item_exists = False
 
