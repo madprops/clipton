@@ -298,7 +298,13 @@ class Rofi:
 #----------
 
 class Items:
-  # Read the items file
+  # An item has these properties:
+  # text: The text that was copied
+  # date: The date when the text was copied
+  # num_lines: The number of lines in the text
+  # title: The title of the URL
+
+  # Read the items file and fill the items array
   def read() -> None:
     file = open(Globals.items_path, "r")
     content = file.read().strip()
