@@ -148,7 +148,7 @@ class Utils:
 
     return ""
 
-  # Copy text to clipboard
+  # Copy text to the clipboard
   @staticmethod
   def copy_text(text: str) -> None:
     proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
