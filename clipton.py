@@ -296,6 +296,22 @@ class Rofi:
 #----------
 
 class Items:
+  def read() -> None:
+    file = open(Globals.items_path, "r")
+    content = file.read().strip()
+
+    if content == "":
+      content = "[]"
+
+    Globals.items = json.loads(content)
+    file.close()
+
+  # Stringify the JSON object and save it into the file
+  def write() -> None:
+    file = open(Globals.items_path, "w")
+    file.write(json.dumps(Globals.items))
+    file.close()
+
   # When an item is selected through the Rofi menu
   def select(index: int) -> None:
     text = Globals.items[index]["text"]
@@ -367,29 +383,7 @@ class Items:
 
     Globals.items.insert(0, the_item)
     Globals.items = Globals.items[0:Settings.max_items]
-    File.write()
-
-#----------
-# FILE
-#----------
-
-class File:
-  # Read the items file and parse it to JSON
-  def read() -> None:
-    file = open(Globals.items_path, "r")
-    content = file.read().strip()
-
-    if content == "":
-      content = "[]"
-
-    Globals.items = json.loads(content)
-    file.close()
-
-  # Stringify the JSON object and save it into the file
-  def write() -> None:
-    file = open(Globals.items_path, "w")
-    file.write(json.dumps(Globals.items))
-    file.close()
+    Items.write()
 
 class Watcher:
   # Start the clipboard watcher
@@ -419,7 +413,7 @@ class Watcher:
             clip = ans.stdout.decode()
 
             if clip:
-              File.read()
+              Items.read()
               Items.add(clip)
               iterations = 0
       except Exception as err:
@@ -445,7 +439,7 @@ def main() -> None:
       exit(0)
 
   elif mode == "show":
-    File.read()
+    Items.read()
     Rofi.show()
 
 # Start the program
