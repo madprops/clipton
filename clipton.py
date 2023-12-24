@@ -206,9 +206,9 @@ class Converters:
 
   # Convert a Youtube Music URL into a Youtube URL
   def youtube_music(text: str) -> str:
-    if Utils.space(text): return text
-
     new_text = ""
+
+    if Utils.space(text): return new_text
 
     if Settings.converters["youtube_music"]:
       regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
