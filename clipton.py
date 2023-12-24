@@ -93,7 +93,7 @@ class Settings:
   # Don't save to file if char length exceeds this
     Settings.heavy_paste = settings.get("heavy_paste", 5000)
 
-  # If enabled the URL titles are fetched
+  # If enabled the URL titles are fetched by parsing the HTML
     Settings.enable_titles = settings.get("enable_titles", True)
 
   # If enabled the text can be converted
@@ -181,7 +181,7 @@ class Utils:
       if not Utils.get_url_type(text) == "text/html":
         print("Non HTML URL")
       else:
-        print("Fetching title...")
+        print("Getting Title")
         html = str(urlopen(text).read().decode("utf-8"))
         parser = Utils.TitleParser()
         parser.feed(html)
@@ -209,6 +209,7 @@ class Converters:
 
     if new_text:
       Utils.copy_text(new_text)
+      print("Text Converted")
       return new_text
 
     return text
@@ -403,6 +404,7 @@ class Watcher:
     herepath = Path(__file__).parent.resolve()
     max_iterations = 100
     iterations = 0
+    print("Watcher Started")
 
     while True:
       try:
