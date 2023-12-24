@@ -160,7 +160,7 @@ class Utils:
 class Converts:
   # Convert text into something else
   @staticmethod
-  def check_convert(text: str) -> str:
+  def check(text: str) -> str:
     if Settings.converts["youtube_music"]:
       new_text = Converts.youtube_music(text)
 
@@ -312,7 +312,7 @@ class Items:
       return
 
     if Settings.enable_converts:
-      text = Converts.check_convert(text)
+      text = Converts.check(text)
 
     item_exists = False
 
