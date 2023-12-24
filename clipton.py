@@ -302,7 +302,7 @@ class Items:
   # text: The text that was copied
   # date: The date when the text was copied
   # num_lines: The number of lines in the text
-  # title: The title of the URL
+  # title: The title of the URL (if any)
 
   # Read the items file and fill the items array
   def read() -> None:
