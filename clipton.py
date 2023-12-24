@@ -161,6 +161,8 @@ class Converts:
   # Convert text into something else
   @staticmethod
   def check(text: str) -> str:
+    new_text = ""
+
     if Settings.converts["youtube_music"]:
       new_text = Converts.youtube_music(text)
 
