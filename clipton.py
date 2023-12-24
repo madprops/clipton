@@ -74,7 +74,6 @@ class Config:
 #----------
 
 class Settings:
-  @staticmethod
   def read():
     file = open(Globals.settings_path, "r")
     content = file.read().strip()
@@ -127,7 +126,6 @@ class Utils:
         self.match = False
 
   # Log something for debugging
-  @staticmethod
   def log(text: str) -> None:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
@@ -138,23 +136,19 @@ class Utils:
     logger.info(text)
 
   # Check if a string contains a space
-  @staticmethod
   def space(text: str) -> str:
     return any(char.isspace() for char in text)
 
   # Convert a number into a filled string
-  @staticmethod
   def fillnum(num: int) -> str:
     snum = str(num)
     return snum.rjust(2, "0")
 
   # Get unix seconts
-  @staticmethod
   def get_seconds() -> int:
     return int(datetime.now().timestamp())
 
   # Get timeago string based on minutes
-  @staticmethod
   def get_timeago(mins: int) -> str:
     if mins >= 1440:
       d = round(mins / 1440)
@@ -170,7 +164,6 @@ class Utils:
     return f"({timeago})".ljust(12, " ")
 
   # Get the content type of a URL
-  @staticmethod
   def get_url_type(url: str) -> str:
     try:
       r = urlopen(url)
@@ -180,7 +173,6 @@ class Utils:
       return "none"
 
   # Get the title from a URL
-  @staticmethod
   def get_title(text: str) -> str:
     if text.startswith("https://") and not Utils.space(text):
       if not Utils.get_url_type(text) == "text/html":
@@ -195,7 +187,6 @@ class Utils:
     return ""
 
   # Copy text to the clipboard
-  @staticmethod
   def copy_text(text: str) -> None:
     proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, \
     stdin = subprocess.PIPE, shell = True, text = True)
@@ -207,7 +198,6 @@ class Utils:
 
 class Converts:
   # Convert text into something else
-  @staticmethod
   def check(text: str) -> str:
     new_text = ""
 
@@ -221,7 +211,6 @@ class Converts:
     return text
 
   # Convert a Youtube Music URL into a Youtube URL
-  @staticmethod
   def youtube_music(text: str) -> str:
     if Utils.space(text): return text
 
@@ -251,12 +240,10 @@ class Rofi:
     -theme-str "window {width: 66%;}"'
 
   # Get a Rofi prompt
-  @staticmethod
   def prompt(s: str) -> str:
     return f'rofi -dmenu -markup-rows -i -p "{s}"'
 
   # Show the Rofi menu with the items
-  @staticmethod
   def show(selected: int = 0) -> None:
     opts: List[str] = []
     date_now = Utils.get_seconds()
@@ -310,25 +297,21 @@ class Rofi:
 
 class Items:
   # When an item is selected through the Rofi menu
-  @staticmethod
   def select(index: int) -> None:
     text = Globals.items[index]["text"]
     Utils.copy_text(text)
 
   # Delete an item from the item list
-  @staticmethod
   def delete(index: int) -> None:
     del Globals.items[index]
     update_file()
 
   # Delete all the items
-  @staticmethod
   def delete_all() -> None:
     Globals.items = []
     update_file()
 
   # Delete all items
-  @staticmethod
   def confirm_delete() -> None:
     opts = ["No", "Yes"]
     prompt = Rofi.prompt("Delete all items?")
@@ -340,7 +323,6 @@ class Items:
       Items.delete_all()
 
   # Join 2 or more items into one
-  @staticmethod
   def join(num: int) -> None:
     s = " ".join(item["text"].strip() for item in reversed(Globals.items[0:num]))
     del Globals.items[0:num]
@@ -350,7 +332,6 @@ class Items:
   # Add an item to the items array
   # It performs some checks
   # It removes duplicates
-  @staticmethod
   def add(text: str) -> None:
     text = text.rstrip()
 
@@ -394,7 +375,6 @@ class Items:
 
 class File:
   # Read the items file and parse it to JSON
-  @staticmethod
   def read() -> None:
     file = open(Globals.items_path, "r")
     content = file.read().strip()
@@ -406,7 +386,6 @@ class File:
     file.close()
 
   # Stringify the JSON object and save it into the file
-  @staticmethod
   def write() -> None:
     file = open(Globals.items_path, "w")
     file.write(json.dumps(Globals.items))
@@ -414,7 +393,6 @@ class File:
 
 class Watcher:
   # Start the clipboard watcher
-  @staticmethod
   def start() -> None:
     if shutil.which("copyevent") is None:
       print("The watcher needs 'copyevent' to be installed.")
