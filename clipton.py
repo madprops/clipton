@@ -45,6 +45,7 @@ import sys
 import json
 import html
 import shutil
+import time
 import subprocess
 import logging
 from pathlib import Path
@@ -53,7 +54,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.7"
+VERSION = "1.8"
 
 #-----------------
 # CONFIG
@@ -515,6 +516,7 @@ class Watcher:
               Items.read()
               Items.insert(clip)
               iterations = 0
+              time.sleep(0.1)
       except Exception as err:
         Utils.log(err)
 
