@@ -53,7 +53,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.6"
+VERSION = "1.7"
 
 #-----------------
 # CONFIG
@@ -467,18 +467,17 @@ class Items:
 
   # Insert an item into the item list
   def insert(text: str) -> None:
-    if not Settings.enable_converters:
-      return
+    if Settings.enable_converters:
+      converted = Converters.convert(text)
 
-    converted = Converters.convert(text)
+      if converted:
+        print("Text Converted")
+        Items.add(f"Original: {text}")
+        Items.add(converted)
+        Utils.copy_text(converted)
+        return
 
-    if converted:
-      print("Text Converted")
-      Items.add(f"Original: {text}")
-      Items.add(converted)
-      Utils.copy_text(converted)
-    else:
-      Items.add(text)
+    Items.add(text)
 
 #-----------------
 # WATCHER
