@@ -291,6 +291,7 @@ class Rofi:
         Rofi.show(index)
       elif code >= 11 and code <= 18:
         Items.join(code - 9)
+        Rofi.show()
       elif code == 19:
         Items.confirm_delete()
       else:
@@ -308,12 +309,20 @@ class Item:
   # title: The title of the URL (if any)
 
   # Create an item from a JSON object
-  def load(obj):
+  def from_json(obj):
     item = Item()
     item.text = obj["text"]
     item.date = obj["date"]
     item.num_lines = obj["num_lines"]
     item.title = obj["title"]
+    return item
+
+  def from_text(text: str):
+    item = Item()
+    item.text = text
+    item.date = Utils.get_seconds()
+    item.num_lines = text.count("\n") + 1
+    item.title = ""
     return item
 
   # Convert an item to a dictionary
@@ -332,7 +341,7 @@ class Items:
     if content == "":
       content = "[]"
 
-    Items.items = json.loads(content, object_hook = Item.load)
+    Items.items = json.loads(content, object_hook = Item.from_json)
     file.close()
 
   # Stringify the JSON object and save it in the items file
@@ -371,6 +380,7 @@ class Items:
   def join(num: int) -> None:
     s = " ".join(item.text.strip() for item in reversed(Items.items[0:num]))
     del Items.items[0:num]
+    Items.items.insert(0, Item.from_text(s))
     Items.write()
     Utils.copy_text(s)
 
