@@ -79,27 +79,32 @@ class Settings:
     settings = json.loads(content)
     file.close()
 
-  # How many items to store in the file
+    # How many items to store in the file
     Settings.max_items = settings.get("max_items", 2000)
 
-  # Don't save to file if char length exceeds this
+    # Don't save to file if char length exceeds this
     Settings.heavy_paste = settings.get("heavy_paste", 5000)
 
-  # If enabled the URL titles are fetched by parsing the HTML
+    # If enabled the URL titles are fetched by parsing the HTML
     Settings.enable_titles = settings.get("enable_titles", True)
 
-  # If enabled the text can be converted
+    # If enabled the text can be converted
     Settings.enable_converters = settings.get("enable_converters", True)
 
-  # The specific converters to enable
+    # If enabled the join function will reverse the order of the items
+    Settings.reverse_join = settings.get("reverse_join", False)
+
+    # The specific converters to enable
     Settings.converters = settings.get("converters", {})
 
     if not Settings.converters:
       Settings.converters = {}
 
+    # Convert a youtu.be URL to a youtube URL
     if not "youtu_be" in Settings.converters:
       Settings.converters["youtu_be"] = True
 
+    # Convert a music.youtube URL to a youtube URL
     if not "youtube_music" in Settings.converters:
       Settings.converters["youtube_music"] = True
 
@@ -199,7 +204,10 @@ class Converters:
   def check(text: str) -> str:
     new_text = ""
 
-    if Settings.converters["youtube_music"]:
+    if Settings.converters["youtu_be"] and not new_text:
+      new_text = Converters.youtu_be(text)
+
+    if Settings.converters["youtube_music"] and not new_text:
       new_text = Converters.youtube_music(text)
 
     if new_text:
@@ -209,31 +217,29 @@ class Converters:
 
     return text
 
-  # Convert a Youtube Music URL into a Youtube URL
+  def youtu_be(text: str) -> str:
+    if Utils.space(text): return ""
+    regex = re.compile(r'https://youtu.be/([\w-]+)')
+    match = regex.search(text)
+
+    if match and match.group(1):
+      video_id = match.group(1)
+      return f'https://www.youtube.com/watch?v={video_id}'
+
+    return ""
+
   def youtube_music(text: str) -> str:
     if Utils.space(text): return ""
+    regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
+    match = regex.search(text)
 
-    # Convert a youtu.be URL to a youtube URL
-    if Settings.converters["youtu_be"]:
-      regex = re.compile(r'https://youtu.be/([\w-]+)')
-      match = regex.search(text)
+    if match and match.group(2):
+      video_id = match.group(2)
+      return f'https://www.youtube.com/watch?v={video_id}'
 
-      if match and match.group(1):
-        video_id = match.group(1)
-        return f'https://www.youtube.com/watch?v={video_id}'
-
-    # Convert a music.youtube URL to a youtube URL
-    if Settings.converters["youtube_music"]:
-      regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
-      match = regex.search(text)
-
-      if match and match.group(2):
-        video_id = match.group(2)
-        return f'https://www.youtube.com/watch?v={video_id}'
-
-      if match and match.group(3):
-        playlist_id = match.group(3)
-        return f'https://www.youtube.com/playlist?list={playlist_id}'
+    if match and match.group(3):
+      playlist_id = match.group(3)
+      return f'https://www.youtube.com/playlist?list={playlist_id}'
 
     return ""
 
@@ -292,7 +298,7 @@ class Rofi:
         Items.delete(index)
         Rofi.show(index)
       elif code >= 11 and code <= 18:
-        Items.join(code - 9)
+        Items.join(index, code - 9)
         Rofi.show()
       elif code == 19:
         Items.confirm_delete()
@@ -354,7 +360,7 @@ class Items:
 
   # When an item is selected through the Rofi menu
   def select(index: int) -> None:
-    text = Items.items[index]["text"]
+    text = Items.items[index].text
     Utils.copy_text(text)
 
   # Delete an item from the item list
@@ -379,9 +385,16 @@ class Items:
       Items.delete_all()
 
   # Join 2 or more items into one
-  def join(num: int) -> None:
-    s = " ".join(item.text.strip() for item in reversed(Items.items[0:num]))
-    del Items.items[0:num]
+  def join(index: int, num: int) -> None:
+    index_2 = index + num
+
+    if Settings.reverse_join:
+      item_slice = reversed(Items.items[index:index_2])
+    else:
+      item_slice = Items.items[index:index_2]
+
+    s = " ".join(item.text.strip() for item in item_slice)
+    del Items.items[index:index_2]
     Items.items.insert(0, Item.from_text(s))
     Items.write()
     Utils.copy_text(s)
