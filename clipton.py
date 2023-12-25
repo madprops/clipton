@@ -53,7 +53,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.4"
+VERSION = "1.5"
 
 #-----------------
 # CONFIG
@@ -254,12 +254,17 @@ class Converters:
   # youtu.be -> youtube
   def youtu_be(text: str) -> str:
     if Utils.space(text): return ""
-    regex = re.compile(r'https://youtu.be/([\w-]+)')
+    regex = re.compile(r'https://youtu.be/([\w-]+)(\?t=([\d]+))?')
     match = regex.search(text)
 
     if match and match.group(1):
       video_id = match.group(1)
-      return f'https://www.youtube.com/watch?v={video_id}'
+      timestamp = match.group(2)
+
+      if timestamp:
+        return f'https://www.youtube.com/watch?v={video_id}&t={timestamp}s'
+      else:
+        return f'https://www.youtube.com/watch?v={video_id}'
 
     return ""
 
