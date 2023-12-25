@@ -332,6 +332,7 @@ class Item:
     item.title = obj["title"]
     return item
 
+  # Create an item from text
   def from_text(text: str):
     item = Item()
     item.text = text
