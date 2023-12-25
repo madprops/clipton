@@ -69,6 +69,7 @@ class Config:
 #-----------------
 
 class Files:
+  # Read a file and return the content
   def read(path: str, fallback: str) -> str:
     file = open(path, "r")
     content = file.read().strip()
@@ -79,6 +80,7 @@ class Files:
     file.close()
     return content
 
+  # Write to a file
   def write(path: str, content: str) -> None:
     file = open(path, "w")
     file.write(content)
