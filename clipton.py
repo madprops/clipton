@@ -222,6 +222,7 @@ class Converters:
 
     return text
 
+  # youtu.be -> youtube
   def youtu_be(text: str) -> str:
     if Utils.space(text): return ""
     regex = re.compile(r'https://youtu.be/([\w-]+)')
@@ -233,6 +234,7 @@ class Converters:
 
     return ""
 
+  # music.youtube -> youtube
   def youtube_music(text: str) -> str:
     if Utils.space(text): return ""
     regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
