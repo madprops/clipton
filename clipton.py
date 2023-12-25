@@ -12,7 +12,6 @@
 # Then you can paste it anywhere you want
 # You need to install 'xclip' and 'rofi' for this to work
 # You also need to install 'copyevent' for the watcher to work
-# Repo: https://github.com/madprops/copyevent
 # Then start the watcher with 'python clipton.py watcher'
 # To launch the Rofi menu use 'python clipton.py'
 # Add a keyboard shortcut to show the Rofi menu
