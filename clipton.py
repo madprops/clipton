@@ -38,6 +38,8 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
+VERSION = "1.0"
+
 #-----------------
 # CONFIG
 #-----------------
@@ -277,7 +279,7 @@ class Rofi:
 
       opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
 
-    prompt = Rofi.prompt("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+    prompt = Rofi.prompt(f"Clipton {VERSION} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
     proc = subprocess.Popen(f"{prompt} -format i {Rofi.style} -selected-row {selected}", \
     stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
     ans = proc.communicate("\n".join(opts))[0].strip()
