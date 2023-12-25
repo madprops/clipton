@@ -98,6 +98,9 @@ class Settings:
     if not "youtube_music" in Settings.converters:
       Settings.converters["youtube_music"] = True
 
+    if not "youtu_be" in Settings.converters:
+      Settings.converters["youtu_be"] = True
+
 #-----------------
 # UTILS
 #-----------------
@@ -206,9 +209,7 @@ class Converters:
 
   # Convert a Youtube Music URL into a Youtube URL
   def youtube_music(text: str) -> str:
-    new_text = ""
-
-    if Utils.space(text): return new_text
+    if Utils.space(text): return ""
 
     if Settings.converters["youtube_music"]:
       regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
@@ -216,13 +217,21 @@ class Converters:
 
       if match and match.group(2):
         video_id = match.group(2)
-        new_text = f'https://www.youtube.com/watch?v={video_id}'
+        return f'https://www.youtube.com/watch?v={video_id}'
 
       if match and match.group(3):
         playlist_id = match.group(3)
-        new_text = f'https://www.youtube.com/playlist?list={playlist_id}'
+        return f'https://www.youtube.com/playlist?list={playlist_id}'
 
-    return new_text
+    if Settings.converters["youtu_be"]:
+      regex = re.compile(r'https://youtu.be/([\w-]+)')
+      match = regex.search(text)
+
+      if match and match.group(1):
+        video_id = match.group(1)
+        return f'https://www.youtube.com/watch?v={video_id}'
+
+    return ""
 
 #-----------------
 # ROFI
