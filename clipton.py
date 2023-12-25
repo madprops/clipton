@@ -32,9 +32,9 @@
 
 # INSTALLATION
 
-# Place clipton.py somewhere in your path
-# Compile and place copyevent somewhere in your path
-# Add a keyboard shortcut to run clipton.py
+# Place 'clipton.py' somewhere in your path
+# Compile and place 'copyevent' somewhere in your path
+# Add a keyboard shortcut to run 'clipton.py'
 # For example Ctrl + Backtick
 
 import re
