@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Clipton is a clipboard manager for Linux
+# Repo: https://github.com/madprops/clipton
 # It has 2 functions, the Rofi menu and the clipboard watcher
 # The clipboard watcher is used to save copied text
 # It works by using 'copyevent' to detect a clipboard change
@@ -11,7 +12,7 @@
 # Then you can paste it anywhere you want
 # You need to install 'xclip' and 'rofi' for this to work
 # You also need to install 'copyevent' for the watcher to work
-# https://github.com/madprops/copyevent
+# Repo: https://github.com/madprops/copyevent
 # Then start the watcher with 'python clipton.py watcher'
 # To launch the Rofi menu use 'python clipton.py'
 # Add a keyboard shortcut to show the Rofi menu
