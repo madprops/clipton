@@ -53,7 +53,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.5"
+VERSION = "1.6"
 
 #-----------------
 # CONFIG
@@ -234,8 +234,8 @@ class Utils:
 # Any number of these can be added and used if enabled in the settings
 
 class Converters:
-  # Try to convert text
-  def check(text: str) -> str:
+  # Try to convert text and add it to the list
+  def convert(text: str) -> None:
     new_text = ""
 
     if (not new_text) and Settings.converters["youtu_be"]:
@@ -244,12 +244,7 @@ class Converters:
     if (not new_text) and Settings.converters["youtube_music"]:
       new_text = Converters.youtube_music(text)
 
-    if new_text:
-      Utils.copy_text(new_text)
-      print("Text Converted")
-      return new_text
-
-    return text
+    return new_text
 
   # youtu.be -> youtube
   def youtu_be(text: str) -> str:
@@ -367,12 +362,12 @@ class Item:
     return item
 
   # Create an item from text
-  def from_text(text: str):
+  def from_text(text: str, title: str = ""):
     item = Item()
     item.text = text
     item.date = Utils.get_seconds()
     item.num_lines = text.count("\n") + 1
-    item.title = ""
+    item.title = title
     return item
 
   # Convert an item to a dictionary
@@ -430,7 +425,7 @@ class Items:
 
     s = " ".join(item.text.strip() for item in item_slice)
     del Items.items[index:index_2]
-    Items.items.insert(0, Item.from_text(s))
+    Items.add(s)
     Items.write()
     Utils.copy_text(s)
 
@@ -449,9 +444,6 @@ class Items:
     if len(text) > Settings.heavy_paste:
       return
 
-    if Settings.enable_converters:
-      text = Converters.check(text)
-
     item_exists = False
 
     for item in Items.items:
@@ -467,12 +459,26 @@ class Items:
       if Settings.enable_titles:
         title = Utils.get_title(text)
 
-      num_lines = text.count("\n") + 1
-      the_item = {"date": Utils.get_seconds(), "text": text, "num_lines": num_lines, "title": title}
+      the_item = Item.from_text(text, title)
 
     Items.items.insert(0, the_item)
     Items.items = Items.items[0:Settings.max_items]
     Items.write()
+
+  # Insert an item into the item list
+  def insert(text: str) -> None:
+    if not Settings.enable_converters:
+      return
+
+    converted = Converters.convert(text)
+
+    if converted:
+      print("Text Converted")
+      Items.add(f"Original: {text}")
+      Items.add(converted)
+      Utils.copy_text(converted)
+    else:
+      Items.add(text)
 
 #-----------------
 # WATCHER
@@ -508,7 +514,7 @@ class Watcher:
 
             if clip:
               Items.read()
-              Items.add(clip)
+              Items.insert(clip)
               iterations = 0
       except Exception as err:
         Utils.log(err)
