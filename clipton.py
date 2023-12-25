@@ -34,6 +34,9 @@
 
 # Place 'clipton.py' somewhere in your path
 # Compile and place 'copyevent' somewhere in your path
+# Place 'clipton.service' inside /usr/lib/systemd/user/"
+# Start the watcher: systemctl start --user clipton
+# Make it autostart: systemctl --user enable clipton
 # Add a keyboard shortcut to run 'clipton.py'
 # For example Ctrl + Backtick
 
