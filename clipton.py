@@ -2,6 +2,9 @@
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
+
+# ABOUT
+
 # It has 2 functions, the Rofi menu and the clipboard watcher
 # The clipboard watcher is used to save copied text
 # It works by using 'copyevent' to detect a clipboard change
