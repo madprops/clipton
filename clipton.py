@@ -40,7 +40,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.2"
+VERSION = "1.4"
 
 #-----------------
 # CONFIG
@@ -65,6 +65,26 @@ class Config:
     Config.settings_path.touch(exist_ok = True)
 
 #-----------------
+# Files
+#-----------------
+
+class Files:
+  def read(path: str, fallback: str) -> str:
+    file = open(path, "r")
+    content = file.read().strip()
+
+    if not content:
+      content = fallback
+
+    file.close()
+    return content
+
+  def write(path: str, content: str) -> None:
+    file = open(path, "w")
+    file.write(content)
+    file.close()
+
+#-----------------
 # SETTINGS
 #-----------------
 
@@ -72,14 +92,8 @@ class Settings:
   # Read the settings file
   # Fill the settings class with the values
   def read():
-    file = open(Config.settings_path, "r")
-    content = file.read().strip()
-
-    if not content:
-      content = "{}"
-
+    content = Files.read(Config.settings_path, "{}")
     settings = json.loads(content)
-    file.close()
 
     # How many items to store in the file
     Settings.max_items = settings.get("max_items", 2000)
@@ -351,20 +365,13 @@ class Items:
 
   # Read the items file and fill the item list
   def read() -> None:
-    file = open(Config.items_path, "r")
-    content = file.read().strip()
-
-    if content == "":
-      content = "[]"
-
+    content = Files.read(Config.items_path, "[]")
     Items.items = json.loads(content, object_hook = Item.from_json)
-    file.close()
 
   # Stringify the JSON object and save it in the items file
   def write() -> None:
-    file = open(Config.items_path, "w")
-    file.write(json.dumps(Items.items, default = Item.to_dict, indent = 2))
-    file.close()
+    content = json.dumps(Items.items, default = Item.to_dict, indent = 2)
+    Files.write(Config.items_path, content)
 
   # When an item is selected through the Rofi menu
   def select(index: int) -> None:
