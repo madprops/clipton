@@ -346,7 +346,7 @@ class Items:
   # List with all the items
   items: List[Item] = []
 
-  # Read the items file and fill the items array
+  # Read the items file and fill the item list
   def read() -> None:
     file = open(Config.items_path, "r")
     content = file.read().strip()
@@ -404,7 +404,7 @@ class Items:
     Items.write()
     Utils.copy_text(s)
 
-  # Add an item to the items array
+  # Add an item to the item list
   # It performs some checks
   # It removes duplicates
   def add(text: str) -> None:
