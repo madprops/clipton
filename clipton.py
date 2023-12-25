@@ -54,7 +54,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.8"
+VERSION = "2.0"
 
 #-----------------
 # CONFIG
@@ -237,6 +237,9 @@ class Utils:
 class Converters:
   # Try to convert text and add it to the list
   def convert(text: str) -> None:
+    # Strings with spaces are ignored
+    if Utils.space(text): return ""
+
     new_text = ""
 
     if (not new_text) and Settings.converters["youtu_be"]:
@@ -249,7 +252,6 @@ class Converters:
 
   # youtu.be -> youtube
   def youtu_be(text: str) -> str:
-    if Utils.space(text): return ""
     regex = re.compile(r'https://youtu.be/([\w-]+)(\?t=([\d]+))?')
     match = regex.search(text)
 
@@ -516,6 +518,8 @@ class Watcher:
               Items.read()
               Items.insert(clip)
               iterations = 0
+
+              # Give clipboard operations some time
               time.sleep(0.1)
       except Exception as err:
         Utils.log(err)
