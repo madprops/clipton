@@ -14,7 +14,6 @@
 # You also need to install 'copyevent' for the watcher to work
 # Then start the watcher with 'python clipton.py watcher'
 # To launch the Rofi menu use 'python clipton.py'
-# Add a keyboard shortcut to show the Rofi menu
 
 # The settings file path is '~/.config/clipton/settings.json'
 # Just override the settings you want to change:
@@ -25,6 +24,12 @@
 # 		"youtube_music": false
 # 	}
 # }
+
+# INSTALLATION
+
+# Place clipton.py somewhere in your path
+# Compile and place copyevent somewhere in your path
+# Add a keyboard shortcut to run clipton.py
 
 import re
 import sys

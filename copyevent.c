@@ -1,5 +1,6 @@
 // It allows using the -s flag like: copyevent -s clipboard,primary,secondary
 // Compilation: gcc copyevent.c -o copyevent -I/usr/X11R6/include -L/usr/X11R6/lib -lX11 -lXfixes
+// Place it somewhere in your path
 
 #include <stdio.h>
 #include <stdlib.h>
