@@ -95,11 +95,11 @@ class Settings:
     if not Settings.converters:
       Settings.converters = {}
 
-    if not "youtube_music" in Settings.converters:
-      Settings.converters["youtube_music"] = True
-
     if not "youtu_be" in Settings.converters:
       Settings.converters["youtu_be"] = True
+
+    if not "youtube_music" in Settings.converters:
+      Settings.converters["youtube_music"] = True
 
 #-----------------
 # UTILS
@@ -211,6 +211,16 @@ class Converters:
   def youtube_music(text: str) -> str:
     if Utils.space(text): return ""
 
+    # Convert a youtu.be URL to a youtube URL
+    if Settings.converters["youtu_be"]:
+      regex = re.compile(r'https://youtu.be/([\w-]+)')
+      match = regex.search(text)
+
+      if match and match.group(1):
+        video_id = match.group(1)
+        return f'https://www.youtube.com/watch?v={video_id}'
+
+    # Convert a music.youtube URL to a youtube URL
     if Settings.converters["youtube_music"]:
       regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
       match = regex.search(text)
@@ -222,14 +232,6 @@ class Converters:
       if match and match.group(3):
         playlist_id = match.group(3)
         return f'https://www.youtube.com/playlist?list={playlist_id}'
-
-    if Settings.converters["youtu_be"]:
-      regex = re.compile(r'https://youtu.be/([\w-]+)')
-      match = regex.search(text)
-
-      if match and match.group(1):
-        video_id = match.group(1)
-        return f'https://www.youtube.com/watch?v={video_id}'
 
     return ""
 
