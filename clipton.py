@@ -199,8 +199,11 @@ class Utils:
 # CONVERTERS
 #-----------------
 
+# Converters are functions that automatically change copied text into something else
+# Any number of these can be added and used if enabled in the settings
+
 class Converters:
-  # Convert text into something else
+  # Try to convert text
   def check(text: str) -> str:
     new_text = ""
 
