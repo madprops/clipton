@@ -40,7 +40,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "1.1"
+VERSION = "1.2"
 
 #-----------------
 # CONFIG
@@ -209,10 +209,10 @@ class Converters:
   def check(text: str) -> str:
     new_text = ""
 
-    if Settings.converters["youtu_be"] and not new_text:
+    if (not new_text) and Settings.converters["youtu_be"]:
       new_text = Converters.youtu_be(text)
 
-    if Settings.converters["youtube_music"] and not new_text:
+    if (not new_text) and Settings.converters["youtube_music"]:
       new_text = Converters.youtube_music(text)
 
     if new_text:
