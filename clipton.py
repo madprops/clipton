@@ -35,6 +35,7 @@ VERSION = "6.5"
 # SETTINGS
 
 # The settings file path is '~/.config/clipton/settings.json'
+# It's empty by default and it's not required to be edited
 # (Optional) Override the settings you want to change:
 
 # {
