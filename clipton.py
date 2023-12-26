@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "5.0"
+VERSION = "5.1"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -67,6 +67,43 @@ from datetime import datetime
 ORIGINAL = "Original: "
 
 #-----------------
+# SETTINGS
+#-----------------
+
+class Settings:
+  max_items: int
+  heavy_paste: int
+  enable_titles: bool
+  enable_converters: bool
+  reverse_join: bool
+  save_originals: bool
+
+  # Read the settings file
+  # Fill the settings class with the values
+  @staticmethod
+  def read() -> None:
+    content = Files.read(Config.settings_path, "{}")
+    settings = json.loads(content)
+
+    # How many items to store in the file
+    Settings.max_items = settings.get("max_items", 2000)
+
+    # Don't save text if the character length exceeds this
+    Settings.heavy_paste = settings.get("heavy_paste", 5000)
+
+    # If enabled, the URL titles are fetched by parsing the HTML
+    Settings.enable_titles = settings.get("enable_titles", True)
+
+    # If enabled, the text can be converted
+    Settings.enable_converters = settings.get("enable_converters", True)
+
+    # If enabled, the join function will reverse the order of the items
+    Settings.reverse_join = settings.get("reverse_join", False)
+
+    # If enabled, the original text is saved before the converted text
+    Settings.save_originals = settings.get("save_originals", True)
+
+#-----------------
 # CONFIG
 #-----------------
 
@@ -118,40 +155,6 @@ class Files:
     file = open(path, "w")
     file.write(content)
     file.close()
-
-#-----------------
-# SETTINGS
-#-----------------
-
-class Settings:
-  max_items: int
-  heavy_paste: int
-  enable_titles: bool
-  enable_converters: bool
-  reverse_join: bool
-  converters: Dict[str, bool]
-
-  # Read the settings file
-  # Fill the settings class with the values
-  @staticmethod
-  def read() -> None:
-    content = Files.read(Config.settings_path, "{}")
-    settings = json.loads(content)
-
-    # How many items to store in the file
-    Settings.max_items = settings.get("max_items", 2000)
-
-    # Don't save to file if char length exceeds this
-    Settings.heavy_paste = settings.get("heavy_paste", 5000)
-
-    # If enabled the URL titles are fetched by parsing the HTML
-    Settings.enable_titles = settings.get("enable_titles", True)
-
-    # If enabled the text can be converted
-    Settings.enable_converters = settings.get("enable_converters", True)
-
-    # If enabled the join function will reverse the order of the items
-    Settings.reverse_join = settings.get("reverse_join", False)
 
 #-----------------
 # UTILS
@@ -504,7 +507,10 @@ class Items:
 
       if converted:
         print("Text Converted")
-        Items.add(ORIGINAL + text)
+
+        if Settings.save_originals:
+          Items.add(ORIGINAL + text)
+
         Items.add(converted)
         Utils.copy_text(converted)
         return
