@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "4.4"
+VERSION = "4.5"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
