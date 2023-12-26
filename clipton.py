@@ -21,13 +21,13 @@ VERSION = "4.8"
 # Place 'clipton.py' somewhere in your path
 # Compile and place 'copyevent' somewhere in your path
 # Compilation command is commented at the top of the file
-# Place 'clipton.service' inside /usr/lib/systemd/user/"
-# Start the watcher: systemctl --user start clipton
-# Make it autostart: systemctl --user enable clipton
+# Place 'clipton.service' inside '/usr/lib/systemd/user/'
+# Start the watcher with 'systemctl --user start clipton'
+# Make it autostart with 'systemctl --user enable clipton'
 # Start the watcher with 'clipton.py watcher'
-# To launch the Rofi menu use 'clipton.py'
+# Launch the Rofi menu with 'clipton.py'
 # Add a keyboard shortcut to run 'clipton.py'
-# For example Ctrl + Backtick
+# For example 'Ctrl + Backtick'
 
 # SETTINGS
 
