@@ -14,6 +14,8 @@ VERSION = "6.2"
 # You can type something to filter the items
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
+# It can delete indidiual items or all items
+# It has some extra features like joining items
 
 # INSTALLATION
 
