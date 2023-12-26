@@ -49,12 +49,12 @@ import time
 import subprocess
 import logging
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Tuple, Any
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "2.0"
+VERSION = "2.2"
 
 #-----------------
 # CONFIG
@@ -71,7 +71,8 @@ class Config:
   settings_path = config_path / Path("settings.json")
 
   # Create the config directory and files
-  def setup():
+  @staticmethod
+  def setup() -> None:
     if not Config.config_path.exists():
       Config.config_path.mkdir(parents = True)
 
@@ -84,7 +85,8 @@ class Config:
 
 class Files:
   # Read a file and return the content
-  def read(path: str, fallback: str) -> str:
+  @staticmethod
+  def read(path: Path, fallback: str) -> str:
     file = open(path, "r")
     content = file.read().strip()
 
@@ -95,7 +97,8 @@ class Files:
     return content
 
   # Write to a file
-  def write(path: str, content: str) -> None:
+  @staticmethod
+  def write(path: Path, content: str) -> None:
     file = open(path, "w")
     file.write(content)
     file.close()
@@ -105,9 +108,17 @@ class Files:
 #-----------------
 
 class Settings:
+  max_items: int
+  heavy_paste: int
+  enable_titles: bool
+  enable_converters: bool
+  reverse_join: bool
+  converters: Dict[str, bool]
+
   # Read the settings file
   # Fill the settings class with the values
-  def read():
+  @staticmethod
+  def read() -> None:
     content = Files.read(Config.settings_path, "{}")
     settings = json.loads(content)
 
@@ -129,9 +140,6 @@ class Settings:
     # The specific converters to enable
     Settings.converters = settings.get("converters", {})
 
-    if not Settings.converters:
-      Settings.converters = {}
-
     # Convert a youtu.be URL to a youtube URL
     if not "youtu_be" in Settings.converters:
       Settings.converters["youtu_be"] = True
@@ -147,20 +155,21 @@ class Settings:
 class Utils:
   # HTML parser to get the title from a URL
   class TitleParser(HTMLParser):
-    def __init__(self):
+    def __init__(self) -> None:
       HTMLParser.__init__(self)
       self.match = False
       self.title = ""
 
-    def handle_starttag(self, tag, attributes):
+    def handle_starttag(self, tag: str, attributes: List[Tuple[str, str | None]]) -> None:
       self.match = tag == "title"
 
-    def handle_data(self, data):
+    def handle_data(self, data: str) -> None:
       if self.match:
         self.title = data
         self.match = False
 
   # Log something for debugging
+  @staticmethod
   def log(text: str) -> None:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
@@ -171,19 +180,23 @@ class Utils:
     logger.info(text)
 
   # Check if a string contains a space
-  def space(text: str) -> str:
+  @staticmethod
+  def space(text: str) -> bool:
     return any(char.isspace() for char in text)
 
   # Convert a number into a filled string
+  @staticmethod
   def fillnum(num: int) -> str:
     snum = str(num)
     return snum.rjust(2, "0")
 
   # Get unix seconts
+  @staticmethod
   def get_seconds() -> int:
     return int(datetime.now().timestamp())
 
   # Get timeago string based on minutes
+  @staticmethod
   def get_timeago(mins: int) -> str:
     if mins >= 1440:
       d = round(mins / 1440)
@@ -199,15 +212,17 @@ class Utils:
     return f"({timeago})".ljust(12, " ")
 
   # Get the content type of a URL
+  @staticmethod
   def get_url_type(url: str) -> str:
     try:
       r = urlopen(url)
       header = r.headers
-      return header.get_content_type()
+      return str(header.get_content_type())
     except:
       return "none"
 
   # Get the title from a URL
+  @staticmethod
   def get_title(text: str) -> str:
     if text.startswith("https://") and not Utils.space(text):
       if not Utils.get_url_type(text) == "text/html":
@@ -222,6 +237,7 @@ class Utils:
     return ""
 
   # Copy text to the clipboard
+  @staticmethod
   def copy_text(text: str) -> None:
     proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, \
     stdin = subprocess.PIPE, shell = True, text = True)
@@ -236,7 +252,8 @@ class Utils:
 
 class Converters:
   # Try to convert text and add it to the list
-  def convert(text: str) -> None:
+  @staticmethod
+  def convert(text: str) -> str:
     # Strings with spaces are ignored
     if Utils.space(text): return ""
 
@@ -251,6 +268,7 @@ class Converters:
     return new_text
 
   # youtu.be -> youtube
+  @staticmethod
   def youtu_be(text: str) -> str:
     regex = re.compile(r'https://youtu.be/([\w-]+)(\?t=([\d]+))?')
     match = regex.search(text)
@@ -267,6 +285,7 @@ class Converters:
     return ""
 
   # music.youtube -> youtube
+  @staticmethod
   def youtube_music(text: str) -> str:
     if Utils.space(text): return ""
     regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
@@ -292,10 +311,12 @@ class Rofi:
     -theme-str "window {width: 66%;}"'
 
   # Get a Rofi prompt
+  @staticmethod
   def prompt(s: str) -> str:
     return f'rofi -dmenu -markup-rows -i -p "{s}"'
 
   # Show the Rofi menu with the items
+  @staticmethod
   def show(selected: int = 0) -> None:
     opts: List[str] = []
     date_now = Utils.get_seconds()
@@ -355,8 +376,14 @@ class Item:
   # num_lines: The number of lines in the text
   # title: The title of the URL (if any)
 
+  text: str
+  date: int
+  num_lines: int
+  title: str
+
   # Create an item from a JSON object
-  def from_json(obj):
+  @staticmethod
+  def from_json(obj: Dict[str, Any]) -> "Item":
     item = Item()
     item.text = obj["text"]
     item.date = obj["date"]
@@ -365,7 +392,8 @@ class Item:
     return item
 
   # Create an item from text
-  def from_text(text: str, title: str = ""):
+  @staticmethod
+  def from_text(text: str, title: str = "") -> "Item":
     item = Item()
     item.text = text
     item.date = Utils.get_seconds()
@@ -374,7 +402,7 @@ class Item:
     return item
 
   # Convert an item to a dictionary
-  def to_dict(self):
+  def to_dict(self) -> Dict[str, Any]:
     return self.__dict__
 
 class Items:
@@ -382,31 +410,37 @@ class Items:
   items: List[Item] = []
 
   # Read the items file and fill the item list
+  @staticmethod
   def read() -> None:
     content = Files.read(Config.items_path, "[]")
     Items.items = json.loads(content, object_hook = Item.from_json)
 
   # Stringify the JSON object and save it in the items file
+  @staticmethod
   def write() -> None:
     content = json.dumps(Items.items, default = Item.to_dict, indent = 2)
     Files.write(Config.items_path, content)
 
   # When an item is selected through the Rofi menu
+  @staticmethod
   def select(index: int) -> None:
     text = Items.items[index].text
     Utils.copy_text(text)
 
   # Delete an item from the item list
+  @staticmethod
   def delete(index: int) -> None:
     del Items.items[index]
     Items.write()
 
   # Delete all the items
+  @staticmethod
   def delete_all() -> None:
     Items.items = []
     Items.write()
 
   # Delete all items
+  @staticmethod
   def confirm_delete() -> None:
     opts = ["No", "Yes"]
     prompt = Rofi.prompt("Delete all items?")
@@ -418,11 +452,12 @@ class Items:
       Items.delete_all()
 
   # Join 2 or more items into one
+  @staticmethod
   def join(index: int, num: int) -> None:
     index_2 = index + num
 
     if Settings.reverse_join:
-      item_slice = reversed(Items.items[index:index_2])
+      item_slice = list(reversed(Items.items[index:index_2]))
     else:
       item_slice = Items.items[index:index_2]
 
@@ -435,6 +470,7 @@ class Items:
   # Add an item to the item list
   # It performs some checks
   # It removes duplicates
+  @staticmethod
   def add(text: str) -> None:
     text = text.rstrip()
 
@@ -469,6 +505,7 @@ class Items:
     Items.write()
 
   # Insert an item into the item list
+  @staticmethod
   def insert(text: str) -> None:
     if Settings.enable_converters:
       converted = Converters.convert(text)
@@ -488,6 +525,7 @@ class Items:
 
 class Watcher:
   # Start the clipboard watcher
+  @staticmethod
   def start() -> None:
     if shutil.which("copyevent") is None:
       print("The watcher needs 'copyevent' to be installed.")
@@ -522,7 +560,7 @@ class Watcher:
               # Give clipboard operations some time
               time.sleep(0.1)
       except Exception as err:
-        Utils.log(err)
+        Utils.log(str(err))
 
 #-----------------
 # MAIN
