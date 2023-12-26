@@ -72,7 +72,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-ORIGINAL = "Original ::"
+ORIGINAL = "Original :: "
 
 #-----------------
 # SETTINGS
