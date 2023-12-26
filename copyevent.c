@@ -1,6 +1,5 @@
-// It allows using the -s flag like: copyevent -s clipboard,primary,secondary
 // Compilation: gcc copyevent.c -o copyevent -I/usr/X11R6/include -L/usr/X11R6/lib -lX11 -lXfixes
-// Place it somewhere in your path
+// It allows using the -s flag like: copyevent -s clipboard,primary,secondary
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,35 +24,43 @@ int main(int argc, char *argv[]) {
     static const char SEL_OPT_SEPARATOR[] = ",";
 
     int optchar;
+
     while ((optchar = getopt(argc, argv, "hs:")) != -1) {
         switch (optchar)
         {
-        case 'h':
-            printf(USAGE, argv[0]);
-            return EXIT_SUCCESS;
-        /* We need the pair of braces because C does not allow a declaration after a labeled statement. */
-        case 's': {
-            char *token = strtok(optarg, SEL_OPT_SEPARATOR);
-            while(token != NULL) {
-                if (strcmp(token, SEL_OPT_CLIPBOARD) == 0) {
-                    selections |= SELECTION_CLIPBOARD;
-                } else if (strcmp(token, SEL_OPT_PRIMARY) == 0) {
-                    selections |= SELECTION_PRIMARY;
-                } else if (strcmp(token, SEL_OPT_SECONDARY) == 0) {
-                    selections |= SELECTION_SECONDARY;
-                } else {
-                    fprintf(stderr, "Unrecognized selection '%s'. Available selections: clipboard, primary.\n", token);
-                    return EXIT_FAILURE;
+            case 'h':
+                printf(USAGE, argv[0]);
+                return EXIT_SUCCESS;
+            /* We need the pair of braces because C does not allow a declaration after a labeled statement. */
+            case 's': {
+                char *token = strtok(optarg, SEL_OPT_SEPARATOR);
+
+                while(token != NULL) {
+                    if (strcmp(token, SEL_OPT_CLIPBOARD) == 0) {
+                        selections |= SELECTION_CLIPBOARD;
+                    }
+                    else if (strcmp(token, SEL_OPT_PRIMARY) == 0) {
+                        selections |= SELECTION_PRIMARY;
+                    }
+                    else if (strcmp(token, SEL_OPT_SECONDARY) == 0) {
+                        selections |= SELECTION_SECONDARY;
+                    }
+                    else {
+                        fprintf(stderr, "Unrecognized selection '%s'. Available selections: clipboard, primary.\n", token);
+                        return EXIT_FAILURE;
+                    }
+
+                    token = strtok(NULL, SEL_OPT_SEPARATOR);
                 }
-                token = strtok(NULL, SEL_OPT_SEPARATOR);
+
+                break;
             }
-            break;
-        }
-        default: /* '?' */
-            fprintf(stderr, USAGE, argv[0]);
-            return EXIT_FAILURE;
+            default: /* '?' */
+                fprintf(stderr, USAGE, argv[0]);
+                return EXIT_FAILURE;
         }
     }
+
     Display *display = XOpenDisplay(NULL);
 
     if (!display) {

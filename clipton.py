@@ -23,6 +23,7 @@ VERSION = "4.4"
 
 # Place 'clipton.py' somewhere in your path
 # Compile and place 'copyevent' somewhere in your path
+# Compilation command is commented at the top of the file
 # Place 'clipton.service' inside /usr/lib/systemd/user/"
 # Start the watcher: systemctl --user start clipton
 # Make it autostart: systemctl --user enable clipton
