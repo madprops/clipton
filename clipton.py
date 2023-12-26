@@ -46,8 +46,8 @@ VERSION = "5.0"
 # Check out 'converters/youtube_music.py' for an example
 # The function that is called is 'convert(text: str) -> str'
 # If nothing is converted it must return an empty string
-# There's a script to copy all converters to the config directory
 # Add or remove the converter files you want to enable/disable
+# There's a script to copy all converters to the config directory
 
 import os
 import re
