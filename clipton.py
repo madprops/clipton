@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "6.9"
+VERSION = "7.1"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -54,7 +54,7 @@ VERSION = "6.9"
 # There's a script to copy all converters to the config directory
 # If the setting 'save_originals' is enabled, the original text is also saved
 # It's saved as 'Original :: <text>' and it's placed before the converted text
-# Only the last original text is saved to not fill the items file too much
+# If the converted item is no longer the first item, the original is removed
 
 import os
 import re
@@ -583,16 +583,13 @@ class Items:
   # Remove unwanted items
   @staticmethod
   def clean() -> None:
-    first_original = False
     edited = False
 
-    for item in Items.items:
+    for index, item in enumerate(Items.items):
       if item.text.startswith(ORIGINAL):
-        if first_original:
+        if index != 1:
           Items.items.remove(item)
           edited = True
-        else:
-          first_original = True
 
     if edited:
       Items.write()
