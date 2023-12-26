@@ -629,6 +629,9 @@ class Watcher:
             clip = ans.stdout.decode()
 
             if clip:
+              if clip.startswith(ORIGINAL):
+                continue
+
               Items.read()
               Items.insert(clip)
               iterations = 0
