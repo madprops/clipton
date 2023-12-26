@@ -35,7 +35,7 @@ VERSION = "9.0"
 
 # SETTINGS
 
-# The settings file path is '~/.config/clipton/settings.ini'
+# The settings file path is '~/.config/clipton/settings.toml'
 # It's empty by default and it's not required to be edited
 # (Optional) Override the settings you want to change:
 
@@ -148,7 +148,7 @@ class Config:
   items_path = config_path / Path("items.json")
 
   # Path to the settings file
-  settings_path = config_path / Path("settings.ini")
+  settings_path = config_path / Path("settings.toml")
 
   # Converters path
   converters_path = config_path / Path("converters")
