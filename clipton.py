@@ -12,8 +12,6 @@ VERSION = "6.2"
 # The Rofi menu is used to view and select items from the list
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
-# The config path is '~/.config/clipton'
-# The list, settings, and converters are placed here
 
 # INSTALLATION
 
@@ -27,6 +25,8 @@ VERSION = "6.2"
 # Launch the Rofi menu with 'clipton.py'
 # Add a keyboard shortcut to run 'clipton.py'
 # For example 'Ctrl + Backtick'
+# The config path is '~/.config/clipton'
+# The list, settings, and converters are placed here
 
 # SETTINGS
 
