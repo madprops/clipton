@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "4.0"
+VERSION = "4.2"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -325,7 +325,7 @@ class Rofi:
     else:
       num = f"{num_items} Items"
 
-    prompt = Rofi.prompt(f"Clipton {VERSION} | ${num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+    prompt = Rofi.prompt(f"Clipton {VERSION} | {num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
     proc = subprocess.Popen(f"{prompt} -format i {Rofi.style} -selected-row {selected}", \
     stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
     ans = proc.communicate("\n".join(opts))[0].strip()
