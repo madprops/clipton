@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "5.4"
+VERSION = "5.5"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -516,12 +516,7 @@ class Items:
         break
 
     if not item_exists:
-      title = ""
-
-      if Settings.enable_titles:
-        title = Utils.get_title(text)
-
-      the_item = Item.from_text(text, title)
+      the_item = Item.from_text(text)
 
     Items.items.insert(0, the_item)
     Items.items = Items.items[0:Settings.max_items]
@@ -543,9 +538,30 @@ class Items:
 
         Items.add(converted)
         Utils.copy_text(converted)
+        Items.title(converted)
         return
 
     Items.add(text)
+    Items.title(text)
+
+  # Add a title to an item
+  @staticmethod
+  def title(text: str) -> None:
+    if not Settings.enable_titles:
+      return
+
+    for item in Items.items:
+      if item.text == text:
+        if item.title:
+          return
+
+        title = Utils.get_title(text)
+
+        if title:
+          item.title = title
+
+        Items.write()
+        break
 
 #-----------------
 # WATCHER
