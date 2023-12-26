@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "7.1"
+VERSION = "7.2"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -583,15 +583,17 @@ class Items:
   # Remove unwanted items
   @staticmethod
   def clean() -> None:
-    edited = False
+    keep = []
 
     for index, item in enumerate(Items.items):
       if item.text.startswith(ORIGINAL):
         if index != 1:
-          Items.items.remove(item)
-          edited = True
+          continue
 
-    if edited:
+      keep.append(item)
+
+    if len(Items.items) != len(keep):
+      Items.items = keep
       Items.write()
 
 #-----------------
