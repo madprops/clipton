@@ -35,7 +35,7 @@ VERSION = "6.2"
 # SETTINGS
 
 # The settings file path is '~/.config/clipton/settings.json'
-# Create it and override the settings you want to change:
+# (Optional) Override the settings you want to change:
 
 # {
 #   "heavy_paste": 3000,
