@@ -39,14 +39,14 @@ VERSION = "9.0"
 # It's empty by default and it's not required to be edited
 # (Optional) Override the settings you want to change:
 
-# heavy_paste = 1000
+# max_items = 250
 # enable_titles = false
 # rofi_width = "50%"
 
 # Here are all the default settings:
 
-# max_items = 2000
-# heavy_paste = 5000
+# max_items = 1000
+# heavy_paste = 2000
 # enable_titles = true
 # enable_converters = true
 # reverse_join = true
@@ -109,10 +109,10 @@ class Settings:
     data = Files.read_toml(Config.settings_path)
 
     # How many items to store in the file
-    Settings.max_items = data.get("max_items", 2000)
+    Settings.max_items = data.get("max_items", 1000)
 
     # Don't save text if the character length exceeds this
-    Settings.heavy_paste = data.get("heavy_paste", 5000)
+    Settings.heavy_paste = data.get("heavy_paste", 2000)
 
     # If enabled, the URL titles are fetched by parsing the HTML
     Settings.enable_titles = data.get("enable_titles", True)
