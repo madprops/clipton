@@ -14,13 +14,13 @@ VERSION = "4.8"
 # The Rofi menu is used to select previous items from the list
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
-# You need to install 'xclip' and 'rofi' for this to work
 # You also need to install 'copyevent' for the watcher to work
 # Then start the watcher with 'python clipton.py watcher'
 # To launch the Rofi menu use 'python clipton.py'
 
 # INSTALLATION
 
+# Install 'xclip' and 'rofi'
 # Place 'clipton.py' somewhere in your path
 # Compile and place 'copyevent' somewhere in your path
 # Compilation command is commented at the top of the file
