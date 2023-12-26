@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "4.6"
+VERSION = "4.7"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -64,6 +64,8 @@ from typing import List, Dict, Tuple, Any
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
+
+ORIGINAL = "Original: "
 
 #-----------------
 # CONFIG
@@ -489,14 +491,14 @@ class Items:
   # Insert an item into the item list
   @staticmethod
   def insert(text: str) -> None:
-    original = text.startswith("Original: ")
+    original = text.startswith(ORIGINAL)
 
     if Settings.enable_converters and not original:
       converted = Converters.convert(text)
 
       if converted:
         print("Text Converted")
-        Items.add(f"Original: {text}")
+        Items.add(ORIGINAL + text)
         Items.add(converted)
         Utils.copy_text(converted)
         return
