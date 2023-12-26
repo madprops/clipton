@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "5.1"
+VERSION = "5.3"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -77,6 +77,7 @@ class Settings:
   enable_converters: bool
   reverse_join: bool
   save_originals: bool
+  rofi_width: int
 
   # Read the settings file
   # Fill the settings class with the values
@@ -102,6 +103,9 @@ class Settings:
 
     # If enabled, the original text is saved before the converted text
     Settings.save_originals = settings.get("save_originals", True)
+
+    # The percentage width of the Rofi menu
+    Settings.rofi_width = settings.get("rofi_width", 66)
 
 #-----------------
 # CONFIG
@@ -292,9 +296,11 @@ class Converters:
 #-----------------
 
 class Rofi:
-  # Style for Rofi windows
-  style = '-me-select-entry "" -me-accept-entry "MousePrimary" \
-    -theme-str "window {width: 66%;}"'
+  # Get the style for the Rofi menu
+  @staticmethod
+  def style():
+    return f'-me-select-entry "" -me-accept-entry "MousePrimary"' \
+    f' -theme-str "window {{width: {Settings.rofi_width}%;}}"'
 
   # Get a Rofi prompt
   @staticmethod
@@ -339,7 +345,7 @@ class Rofi:
       num = f"{num_items} Items"
 
     prompt = Rofi.prompt(f"Clipton {VERSION} | {num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-    proc = subprocess.Popen(f"{prompt} -format i {Rofi.style} -selected-row {selected}", \
+    proc = subprocess.Popen(f"{prompt} -format i {Rofi.style()} -selected-row {selected}", \
     stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
     ans = proc.communicate("\n".join(opts))[0].strip()
 
@@ -437,7 +443,7 @@ class Items:
   def confirm_delete() -> None:
     opts = ["No", "Yes"]
     prompt = Rofi.prompt("Delete all items?")
-    proc = subprocess.Popen(f"{prompt} {Rofi.style} -selected-row 0", \
+    proc = subprocess.Popen(f"{prompt} {Rofi.style()} -selected-row 0", \
     stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
     ans = proc.communicate("\n".join(opts))[0].strip()
 
