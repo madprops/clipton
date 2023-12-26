@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "4.7"
+VERSION = "4.8"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -267,6 +267,13 @@ class Converters:
       module_name = os.path.splitext(file)[0]
       module_path = Path(Config.converters_path / file)
       spec = importlib.util.spec_from_file_location(module_name, module_path)
+
+      if spec is None:
+        return ""
+
+      if spec.loader is None:
+        return ""
+
       module = importlib.util.module_from_spec(spec)
       spec.loader.exec_module(module)
 
@@ -274,7 +281,7 @@ class Converters:
         new_text = module.convert(text)
 
         if new_text:
-          return new_text
+          return str(new_text)
 
     return ""
 
