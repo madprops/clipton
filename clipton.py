@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "6.0"
+VERSION = "6.2"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -570,6 +570,8 @@ class Items:
 #-----------------
 
 class Watcher:
+  max_iterations = 100
+
   # Start the clipboard watcher
   @staticmethod
   def start() -> None:
@@ -578,7 +580,6 @@ class Watcher:
       exit(1)
 
     herepath = Path(__file__).parent.resolve()
-    max_iterations = 100
     iterations = 0
     print("Watcher Started")
 
@@ -586,7 +587,7 @@ class Watcher:
       try:
         iterations += 1
 
-        if iterations > max_iterations:
+        if iterations > Watcher.max_iterations:
           Utils.log("Too many iterations")
           exit(1)
 
