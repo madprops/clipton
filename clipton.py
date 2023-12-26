@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "8.6"
+VERSION = "9.0"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -35,28 +35,24 @@ VERSION = "8.6"
 
 # SETTINGS
 
-# The settings file path is '~/.config/clipton/settings.json'
+# The settings file path is '~/.config/clipton/settings.ini'
 # It's empty by default and it's not required to be edited
 # (Optional) Override the settings you want to change:
 
-# {
-#   "heavy_paste": 3000,
-#   "enable_titles": false
-# }
+# heavy_paste = 3000
+# enable_titles = false
 
 # Here are all the default settings:
 
-# {
-#   "max_items": 2000,
-#   "heavy_paste": 5000,
-#   "enable_titles": true,
-#   "enable_converters": true,
-#   "reverse_join": true,
-#   "save_originals": true,
-#   "show_date": true,
-#   "show_num_lines": true,
-#   "rofi_width": "1080px"
-# }
+# max_items = 2000
+# heavy_paste = 5000
+# enable_titles = true
+# enable_converters = true
+# reverse_join = true
+# save_originals = true
+# show_date = true
+# show_num_lines = true
+# rofi_width = "1080px"
 
 # CONVERTERS
 
@@ -79,6 +75,7 @@ import html
 import shutil
 import time
 import subprocess
+import tomllib
 import logging
 import importlib.util
 from pathlib import Path
@@ -108,35 +105,36 @@ class Settings:
   # Fill the settings class with the values
   @staticmethod
   def read() -> None:
-    content = Files.read(Config.settings_path, "{}")
-    settings = json.loads(content)
+    with open(Config.settings_path, "rb") as file:
+      # Load the TOML file
+      data = tomllib.load(file)
 
-    # How many items to store in the file
-    Settings.max_items = settings.get("max_items", 2000)
+      # How many items to store in the file
+      Settings.max_items = data.get("max_items", 2000)
 
-    # Don't save text if the character length exceeds this
-    Settings.heavy_paste = settings.get("heavy_paste", 5000)
+      # Don't save text if the character length exceeds this
+      Settings.heavy_paste = data.get("heavy_paste", 5000)
 
-    # If enabled, the URL titles are fetched by parsing the HTML
-    Settings.enable_titles = settings.get("enable_titles", True)
+      # If enabled, the URL titles are fetched by parsing the HTML
+      Settings.enable_titles = data.get("enable_titles", True)
 
-    # If enabled, the text can be converted
-    Settings.enable_converters = settings.get("enable_converters", True)
+      # If enabled, the text can be converted
+      Settings.enable_converters = data.get("enable_converters", True)
 
-    # If enabled, the join function will reverse the order of the items
-    Settings.reverse_join = settings.get("reverse_join", False)
+      # If enabled, the join function will reverse the order of the items
+      Settings.reverse_join = data.get("reverse_join", False)
 
-    # If enabled, the original text is saved before the converted text
-    Settings.save_originals = settings.get("save_originals", True)
+      # If enabled, the original text is saved before the converted text
+      Settings.save_originals = data.get("save_originals", True)
 
-    # Show the date/timeago in the Rofi menu
-    Settings.show_date = settings.get("show_date", True)
+      # Show the date/timeago in the Rofi menu
+      Settings.show_date = data.get("show_date", True)
 
-    # Show the number of lines in the Rofi menu
-    Settings.show_num_lines = settings.get("show_num_lines", True)
+      # Show the number of lines in the Rofi menu
+      Settings.show_num_lines = data.get("show_num_lines", True)
 
-    # The width of the Rofi menu (Percentage or pixels)
-    Settings.rofi_width = settings.get("rofi_width", "1080px")
+      # The width of the Rofi menu (Percentage or pixels)
+      Settings.rofi_width = data.get("rofi_width", "1080px")
 
 #-----------------
 # CONFIG
@@ -150,7 +148,7 @@ class Config:
   items_path = config_path / Path("items.json")
 
   # Path to the settings file
-  settings_path = config_path / Path("settings.json")
+  settings_path = config_path / Path("settings.ini")
 
   # Converters path
   converters_path = config_path / Path("converters")
@@ -174,7 +172,7 @@ class Config:
 class Files:
   # Read a file and return the content
   @staticmethod
-  def read(path: Path, fallback: str) -> str:
+  def read(path: Path, fallback: str = "") -> str:
     file = open(path, "r")
     content = file.read().strip()
 
