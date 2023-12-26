@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "8.0"
+VERSION = "8.1"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -115,7 +115,7 @@ class Settings:
     Settings.save_originals = settings.get("save_originals", True)
 
     # The percentage width of the Rofi menu
-    Settings.rofi_width = settings.get("rofi_width", 66)
+    Settings.rofi_width = settings.get("rofi_width", 60)
 
     # Show the date/timeago in the Rofi menu
     Settings.show_date = settings.get("show_date", True)
