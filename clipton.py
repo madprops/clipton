@@ -28,7 +28,7 @@ VERSION = "6.5"
 # Make it autostart with 'systemctl --user enable clipton'
 # Launch the Rofi menu with 'clipton.py'
 # Add a keyboard shortcut (somehow) to run 'clipton.py'
-# For example 'Ctrl + Backtick'
+# For example bind it to 'Ctrl + Backtick'
 # The config path is '~/.config/clipton'
 # The list, settings, and converters are placed here
 
