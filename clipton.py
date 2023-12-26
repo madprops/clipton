@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "6.6"
+VERSION = "6.9"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -53,7 +53,8 @@ VERSION = "6.6"
 # Add or remove the converter files you want to enable/disable
 # There's a script to copy all converters to the config directory
 # If the setting 'save_originals' is enabled, the original text is also saved
-# It's saved as 'Original: <text>' and it's placed before the converted text
+# It's saved as 'Original :: <text>' and it's placed before the converted text
+# Only the last original text is saved to not fill the items file too much
 
 import os
 import re
@@ -71,7 +72,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-ORIGINAL = "Original: "
+ORIGINAL = "Original ::"
 
 #-----------------
 # SETTINGS
@@ -553,10 +554,12 @@ class Items:
         Items.add(converted)
         Utils.copy_text(converted)
         Items.title(converted)
+        Items.clean()
         return
 
     Items.add(text)
     Items.title(text)
+    Items.clean()
 
   # Add a title to an item
   @staticmethod
@@ -576,6 +579,23 @@ class Items:
 
         Items.write()
         break
+
+  # Remove unwanted items
+  @staticmethod
+  def clean() -> None:
+    first_original = False
+    edited = False
+
+    for item in Items.items:
+      if item.text.startswith(ORIGINAL):
+        if first_original:
+          Items.items.remove(item)
+          edited = True
+        else:
+          first_original = True
+
+    if edited:
+      Items.write()
 
 #-----------------
 # WATCHER
