@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "4.8"
+VERSION = "5.0"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -44,7 +44,7 @@ VERSION = "4.8"
 # Converters are functions that automatically change copied text into something else
 # They are python files that reside in '~/.config/clipton/converters'
 # Check out 'converters/youtube_music.py' for an example
-# The functions must be named 'convert(text: str) -> str'
+# The function that is called is 'convert(text: str) -> str'
 # If nothing is converted it must return an empty string
 # There's a script to copy all converters to the config directory
 # Add or remove the converter files you want to enable/disable
