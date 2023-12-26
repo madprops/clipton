@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "7.2"
+VERSION = "7.3"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -73,6 +73,10 @@ from html.parser import HTMLParser
 from datetime import datetime
 
 ORIGINAL = "Original :: "
+INFO_LEFT = "("
+INFO_RIGHT = ")"
+INFO_EFFECT = "<b>"
+INFO_EFFECT_END = "</b>"
 
 #-----------------
 # SETTINGS
@@ -237,7 +241,7 @@ class Utils:
     elif mins == 0:
       timeago = "just now"
 
-    return f"({timeago})".ljust(12, " ")
+    return Utils.info(timeago, 12)
 
   # Get the content type of a URL
   @staticmethod
@@ -275,6 +279,12 @@ class Utils:
   @staticmethod
   def msg(text: str) -> None:
     print(f"\033[92mClipton:\033[0m {text}")
+
+  # Add a spaced info string
+  def info(text: str, amount: int) -> str:
+    text = INFO_LEFT + text + INFO_RIGHT
+    text = text.ljust(amount, " ")
+    return INFO_EFFECT + text + INFO_EFFECT_END
 
 #-----------------
 # CONVERTERS
@@ -342,9 +352,9 @@ class Rofi:
       num_lines = ""
 
       if Settings.show_num_lines:
-        num_lines = str(item.num_lines) + ")"
-        num_lines = num_lines.ljust(5, " ")
-        num_lines = f"(Lines: {num_lines}"
+        num_lines = str(item.num_lines)
+        num_lines = f"Lines: {num_lines}"
+        num_lines = Utils.info(num_lines, 13)
 
       mins = round((date_now - item.date) / 60)
       timeago = ""
