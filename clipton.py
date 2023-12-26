@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "8.1"
+VERSION = "8.2"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -114,8 +114,8 @@ class Settings:
     # If enabled, the original text is saved before the converted text
     Settings.save_originals = settings.get("save_originals", True)
 
-    # The percentage width of the Rofi menu
-    Settings.rofi_width = settings.get("rofi_width", 60)
+    # The width of the Rofi menu (Percentage or pixels)
+    Settings.rofi_width = settings.get("rofi_width", "1000px")
 
     # Show the date/timeago in the Rofi menu
     Settings.show_date = settings.get("show_date", True)
@@ -324,7 +324,7 @@ class Rofi:
   @staticmethod
   def style() -> str:
     return f'-me-select-entry "" -me-accept-entry "MousePrimary"' \
-    f' -theme-str "window {{width: {Settings.rofi_width}%;}}"'
+    f' -theme-str "window {{width: {Settings.rofi_width};}}"'
 
   # Get a Rofi prompt
   @staticmethod
