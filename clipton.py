@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "8.2"
+VERSION = "8.3"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -85,7 +85,7 @@ class Settings:
   enable_converters: bool
   reverse_join: bool
   save_originals: bool
-  rofi_width: int
+  rofi_width: str
   show_date: bool
   show_num_lines: bool
 
