@@ -24,7 +24,6 @@ VERSION = "5.0"
 # Place 'clipton.service' inside '/usr/lib/systemd/user/'
 # Start the watcher with 'systemctl --user start clipton'
 # Make it autostart with 'systemctl --user enable clipton'
-# Start the watcher with 'clipton.py watcher'
 # Launch the Rofi menu with 'clipton.py'
 # Add a keyboard shortcut to run 'clipton.py'
 # For example 'Ctrl + Backtick'
