@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "6.4"
+VERSION = "6.5"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -270,7 +270,7 @@ class Utils:
   # Print text
   @staticmethod
   def msg(text: str) -> None:
-    print(text)
+    print(f"\033[92mClipton:\033[0m {text}")
 
 #-----------------
 # CONVERTERS
