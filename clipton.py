@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "6.2"
+VERSION = "6.3"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -611,7 +611,7 @@ class Watcher:
               # Give clipboard operations some time
               time.sleep(0.1)
       except Exception as err:
-        Utils.log(err)
+        Utils.log(str(err))
 
 #-----------------
 # MAIN
