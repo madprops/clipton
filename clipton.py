@@ -541,7 +541,6 @@ class Watcher:
               # Give clipboard operations some time
               time.sleep(0.1)
 
-
 #-----------------
 # MAIN
 #-----------------
