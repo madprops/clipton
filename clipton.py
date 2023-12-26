@@ -8,7 +8,7 @@ VERSION = "6.3"
 
 # This tool helps you go back to previous clipboard text
 # It has 2 functions, the Rofi menu and the clipboard watcher
-# The clipboard watcher is used to save copied text
+# The clipboard watcher is used to save copied text automatically
 # It works by using 'copyevent' to detect clipboard changes
 # The Rofi menu is used to view and select items from the list
 # You can type something to filter the items
