@@ -19,7 +19,7 @@ VERSION = "7.2"
 
 # INSTALLATION
 
-# Install 'xclip' and 'rofi'
+# Install 'xclip' and 'rofi' (Third party programs)
 # Place 'clipton.py' somewhere in your path
 # Compile 'copyevent.c' and place the 'copyevent' in your path
 # Compilation command is commented at the top of the c file
