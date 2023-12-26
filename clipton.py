@@ -8,15 +8,12 @@ VERSION = "4.8"
 
 # It has 2 functions, the Rofi menu and the clipboard watcher
 # The clipboard watcher is used to save copied text
-# It works by using 'copyevent' to detect a clipboard change
+# It works by using 'copyevent' to detect clipboard changes
 # The list is saved in a JSON file in the config directory
 # The items file path is '~/.config/clipton/items.json'
-# The Rofi menu is used to select previous items from the list
+# The Rofi menu is used to view and select items from the list
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
-# You also need to install 'copyevent' for the watcher to work
-# Then start the watcher with 'python clipton.py watcher'
-# To launch the Rofi menu use 'python clipton.py'
 
 # INSTALLATION
 
@@ -27,6 +24,8 @@ VERSION = "4.8"
 # Place 'clipton.service' inside /usr/lib/systemd/user/"
 # Start the watcher: systemctl --user start clipton
 # Make it autostart: systemctl --user enable clipton
+# Start the watcher with 'clipton.py watcher'
+# To launch the Rofi menu use 'clipton.py'
 # Add a keyboard shortcut to run 'clipton.py'
 # For example Ctrl + Backtick
 
