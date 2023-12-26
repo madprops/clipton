@@ -21,7 +21,7 @@ VERSION = "7.2"
 
 # Install 'xclip' and 'rofi' (Third party programs)
 # Place 'clipton.py' somewhere in your path
-# Compile 'copyevent.c' and place the 'copyevent' in your path
+# Compile 'copyevent.c' and place 'copyevent' in your path
 # Compilation command is commented at the top of the c file
 # Place 'clipton.service' inside '/usr/lib/systemd/user/'
 # Start the watcher with 'systemctl --user start clipton'
