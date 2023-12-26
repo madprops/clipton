@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "3.3"
+VERSION = "4.0"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -35,12 +35,19 @@ VERSION = "3.3"
 # Create it and override the settings you want to change:
 
 # {
-# 	"enable_titles": false,
-# 	"converters": {
-# 		"youtube_music": false
-# 	}
+#   "heavy_paste": 3000,
+#   "enable_titles": false
 # }
 
+# CONVERTERS
+
+# Converters are functions that automatically change copied text into something else
+# They are python files that reside in `~/.config/clipton/converters`
+# Check out converters/youtube_music.py for an example
+# The function must be named `convert` and it must return a string
+# If nothing is converted it must return an empty string
+
+import os
 import re
 import sys
 import json
@@ -49,6 +56,7 @@ import shutil
 import time
 import subprocess
 import logging
+import importlib.util
 from pathlib import Path
 from typing import List, Dict, Tuple, Any
 from urllib.request import urlopen
@@ -69,6 +77,9 @@ class Config:
   # Path to the settings file
   settings_path = config_path / Path("settings.json")
 
+  # Converters path
+  converters_path = config_path / Path("converters")
+
   # Create the config directory and files
   @staticmethod
   def setup() -> None:
@@ -77,6 +88,9 @@ class Config:
 
     Config.items_path.touch(exist_ok = True)
     Config.settings_path.touch(exist_ok = True)
+
+    if not Config.converters_path.exists():
+      Config.converters_path.mkdir()
 
 #-----------------
 # Files
@@ -135,17 +149,6 @@ class Settings:
 
     # If enabled the join function will reverse the order of the items
     Settings.reverse_join = settings.get("reverse_join", False)
-
-    # The specific converters to enable
-    Settings.converters = settings.get("converters", {})
-
-    # Convert a youtu.be URL to a youtube URL
-    if not "youtu_be" in Settings.converters:
-      Settings.converters["youtu_be"] = True
-
-    # Convert a music.youtube URL to a youtube URL
-    if not "youtube_music" in Settings.converters:
-      Settings.converters["youtube_music"] = True
 
 #-----------------
 # UTILS
@@ -250,53 +253,23 @@ class Utils:
 # Any number of these can be added and used if enabled in the settings
 
 class Converters:
-  # Try to convert text and add it to the list
   @staticmethod
   def convert(text: str) -> str:
-    # Strings with spaces are ignored
-    if Utils.space(text): return ""
+    files = os.listdir(Config.converters_path)
+    py_files = [file for file in files if file.endswith(".py")]
 
-    new_text = ""
+    for file in py_files:
+      module_name = os.path.splitext(file)[0]
+      module_path = Path(Config.converters_path / file)
+      spec = importlib.util.spec_from_file_location(module_name, module_path)
+      module = importlib.util.module_from_spec(spec)
+      spec.loader.exec_module(module)
 
-    if (not new_text) and Settings.converters["youtu_be"]:
-      new_text = Converters.youtu_be(text)
+      if hasattr(module, "convert") and callable(module.convert):
+        new_text = module.convert(text)
 
-    if (not new_text) and Settings.converters["youtube_music"]:
-      new_text = Converters.youtube_music(text)
-
-    return new_text
-
-  # youtu.be -> youtube
-  @staticmethod
-  def youtu_be(text: str) -> str:
-    regex = re.compile(r'https://youtu.be/([\w-]+)(\?t=([\d]+))?')
-    match = regex.search(text)
-
-    if match and match.group(1):
-      video_id = match.group(1)
-      timestamp = match.group(2)
-
-      if timestamp:
-        return f'https://www.youtube.com/watch?v={video_id}&t={timestamp}s'
-      else:
-        return f'https://www.youtube.com/watch?v={video_id}'
-
-    return ""
-
-  # music.youtube -> youtube
-  @staticmethod
-  def youtube_music(text: str) -> str:
-    if Utils.space(text): return ""
-    regex = re.compile(r"https://music\.youtube\.com/(watch\?v=([\w-]+)|playlist\?list=([\w-]+))")
-    match = regex.search(text)
-
-    if match and match.group(2):
-      video_id = match.group(2)
-      return f'https://www.youtube.com/watch?v={video_id}'
-
-    if match and match.group(3):
-      playlist_id = match.group(3)
-      return f'https://www.youtube.com/playlist?list={playlist_id}'
+        if new_text:
+          return new_text
 
     return ""
 
@@ -543,7 +516,6 @@ class Watcher:
     print("Watcher Started")
 
     while True:
-      try:
         iterations += 1
 
         if iterations > max_iterations:
@@ -565,8 +537,7 @@ class Watcher:
 
               # Give clipboard operations some time
               time.sleep(0.1)
-      except Exception as err:
-        Utils.log(str(err))
+
 
 #-----------------
 # MAIN
