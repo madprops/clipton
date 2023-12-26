@@ -42,9 +42,9 @@ VERSION = "4.0"
 # CONVERTERS
 
 # Converters are functions that automatically change copied text into something else
-# They are python files that reside in `~/.config/clipton/converters`
+# They are python files that reside in '~/.config/clipton/converters'
 # Check out converters/youtube_music.py for an example
-# The function must be named `convert` and it must return a string
+# The function must be named 'convert(text: str) -> str'
 # If nothing is converted it must return an empty string
 
 import os
