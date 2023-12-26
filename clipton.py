@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "6.3"
+VERSION = "6.4"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -250,9 +250,9 @@ class Utils:
   def get_title(text: str) -> str:
     if text.startswith("https://") and not Utils.space(text):
       if not Utils.get_url_type(text) == "text/html":
-        print("Non HTML URL")
+        Utils.msg("Non HTML URL")
       else:
-        print("Getting Title")
+        Utils.msg("Getting Title")
         html = str(urlopen(text).read().decode("utf-8"))
         parser = Utils.TitleParser()
         parser.feed(html)
@@ -266,6 +266,11 @@ class Utils:
     proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, \
     stdin = subprocess.PIPE, shell = True, text = True)
     proc.communicate(text, timeout = 3)
+
+  # Print text
+  @staticmethod
+  def msg(text: str) -> None:
+    print(text)
 
 #-----------------
 # CONVERTERS
@@ -537,7 +542,7 @@ class Items:
       converted = Converters.convert(text)
 
       if converted:
-        print("Text Converted")
+        Utils.msg("Text Converted")
 
         if Settings.save_originals:
           Items.add(ORIGINAL + text)
@@ -580,12 +585,12 @@ class Watcher:
   @staticmethod
   def start() -> None:
     if shutil.which("copyevent") is None:
-      print("The watcher needs 'copyevent' to be installed.")
+      Utils.msg("The watcher needs 'copyevent' to be installed.")
       exit(1)
 
     herepath = Path(__file__).parent.resolve()
     iterations = 0
-    print("Watcher Started")
+    Utils.msg("Watcher Started")
 
     while True:
       try:
