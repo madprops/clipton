@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "5.3"
+VERSION = "5.4"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -78,6 +78,8 @@ class Settings:
   reverse_join: bool
   save_originals: bool
   rofi_width: int
+  show_date: bool
+  show_num_lines: bool
 
   # Read the settings file
   # Fill the settings class with the values
@@ -106,6 +108,12 @@ class Settings:
 
     # The percentage width of the Rofi menu
     Settings.rofi_width = settings.get("rofi_width", 66)
+
+    # Show the date/timeago in the Rofi menu
+    Settings.show_date = settings.get("show_date", True)
+
+    # Show the number of lines in the Rofi menu
+    Settings.show_num_lines = settings.get("show_num_lines", True)
 
 #-----------------
 # CONFIG
@@ -298,7 +306,7 @@ class Converters:
 class Rofi:
   # Get the style for the Rofi menu
   @staticmethod
-  def style():
+  def style() -> str:
     return f'-me-select-entry "" -me-accept-entry "MousePrimary"' \
     f' -theme-str "window {{width: {Settings.rofi_width}%;}}"'
 
@@ -321,10 +329,19 @@ class Rofi:
       line = line.replace("\n", asterisk)
       line = re.sub(" +", " ", line)
       line = re.sub("</span> +", "</span>", line)
-      num_lines = str(item.num_lines) + ")"
-      num_lines = num_lines.ljust(5, " ")
+      num_lines = ""
+
+      if Settings.show_num_lines:
+        num_lines = str(item.num_lines) + ")"
+        num_lines = num_lines.ljust(5, " ")
+        num_lines = f"(Lines: {num_lines}"
+
       mins = round((date_now - item.date) / 60)
-      timeago = Utils.get_timeago(mins)
+      timeago = ""
+
+      if Settings.show_date:
+        timeago = Utils.get_timeago(mins)
+
       title = ""
 
       if item.title:
@@ -335,7 +352,17 @@ class Rofi:
           title = html.escape(title)
           line += f" ({title})"
 
-      opts.append(f"<span>{timeago}(Lines: {num_lines}</span>{line}")
+      opt_str = "<span>"
+
+      if timeago:
+        opt_str += timeago
+
+      if num_lines:
+        opt_str += num_lines
+
+      opt_str += "</span>"
+      opt_str += line
+      opts.append(opt_str)
 
     num_items = len(Items.items)
 
