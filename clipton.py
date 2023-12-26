@@ -254,6 +254,7 @@ class Utils:
 
 class Converters:
   @staticmethod
+  # Load all the converters and run them
   def convert(text: str) -> str:
     files = os.listdir(Config.converters_path)
     py_files = [file for file in files if file.endswith(".py")]
