@@ -12,7 +12,7 @@ def convert(text: str) -> str:
 			arg = match.group("video_id")
 			return f"https://www.youtube.com/watch?v={arg}"
 
-	elif "playlist?list" in text:
+	if "playlist?list" in text:
 		regex = re.compile("^https:\/\/music\.youtube\.com\/playlist\?list=(?P<list_id>[\w-]+)[^ \n]*$")
 		match = regex.search(text)
 
