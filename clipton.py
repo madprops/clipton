@@ -105,36 +105,34 @@ class Settings:
   # Fill the settings class with the values
   @staticmethod
   def read() -> None:
-    with open(Config.settings_path, "rb") as file:
-      # Load the TOML file
-      data = tomllib.load(file)
+    data = Files.read_toml(Config.settings_path)
 
-      # How many items to store in the file
-      Settings.max_items = data.get("max_items", 2000)
+    # How many items to store in the file
+    Settings.max_items = data.get("max_items", 2000)
 
-      # Don't save text if the character length exceeds this
-      Settings.heavy_paste = data.get("heavy_paste", 5000)
+    # Don't save text if the character length exceeds this
+    Settings.heavy_paste = data.get("heavy_paste", 5000)
 
-      # If enabled, the URL titles are fetched by parsing the HTML
-      Settings.enable_titles = data.get("enable_titles", True)
+    # If enabled, the URL titles are fetched by parsing the HTML
+    Settings.enable_titles = data.get("enable_titles", True)
 
-      # If enabled, the text can be converted
-      Settings.enable_converters = data.get("enable_converters", True)
+    # If enabled, the text can be converted
+    Settings.enable_converters = data.get("enable_converters", True)
 
-      # If enabled, the join function will reverse the order of the items
-      Settings.reverse_join = data.get("reverse_join", False)
+    # If enabled, the join function will reverse the order of the items
+    Settings.reverse_join = data.get("reverse_join", False)
 
-      # If enabled, the original text is saved before the converted text
-      Settings.save_originals = data.get("save_originals", True)
+    # If enabled, the original text is saved before the converted text
+    Settings.save_originals = data.get("save_originals", True)
 
-      # Show the date/timeago in the Rofi menu
-      Settings.show_date = data.get("show_date", True)
+    # Show the date/timeago in the Rofi menu
+    Settings.show_date = data.get("show_date", True)
 
-      # Show the number of lines in the Rofi menu
-      Settings.show_num_lines = data.get("show_num_lines", True)
+    # Show the number of lines in the Rofi menu
+    Settings.show_num_lines = data.get("show_num_lines", True)
 
-      # The width of the Rofi menu (Percentage or pixels)
-      Settings.rofi_width = data.get("rofi_width", "1080px")
+    # The width of the Rofi menu (Percentage or pixels)
+    Settings.rofi_width = data.get("rofi_width", "1080px")
 
 #-----------------
 # CONFIG
@@ -188,6 +186,12 @@ class Files:
     file = open(path, "w")
     file.write(content)
     file.close()
+
+  # Read a TOML file and return the dictionary
+  @staticmethod
+  def read_toml(path: Path) -> Dict[str, Any]:
+    with open(path, "rb") as file:
+      return tomllib.load(file)
 
 #-----------------
 # UTILS
