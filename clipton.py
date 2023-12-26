@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "5.5"
+VERSION = "6.0"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -583,6 +583,7 @@ class Watcher:
     print("Watcher Started")
 
     while True:
+      try:
         iterations += 1
 
         if iterations > max_iterations:
@@ -604,6 +605,8 @@ class Watcher:
 
               # Give clipboard operations some time
               time.sleep(0.1)
+      except Exception as err:
+        Utils.log(err)
 
 #-----------------
 # MAIN
