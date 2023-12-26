@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "4.5"
+VERSION = "4.6"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -489,7 +489,9 @@ class Items:
   # Insert an item into the item list
   @staticmethod
   def insert(text: str) -> None:
-    if Settings.enable_converters:
+    original = text.startswith("Original: ")
+
+    if Settings.enable_converters and not original:
       converted = Converters.convert(text)
 
       if converted:
