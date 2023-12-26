@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "8.4"
+VERSION = "8.6"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -44,6 +44,20 @@ VERSION = "8.4"
 #   "enable_titles": false
 # }
 
+# Here are all the default settings:
+
+# {
+#   "max_items": 2000,
+#   "heavy_paste": 5000,
+#   "enable_titles": true,
+#   "enable_converters": true,
+#   "reverse_join": true,
+#   "save_originals": true,
+#   "show_date": true,
+#   "show_num_lines": true,
+#   "rofi_width": "1080px"
+# }
+
 # CONVERTERS
 
 # Converters are functions that automatically change copied text into something else
@@ -86,9 +100,9 @@ class Settings:
   enable_converters: bool
   reverse_join: bool
   save_originals: bool
-  rofi_width: str
   show_date: bool
   show_num_lines: bool
+  rofi_width: str
 
   # Read the settings file
   # Fill the settings class with the values
@@ -115,14 +129,14 @@ class Settings:
     # If enabled, the original text is saved before the converted text
     Settings.save_originals = settings.get("save_originals", True)
 
-    # The width of the Rofi menu (Percentage or pixels)
-    Settings.rofi_width = settings.get("rofi_width", "1080px")
-
     # Show the date/timeago in the Rofi menu
     Settings.show_date = settings.get("show_date", True)
 
     # Show the number of lines in the Rofi menu
     Settings.show_num_lines = settings.get("show_num_lines", True)
+
+    # The width of the Rofi menu (Percentage or pixels)
+    Settings.rofi_width = settings.get("rofi_width", "1080px")
 
 #-----------------
 # CONFIG
