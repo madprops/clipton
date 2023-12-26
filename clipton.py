@@ -46,7 +46,7 @@ VERSION = "4.2"
 # Check out converters/youtube_music.py for an example
 # The function must be named 'convert(text: str) -> str'
 # If nothing is converted it must return an empty string
-# There's a script to copy all files in converters/ to the config directory
+# There's a script to copy all converters to the config directory
 
 import os
 import re
