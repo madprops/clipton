@@ -47,6 +47,7 @@ VERSION = "4.8"
 # The functions must be named 'convert(text: str) -> str'
 # If nothing is converted it must return an empty string
 # There's a script to copy all converters to the config directory
+# Add or remove the converter files you want to enable/disable
 
 import os
 import re
