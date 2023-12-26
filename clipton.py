@@ -16,6 +16,7 @@ VERSION = "8.3"
 # Then you can paste it anywhere you want
 # It can delete indidiual items or all items
 # It has some extra features like joining items
+# It can also convert text automatically
 
 # INSTALLATION
 
