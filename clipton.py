@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "7.3"
+VERSION = "7.4"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -281,6 +281,7 @@ class Utils:
     print(f"\033[92mClipton:\033[0m {text}")
 
   # Add a spaced info string
+  @staticmethod
   def info(text: str, amount: int) -> str:
     text = INFO_LEFT + text + INFO_RIGHT
     text = text.ljust(amount, " ")
