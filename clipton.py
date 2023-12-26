@@ -39,8 +39,9 @@ VERSION = "9.0"
 # It's empty by default and it's not required to be edited
 # (Optional) Override the settings you want to change:
 
-# heavy_paste = 3000
+# heavy_paste = 1000
 # enable_titles = false
+# rofi_width = "50%"
 
 # Here are all the default settings:
 
