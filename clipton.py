@@ -54,7 +54,7 @@ from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 
-VERSION = "2.2"
+VERSION = "3.0"
 
 #-----------------
 # CONFIG
