@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+VERSION = "3.2"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -53,8 +54,6 @@ from typing import List, Dict, Tuple, Any
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
-
-VERSION = "3.2"
 
 #-----------------
 # CONFIG
