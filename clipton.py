@@ -11,6 +11,7 @@ VERSION = "6.2"
 # The clipboard watcher is used to save copied text
 # It works by using 'copyevent' to detect clipboard changes
 # The Rofi menu is used to view and select items from the list
+# You can type something to filter the items
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
 
