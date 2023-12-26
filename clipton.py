@@ -523,6 +523,8 @@ class Items:
     Items.write()
 
   # Insert an item into the item list
+  # Try to convert the text
+  # Get the title afterwards
   @staticmethod
   def insert(text: str) -> None:
     original = text.startswith(ORIGINAL)
