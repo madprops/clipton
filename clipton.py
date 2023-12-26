@@ -18,18 +18,6 @@
 # Then start the watcher with 'python clipton.py watcher'
 # To launch the Rofi menu use 'python clipton.py'
 
-# SETTINGS
-
-# The settings file path is '~/.config/clipton/settings.json'
-# Just override the settings you want to change:
-
-# {
-# 	"enable_titles": false,
-# 	"converters": {
-# 		"youtube_music": false
-# 	}
-# }
-
 # INSTALLATION
 
 # Place 'clipton.py' somewhere in your path
@@ -39,6 +27,18 @@
 # Make it autostart: systemctl --user enable clipton
 # Add a keyboard shortcut to run 'clipton.py'
 # For example Ctrl + Backtick
+
+# SETTINGS
+
+# The settings file path is '~/.config/clipton/settings.json'
+# Create it and override the settings you want to change:
+
+# {
+# 	"enable_titles": false,
+# 	"converters": {
+# 		"youtube_music": false
+# 	}
+# }
 
 import re
 import sys
