@@ -9,11 +9,11 @@ VERSION = "6.2"
 # It has 2 functions, the Rofi menu and the clipboard watcher
 # The clipboard watcher is used to save copied text
 # It works by using 'copyevent' to detect clipboard changes
-# The list is saved in a JSON file in the config directory
-# The items file path is '~/.config/clipton/items.json'
 # The Rofi menu is used to view and select items from the list
 # When an item is selected it is copied to the clipboard
 # Then you can paste it anywhere you want
+# The config path is '~/.config/clipton'
+# The list, settings, and converters are placed here
 
 # INSTALLATION
 
