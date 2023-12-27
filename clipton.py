@@ -328,8 +328,7 @@ class Rofi:
       num_lines = ""
 
       if Settings.show_num_lines:
-        num_lines = str(item.num_lines)
-        num_lines = Utils.fill_num(num_lines)
+        num_lines = Utils.fill_num(item.num_lines)
         num_lines = f"Ln: {num_lines}"
         num_lines = Utils.info(num_lines, 9)
 
