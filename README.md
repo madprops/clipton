@@ -4,15 +4,11 @@
 
 ## About
 
-Language: `Python` with a little bit of `C`.
-
 Clipton helps you go back to previous clipboard text.
 
 It has 2 modes: the [Rofi](https://github.com/davatorium/rofi) menu, and the clipboard watcher.
 
 The clipboard watcher is used to save copied text automatically.
-
-It works by using `copyevent` to detect clipboard changes.
 
 The [Rofi](https://github.com/davatorium/rofi) menu is used to view and select saved items.
 
@@ -42,12 +38,6 @@ Clone this repo somewhere:
 `git clone --depth=1 https://github.com/madprops/clipton`
 
 Place [clipton.py](clipton.py) in `/usr/bin/clipton`.
-
-Compile [copyevent.c](copyevent.c) and place it in `/usr/bin/copyevent`.
-
-The compilation command is commented at the top of the `C` file.
-
-All `copyevent` does is exit when it detects a clipboard copy event.
 
 Place [clipton.service](clipton.service) inside `/usr/lib/systemd/user/`.
 

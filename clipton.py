@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "14"
+VERSION = "15"
 # https://github.com/madprops/clipton
 
 import os
@@ -234,6 +234,16 @@ class Utils:
   @staticmethod
   def copy_text(text: str) -> None:
     Utils.run("xclip -sel clip -f", text, timeout = CMD_TIMEOUT)
+
+  # Read the clipboard
+  @staticmethod
+  def read_clipboard() -> str:
+    ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
+
+    if ans["code"] == 0:
+      return ans["text"]
+
+    return ""
 
   # Print text
   @staticmethod
@@ -583,34 +593,31 @@ class Items:
 #-----------------
 
 class Watcher:
+  last_clip: str
+  sleep_time = 1
+
   # Start the clipboard watcher
+  # This is a loop that checks the clipboard every second
+  # If it detects a clipboard change it adds the text to the item list
   @staticmethod
   def start() -> None:
-    if shutil.which("copyevent") is None:
-      Utils.msg("The watcher needs 'copyevent' to be installed.")
-      exit(1)
-
-    herepath = Path(__file__).parent.resolve()
     Utils.msg("Watcher Started")
+    Watcher.last_clip = Utils.read_clipboard()
 
     while True:
-      ans = Utils.run("copyevent -s clipboard")
+      clip = Utils.read_clipboard()
 
-      if ans["code"] == 0:
-        ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
+      if clip and (clip != Watcher.last_clip):
+        Watcher.last_clip = clip
 
-        if ans["code"] == 0:
-          clip = ans["text"]
+        if clip.startswith(ORIGINAL):
+          continue
 
-          if clip:
-            if clip.startswith(ORIGINAL):
-              continue
+        Items.read()
+        Items.insert(clip)
 
-            Items.read()
-            Items.insert(clip)
-
-            # Give clipboard operations some time
-            time.sleep(0.1)
+      # Very important
+      time.sleep(Watcher.sleep_time)
 
 #-----------------
 # MAIN
