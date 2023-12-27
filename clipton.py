@@ -284,7 +284,7 @@ class Utils:
   @staticmethod
   def need(name: str) -> None:
     if shutil.which(name) is None:
-      Utils.msg(f"The watcher needs '{name}' to be installed.")
+      Utils.msg(f"'{name}' must be installed.")
       exit(1)
 
 #-----------------
