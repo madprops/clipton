@@ -36,8 +36,8 @@ VERSION = "9.2"
 # SETTINGS
 
 # The settings file path is '~/.config/clipton/settings.toml'
-# It's empty by default and it's not required to be edited
-# (Optional) Override the settings you want to change:
+# It uses the TOML format and is not required to be edited
+# Override the settings you want to change by adding them:
 
 # max_items = 250
 # enable_titles = false
