@@ -77,7 +77,7 @@ rofi_width = "50%"
 
 ## Converters
 
-Converters are functions that automatically change copied text into something else.
+Converters are functions that automatically change copied text to something else.
 
 They are python files that reside in `~/.config/clipton/converters`.
 
