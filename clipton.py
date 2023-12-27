@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "9.9"
+VERSION = "10.0"
 # https://github.com/madprops/clipton
 
 import os
