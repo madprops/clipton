@@ -601,8 +601,12 @@ class Watcher:
   # If it detects a clipboard change it adds the text to the item list
   @staticmethod
   def start() -> None:
-    Utils.msg("Watcher Started")
+    if shutil.which("xclip") is None:
+      Utils.msg("The watcher needs 'xclip' to be installed.")
+      exit(1)
+
     Watcher.last_clip = Utils.read_clipboard()
+    Utils.msg("Watcher Started")
 
     while True:
       clip = Utils.read_clipboard()
