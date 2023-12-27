@@ -31,7 +31,7 @@ It can also convert text automatically.
 Install [xclip](https://archlinux.org/packages/extra/x86_64/xclip/)
 and [rofi](https://archlinux.org/packages/extra/x86_64/rofi/) (Third-party programs):
 
-`sudo pacman -R xclip rofi`
+`sudo pacman -S xclip rofi`
 
 Clone this repo somewhere:
 
