@@ -39,7 +39,7 @@ Clone this repo somewhere:
 
 `git clone --depth=1 https://github.com/madprops/clipton`
 
-Place [clipton.py](clipton.py) somewhere in your path like `/usr/bin/`.
+Place [clipton.py](clipton.py) somewhere in your path like `/usr/bin/clipton`.
 
 Compile [copyevent.c](copyevent.c) and place `copyevent` in your path.
 
@@ -55,11 +55,11 @@ Restart it after an update with `systemctl --user restart clipton`.
 
 Stop it (for some reason) with `systemctl --user stop clipton`.
 
-If you want to start the watcher manually use `clipton.py watcher`
+If you want to start the watcher manually use `clipton watcher`
 
-Launch the [Rofi](https://github.com/davatorium/rofi) menu with `clipton.py`.
+Launch the [Rofi](https://github.com/davatorium/rofi) menu with `clipton`.
 
-Add a keyboard shortcut (somehow) to run `clipton.py`.
+Add a keyboard shortcut (somehow) to run `clipton`.
 
 For example bind it to `Ctrl + Backtick`.
 
