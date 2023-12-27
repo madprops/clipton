@@ -208,14 +208,14 @@ class Utils:
   def get_timeago(mins: int) -> str:
     if mins >= 1440:
       d = round(mins / 1440)
-      timeago = f"{Utils.fillnum(d)} days"
+      timeago = f"{Utils.fillnum(d)} day"
     elif mins >= 60:
       d = round(mins / 60)
-      timeago = f"{Utils.fillnum(d)} hours"
+      timeago = f"{Utils.fillnum(d)} hrs"
     elif mins >= 0:
-      timeago = f"{Utils.fillnum(mins)} mins"
+      timeago = f"{Utils.fillnum(mins)} min"
 
-    return Utils.info(timeago, 10)
+    return Utils.info(timeago, 9)
 
   # Get the content type of a URL
   @staticmethod
