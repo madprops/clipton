@@ -37,23 +37,12 @@ VERSION = "9.2"
 
 # The settings file path is '~/.config/clipton/settings.toml'
 # It uses the TOML format and is not required to be edited
+# Check the 'Settings' class for the default values
 # Override the settings you want to change by adding them:
 
 # max_items = 250
 # enable_titles = false
 # rofi_width = "50%"
-
-# Here are all the default settings:
-
-# max_items = 1000
-# heavy_paste = 2000
-# enable_titles = true
-# enable_converters = true
-# save_originals = true
-# show_date = true
-# show_num_lines = true
-# reverse_join = false
-# rofi_width = "1080px"
 
 # CONVERTERS
 
