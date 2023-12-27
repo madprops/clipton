@@ -83,7 +83,7 @@ If nothing is converted it must return an empty string.
 
 Add or remove the converter files you want to enable/disable.
 
-There's a script to copy all converters to the config directory.
+There's a [script](copy_converters.sh) to copy all converters to the config directory.
 
 If the setting `save_originals` is enabled, the original text is also saved.
 
