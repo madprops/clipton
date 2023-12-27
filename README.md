@@ -58,7 +58,7 @@ The settings file path is `~/.config/clipton/settings.toml`.
 
 It uses the TOML format and is not required to be edited.
 
-Check the `Settings` class for the default values.
+Check the `Settings` class in [clipton.py](clipton.py) for the default values.
 
 Override the settings you want to change by adding them:
 
