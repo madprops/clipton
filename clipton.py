@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "21"
+VERSION = "22"
 # https://github.com/madprops/clipton
 
 import os
@@ -278,7 +278,14 @@ class Utils:
     else:
       stdout, stderror = proc.communicate(text)
 
-    return CmdOutput(text=stdout, code=proc.returncode)
+    code = proc.returncode
+
+    if code == 1:
+      text = ""
+    else:
+      text = stdout.strip()
+
+    return CmdOutput(text=text, code=code)
 
   # Check if a program is installed
   @staticmethod
