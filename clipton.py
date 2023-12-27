@@ -32,7 +32,7 @@ VERSION = "9.6"
 # Add a keyboard shortcut (somehow) to run 'clipton.py'
 # For example bind it to 'Ctrl + Backtick'
 # The config path is '~/.config/clipton'
-# The items, settings, and converters are placed here
+# The items, settings, and converters are placed there
 
 # SETTINGS
 
