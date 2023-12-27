@@ -1,6 +1,6 @@
 ## Clipton (Clipboard Manager)
 
-<img src="clipton.jpg" width="420">
+<img src="clipton.jpg" width="450">
 
 ## About
 
