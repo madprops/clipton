@@ -600,8 +600,8 @@ class Watcher:
   sleep_time = 1
 
   # Start the clipboard watcher
-  # This is a loop that checks the clipboard every second
-  # If it detects a clipboard change it adds the text to the item list
+  # This is a loop that checks the clipboard periodically
+  # It detects clipboard change and adds to the item list
   @staticmethod
   def start() -> None:
     if shutil.which("xclip") is None:
