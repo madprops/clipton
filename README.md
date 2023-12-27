@@ -47,6 +47,8 @@ Compile [copyevent.c](copyevent.c) and place it in `/usr/bin/copyevent`.
 
 The compilation command is commented at the top of the `C` file.
 
+All `copyevent` does is exit when it detects a clipboard copy event.
+
 Place [clipton.service](clipton.service) inside `/usr/lib/systemd/user/`.
 
 Start the watcher with `systemctl --user start clipton`.
