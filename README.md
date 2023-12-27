@@ -53,7 +53,7 @@ Make it autostart with `systemctl --user enable clipton`.
 
 Restart it after an update with `systemctl --user restart clipton`.
 
-Stop it (For some reason) with `systemctl --user stop clipton`.
+Stop it (for some reason) with `systemctl --user stop clipton`.
 
 If you want to start the watcher manually use `clipton.py watcher`
 
