@@ -67,7 +67,7 @@ class Settings:
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
 
-    # The width of the Rofi menu (Percentage or pixels)
+    # The width of the Rofi menu (percentage or pixels)
     Settings.rofi_width = data.get("rofi_width", "1080px")
 
 #-----------------
