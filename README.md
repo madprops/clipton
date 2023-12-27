@@ -6,7 +6,7 @@
 
 Clipton helps you go back to previous clipboard text.
 
-It has 2 modes, the [Rofi](https://github.com/davatorium/rofi) menu and the clipboard watcher.
+It has 2 modes: the [Rofi](https://github.com/davatorium/rofi) menu, and the clipboard watcher.
 
 The clipboard watcher is used to save copied text automatically.
 
