@@ -1,5 +1,6 @@
 import re
 
+# Change a YouTube Music URL to a YouTube URL
 def convert(text: str) -> str:
 	if not text.startswith("https://music.youtube.com"):
 		return ""
