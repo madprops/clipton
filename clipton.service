@@ -1,5 +1,5 @@
 [Unit]
-Description=Daemon for clipton (clipboard manager)
+Description=Daemon for Clipton (clipboard manager)
 
 [Service]
 Type=simple
