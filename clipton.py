@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "18"
+VERSION = "20"
 # https://github.com/madprops/clipton
 
 import os
@@ -282,7 +282,7 @@ class Utils:
 
   # Check if a program is installed
   @staticmethod
-  def check_dep(name: str) -> None:
+  def need(name: str) -> None:
     if shutil.which(name) is None:
       Utils.msg(f"The watcher needs '{name}' to be installed.")
       exit(1)
@@ -622,7 +622,7 @@ class Watcher:
   # It detects clipboard changes and adds to the item list
   @staticmethod
   def start() -> None:
-    Utils.check_dep("xclip")
+    Utils.need("xclip")
     Watcher.last_clip = Utils.read_clipboard()
     Utils.msg("Watcher Started")
 
@@ -661,7 +661,7 @@ def main() -> None:
       exit(0)
 
   elif mode == "show":
-    Utils.check_dep("rofi")
+    Utils.need("rofi")
     Items.read()
     Rofi.show()
 
