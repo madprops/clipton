@@ -39,9 +39,9 @@ Clone this repo somewhere:
 
 `git clone --depth=1 https://github.com/madprops/clipton`
 
-Place [clipton.py](clipton.py) somewhere in your path like `/usr/bin/clipton`.
+Place [clipton.py](clipton.py) in `/usr/bin/clipton`.
 
-Compile [copyevent.c](copyevent.c) and place `copyevent` in your path.
+Compile [copyevent.c](copyevent.c) and place it in `/usr/bin/copyevent`.
 
 The compilation command is commented at the top of the `c` file.
 
