@@ -1,6 +1,6 @@
 import re
 
-# Change a youtu.be URL to a YouTube URL
+# Convert a youtu.be URL to a YouTube URL
 def convert(text: str) -> str:
 	if not text.startswith("https://youtu.be"):
 		return ""
