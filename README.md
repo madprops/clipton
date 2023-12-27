@@ -6,13 +6,13 @@
 
 Clipton helps you go back to previous clipboard text.
 
-It has 2 functions, the Rofi menu and the clipboard watcher.
+It has 2 functions, the [Rofi](https://github.com/davatorium/rofi) menu and the clipboard watcher.
 
 The clipboard watcher is used to save copied text automatically.
 
 It works by using `copyevent` to detect clipboard changes.
 
-The Rofi menu is used to view and select saved items.
+The [Rofi](https://github.com/davatorium/rofi) menu is used to view and select saved items.
 
 You can type something to filter the items.
 
@@ -42,7 +42,7 @@ Start the watcher with `systemctl --user start clipton`.
 
 Make it autostart with `systemctl --user enable clipton`.
 
-Launch the Rofi menu with `clipton.py`.
+Launch the [Rofi](https://github.com/davatorium/rofi) menu with `clipton.py`.
 
 Add a keyboard shortcut (somehow) to run `clipton.py`.
 
