@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "16"
+VERSION = "17"
 # https://github.com/madprops/clipton
 
 import os
@@ -14,7 +14,7 @@ import subprocess
 import tomllib
 import importlib.util
 from pathlib import Path
-from typing import List, Dict, Tuple, Any, Callable
+from typing import List, Dict, Tuple, Any, Callable, Union
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
@@ -159,6 +159,15 @@ class Files:
 # UTILS
 #-----------------
 
+# Return data from commands
+class CmdOutput:
+  text: str
+  code: int
+
+  def __init__(self, text: str, code: int) -> None:
+    self.text = text
+    self.code = code
+
 class Utils:
   # HTML parser to get the title from a URL
   class TitleParser(HTMLParser):
@@ -197,9 +206,11 @@ class Utils:
     if mins >= 1440:
       d = round(mins / 1440)
       timeago = f"{Utils.fill_num(d)} day"
+
     elif mins >= 60:
       d = round(mins / 60)
       timeago = f"{Utils.fill_num(d)} hrs"
+
     elif mins >= 0:
       timeago = f"{Utils.fill_num(mins)} min"
 
@@ -240,8 +251,8 @@ class Utils:
   def read_clipboard() -> str:
     ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
 
-    if ans["code"] == 0:
-      return ans["text"]
+    if ans.code == 0:
+      return str(ans.text)
 
     return ""
 
@@ -258,7 +269,7 @@ class Utils:
 
   # Run a command
   @staticmethod
-  def run(cmd: str, text: str = "", timeout: int = 0) -> Dict[str, Any]:
+  def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
     proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, \
     stdin = subprocess.PIPE, shell = True, text = True)
 
@@ -267,10 +278,7 @@ class Utils:
     else:
       ans = proc.communicate(text)
 
-    return {
-      "text": ans[0].strip(),
-      "code": proc.returncode
-    }
+    return CmdOutput(text = ans[0].strip(), code = proc.returncode)
 
   # Check if a program is installed
   @staticmethod
@@ -388,18 +396,21 @@ class Rofi:
     prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
     ans = Utils.run(prompt, "\n".join(opts))
 
-    if ans["text"] != "":
-      code = ans["code"]
-      index = int(ans["text"])
+    if ans.text != "":
+      code = ans.code
+      index = int(ans.text)
 
       if code == 10:
         Items.delete(index)
         Rofi.show(index)
+
       elif code >= 11 and code <= 18:
         Items.join(index, code - 9)
         Rofi.show()
+
       elif code == 19:
         Items.confirm_delete()
+
       else:
         Items.select(index)
 
@@ -483,7 +494,7 @@ class Items:
     prompt = f"{prompt} {Rofi.style()} -selected-row 0"
     ans = Utils.run(prompt, "\n".join(opts))
 
-    if ans["text"] == "Yes":
+    if ans.text == "Yes":
       Items.delete_all()
 
   # Join 2 or more items into one
