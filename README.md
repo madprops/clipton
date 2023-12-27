@@ -81,7 +81,7 @@ Converters are functions that automatically change copied text into something el
 
 They are python files that reside in `~/.config/clipton/converters`.
 
-Check out [converters/youtube_music.py](converters/youtube_music.py) for an example.
+Check out [converters/youtu_be.py](converters/youtu_be.py) for an example.
 
 The function that is called is `convert(text: str) -> str`.
 
