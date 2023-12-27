@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "9.3"
+VERSION = "9.6"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -75,6 +75,7 @@ from html.parser import HTMLParser
 from datetime import datetime
 
 ORIGINAL = "Original :: "
+CMD_TIMEOUT = 3
 
 #-----------------
 # SETTINGS
@@ -300,9 +301,7 @@ class Utils:
   # Copy text to the clipboard
   @staticmethod
   def copy_text(text: str) -> None:
-    proc = subprocess.Popen("xclip -sel clip -f", stdout = subprocess.PIPE, \
-    stdin = subprocess.PIPE, shell = True, text = True)
-    proc.communicate(text, timeout = 3)
+    Utils.run("xclip -sel clip -f", text, timeout = CMD_TIMEOUT)
 
   # Print text
   @staticmethod
@@ -314,6 +313,22 @@ class Utils:
   def info(text: str, amount: int) -> str:
     text = text.ljust(amount, " ")
     return f"<b>{text}</b>"
+
+  # Run a command
+  @staticmethod
+  def run(cmd: str, text: str = "", timeout: int = 0) -> Dict[str, Any]:
+    proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, \
+    stdin = subprocess.PIPE, shell = True, text = True)
+
+    if timeout > 0:
+      ans = proc.communicate(text, timeout = timeout)
+    else:
+      ans = proc.communicate(text)
+
+    return {
+      "text": ans[0].strip(),
+      "code": proc.returncode
+    }
 
 #-----------------
 # CONVERTERS
@@ -421,13 +436,12 @@ class Rofi:
       num = f"{num_items} Items"
 
     prompt = Rofi.prompt(f"Clipton {VERSION} | {num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
-    proc = subprocess.Popen(f"{prompt} -format i {Rofi.style()} -selected-row {selected}", \
-    stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
-    ans = proc.communicate("\n".join(opts))[0].strip()
+    prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
+    ans = Utils.run(prompt, "\n".join(opts))
 
-    if ans != "":
-      code = proc.returncode
-      index = int(ans)
+    if ans["text"] != "":
+      code = ans["code"]
+      index = int(ans["text"])
 
       if code == 10:
         Items.delete(index)
@@ -517,11 +531,10 @@ class Items:
   def confirm_delete() -> None:
     opts = ["No", "Yes"]
     prompt = Rofi.prompt("Delete all items?")
-    proc = subprocess.Popen(f"{prompt} {Rofi.style()} -selected-row 0", \
-    stdout = subprocess.PIPE, stdin = subprocess.PIPE, shell = True, text = True)
-    ans = proc.communicate("\n".join(opts))[0].strip()
+    prompt = f"{prompt} {Rofi.style()} -selected-row 0"
+    ans = Utils.run(prompt, "\n".join(opts))
 
-    if ans == "Yes":
+    if ans["text"] == "Yes":
       Items.delete_all()
 
   # Join 2 or more items into one
@@ -659,13 +672,13 @@ class Watcher:
           Utils.log("Too many iterations")
           exit(1)
 
-        ans = subprocess.run("copyevent -s clipboard", capture_output = True, shell = True)
+        ans = Utils.run("copyevent -s clipboard", timeout = 0)
 
-        if ans.returncode == 0:
-          ans = subprocess.run("xclip -o -sel clip", capture_output = True, shell = True, timeout = 3)
+        if ans["code"] == 0:
+          ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
 
-          if ans.returncode == 0:
-            clip = ans.stdout.decode()
+          if ans["code"] == 0:
+            clip = ans["text"]
 
             if clip:
               if clip.startswith(ORIGINAL):
