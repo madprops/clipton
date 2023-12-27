@@ -69,7 +69,7 @@ The items, settings, and converters are placed there.
 
 ## Settings
 
-The settings file path is `~/.config/clipton/settings.toml`.
+The settings file is `~/.config/clipton/settings.toml`.
 
 It uses the [TOML](https://github.com/toml-lang/toml) format and is not required to be edited.
 
