@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "10"
+VERSION = "11"
 # https://github.com/madprops/clipton
 
 import os
@@ -596,8 +596,6 @@ class Items:
 #-----------------
 
 class Watcher:
-  max_iterations = 100
-
   # Start the clipboard watcher
   @staticmethod
   def start() -> None:
@@ -606,37 +604,26 @@ class Watcher:
       exit(1)
 
     herepath = Path(__file__).parent.resolve()
-    iterations = 0
     Utils.msg("Watcher Started")
 
     while True:
-      try:
-        iterations += 1
+      ans = Utils.run("copyevent -s clipboard")
 
-        if iterations > Watcher.max_iterations:
-          Utils.log("Too many iterations")
-          exit(1)
-
-        ans = Utils.run("copyevent -s clipboard")
+      if ans["code"] == 0:
+        ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
 
         if ans["code"] == 0:
-          ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
+          clip = ans["text"]
 
-          if ans["code"] == 0:
-            clip = ans["text"]
+          if clip:
+            if clip.startswith(ORIGINAL):
+              continue
 
-            if clip:
-              if clip.startswith(ORIGINAL):
-                continue
+            Items.read()
+            Items.insert(clip)
 
-              Items.read()
-              Items.insert(clip)
-              iterations = 0
-
-              # Give clipboard operations some time
-              time.sleep(0.1)
-      except Exception as err:
-        Utils.log(str(err))
+            # Give clipboard operations some time
+            time.sleep(0.1)
 
 #-----------------
 # MAIN
