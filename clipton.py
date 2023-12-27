@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "17"
+VERSION = "18"
 # https://github.com/madprops/clipton
 
 import os
@@ -136,7 +136,7 @@ class Files:
   # Write to a JSON file
   @staticmethod
   def write_json(path: Path, data: Any, default: Callable[[Any], Any]) -> None:
-    content = json.dumps(data, default = default, indent = 2)
+    content = json.dumps(data, default=default, indent=2)
     Files.write(Config.items_path, content)
 
   # Read a TOML file and return the dictionary
@@ -148,12 +148,12 @@ class Files:
   # Create a file
   @staticmethod
   def touch(path: Path) -> None:
-    path.touch(exist_ok = True)
+    path.touch(exist_ok=True)
 
   # Create a directory
   @staticmethod
   def mkdir(path: Path) -> None:
-    path.mkdir(parents = True)
+    path.mkdir(parents=True)
 
 #-----------------
 # UTILS
@@ -244,12 +244,12 @@ class Utils:
   # Copy text to the clipboard
   @staticmethod
   def copy_text(text: str) -> None:
-    Utils.run("xclip -sel clip -f", text, timeout = CMD_TIMEOUT)
+    Utils.run("xclip -sel clip -f", text, timeout=CMD_TIMEOUT)
 
   # Read the clipboard
   @staticmethod
   def read_clipboard() -> str:
-    ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
+    ans = Utils.run("xclip -o -sel clip", timeout=CMD_TIMEOUT)
 
     if ans.code == 0:
       return str(ans.text)
@@ -270,15 +270,15 @@ class Utils:
   # Run a command
   @staticmethod
   def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, \
-    stdin = subprocess.PIPE, shell = True, text = True)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
+          stdin=subprocess.PIPE, shell=True, text=True)
 
     if timeout > 0:
-      ans = proc.communicate(text, timeout = timeout)
+      ans = proc.communicate(text, timeout=timeout)
     else:
       ans = proc.communicate(text)
 
-    return CmdOutput(text = ans[0].strip(), code = proc.returncode)
+    return CmdOutput(text=ans[0].strip(), code=proc.returncode)
 
   # Check if a program is installed
   @staticmethod
