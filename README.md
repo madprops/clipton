@@ -32,7 +32,7 @@ Install `xclip` and `rofi` (Third party programs).
 
 Place `clipton.py` somewhere in your path like `/usr/bin/`.
 
-Compile `copyevent.c` and place `copyevent` in your path.
+Compile [copyevent.c](copyevent.c) and place `copyevent` in your path.
 
 Compilation command is commented at the top of the c file.
 
