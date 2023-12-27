@@ -4,6 +4,8 @@
 
 ## About
 
+Language: `Python` with a little bit of `C`.
+
 Clipton helps you go back to previous clipboard text.
 
 It has 2 modes: the [Rofi](https://github.com/davatorium/rofi) menu, and the clipboard watcher.
@@ -43,7 +45,7 @@ Place [clipton.py](clipton.py) in `/usr/bin/clipton`.
 
 Compile [copyevent.c](copyevent.c) and place it in `/usr/bin/copyevent`.
 
-The compilation command is commented at the top of the `c` file.
+The compilation command is commented at the top of the `C` file.
 
 Place [clipton.service](clipton.service) inside `/usr/lib/systemd/user/`.
 
