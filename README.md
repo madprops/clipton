@@ -63,7 +63,7 @@ Add a keyboard shortcut (somehow) to run `clipton`.
 
 For example bind it to `Ctrl + Backtick`.
 
-The config path is `~/.config/clipton`.
+The config directory is `~/.config/clipton/`.
 
 The items, settings, and converters are placed there.
 
@@ -87,7 +87,7 @@ rofi_width = "50%"
 
 Converters are functions that automatically change copied text to something else.
 
-They are python files that reside in `~/.config/clipton/converters`.
+They are python files that reside in `~/.config/clipton/converters/`.
 
 Check out [converters/youtu_be.py](converters/youtu_be.py) for an example.
 
