@@ -26,6 +26,8 @@ It has some extra features like joining items.
 
 It can also convert text automatically.
 
+It has only been tested on X11 not Wayland.
+
 ## Installation
 
 Install [xclip](https://archlinux.org/packages/extra/x86_64/xclip/)
