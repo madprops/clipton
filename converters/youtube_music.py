@@ -2,9 +2,6 @@ import re
 
 # Convert a YouTube Music URL to a YouTube URL
 def convert(text: str) -> str:
-	if not text.startswith("https://music.youtube.com"):
-		return ""
-
 	if "watch?v" in text:
 		regex = re.compile("^https:\/\/music\.youtube\.com\/watch\?v=(?P<video_id>[\w-]+)[^ \n]*$")
 		match = regex.search(text)

@@ -2,9 +2,6 @@ import re
 
 # Convert a youtu.be URL to a YouTube URL
 def convert(text: str) -> str:
-	if not text.startswith("https://youtu.be"):
-		return ""
-
 	regex = re.compile(r"^https:\/\/youtu.be\/(?P<video_id>[\w-]+)(\?t=(?P<timestamp>[\d]+))?[^ \n]*$")
 	match = regex.search(text)
 
