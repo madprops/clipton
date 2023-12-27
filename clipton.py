@@ -619,7 +619,7 @@ class Watcher:
 
   # Start the clipboard watcher
   # This is a loop that checks the clipboard periodically
-  # It detects clipboard change and adds to the item list
+  # It detects clipboard changes and adds to the item list
   @staticmethod
   def start() -> None:
     Utils.check_dep("xclip")
