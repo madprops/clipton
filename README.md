@@ -57,7 +57,7 @@ The items, settings, and converters are placed there.
 
 The settings file path is `~/.config/clipton/settings.toml`.
 
-It uses the TOML format and is not required to be edited.
+It uses the [TOML](https://github.com/toml-lang/toml) format and is not required to be edited.
 
 Check the `Settings` class in [clipton.py](clipton.py) for the default values.
 
