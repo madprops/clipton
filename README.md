@@ -36,7 +36,7 @@ Compile [copyevent.c](copyevent.c) and place `copyevent` in your path.
 
 Compilation command is commented at the top of the c file.
 
-Place `clipton.service` inside `/usr/lib/systemd/user/`.
+Place [clipton.service](clipton.service) inside `/usr/lib/systemd/user/`.
 
 Start the watcher with `systemctl --user start clipton`.
 
