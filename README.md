@@ -29,7 +29,7 @@ It can also convert text automatically.
 ## Installation
 
 Install [xclip](https://archlinux.org/packages/extra/x86_64/xclip/)
-and [rofi](https://archlinux.org/packages/extra/x86_64/rofi/) (Third party programs).
+and [rofi](https://archlinux.org/packages/extra/x86_64/rofi/) (Third-party programs).
 
 Place [clipton.py](clipton.py) somewhere in your path like `/usr/bin/`.
 
