@@ -593,7 +593,10 @@ class Items:
 #-----------------
 
 class Watcher:
+  # The last text that was copied
   last_clip: str
+
+  # Time in seconds to check the clipboard
   sleep_time = 1
 
   # Start the clipboard watcher
