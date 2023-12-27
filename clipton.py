@@ -54,7 +54,7 @@ VERSION = "9.3"
 # Add or remove the converter files you want to enable/disable
 # There's a script to copy all converters to the config directory
 # If the setting 'save_originals' is enabled, the original text is also saved
-# It's saved as 'Original :: <text>' and it's placed before the converted text
+# It's saved as 'Original :: <text>' and it's placed below the converted text
 # If the converted item is no longer the first item, the original is removed
 
 import os
