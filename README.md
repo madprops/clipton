@@ -26,7 +26,7 @@ It has some extra features like joining items.
 
 It can also convert text automatically.
 
-It has only been tested on X11 not Wayland.
+It has only been tested on `X11` and not `Wayland`.
 
 ## Installation
 
