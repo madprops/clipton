@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 VERSION = "9.6"
 
 # Clipton is a clipboard manager for Linux
