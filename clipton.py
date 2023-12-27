@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "9.2"
+VERSION = "9.3"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -145,13 +145,13 @@ class Config:
   @staticmethod
   def setup() -> None:
     if not Config.config_path.exists():
-      Config.config_path.mkdir(parents = True)
-
-    Config.items_path.touch(exist_ok = True)
-    Config.settings_path.touch(exist_ok = True)
+      Files.mkdir(Config.config_path)
 
     if not Config.converters_path.exists():
-      Config.converters_path.mkdir()
+      Files.mkdir(Config.converters_path)
+
+    Files.touch(Config.items_path)
+    Files.touch(Config.settings_path)
 
 #-----------------
 # Files
@@ -198,6 +198,16 @@ class Files:
   def read_toml(path: Path) -> Dict[str, Any]:
     with open(path, "rb") as file:
       return tomllib.load(file)
+
+  # Create a file
+  @staticmethod
+  def touch(path: Path) -> None:
+    path.touch(exist_ok = True)
+
+  # Create a directory
+  @staticmethod
+  def mkdir(path: Path) -> None:
+    path.mkdir(parents = True)
 
 #-----------------
 # UTILS
