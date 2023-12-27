@@ -67,7 +67,7 @@ It uses the [TOML](https://github.com/toml-lang/toml) format and is not required
 
 Check the `Settings` class in [clipton.py](clipton.py) for the default values.
 
-Override the settings you want to change by adding them:
+Override the settings you want to change by adding them to `settings.toml`:
 
 ```toml
 max_items = 250
