@@ -51,6 +51,12 @@ Start the watcher with `systemctl --user start clipton`.
 
 Make it autostart with `systemctl --user enable clipton`.
 
+Restart it after an update with `systemctl --user restart clipton`.
+
+Stop it (For some reason) with `systemctl --user stop clipton`.
+
+If you want to start the watcher manually use `clipton.py watcher`
+
 Launch the [Rofi](https://github.com/davatorium/rofi) menu with `clipton.py`.
 
 Add a keyboard shortcut (somehow) to run `clipton.py`.
