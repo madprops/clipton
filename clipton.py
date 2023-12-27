@@ -12,7 +12,6 @@ import shutil
 import time
 import subprocess
 import tomllib
-import logging
 import importlib.util
 from pathlib import Path
 from typing import List, Dict, Tuple, Any, Callable
@@ -175,17 +174,6 @@ class Utils:
       if self.match:
         self.title = data
         self.match = False
-
-  # Log something for debugging
-  @staticmethod
-  def log(text: str) -> None:
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-    formatter = logging.Formatter(fmt="%(asctime)s %(name)s.%(levelname)s: %(message)s", datefmt="%Y.%m.%d %H:%M:%S")
-    handler = logging.StreamHandler(stream = sys.stdout)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.info(text)
 
   # Check if a string contains a space
   @staticmethod

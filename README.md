@@ -104,7 +104,3 @@ If the setting `save_originals` is enabled, the original text is also saved.
 It's saved as `Original :: <text>` and it's placed below the converted text.
 
 If the converted item is no longer the first item, the original is removed.
-
-## Logs
-
-Check the log with `journalctl --user -b -u clipton.service | tail`
