@@ -80,7 +80,7 @@ import tomllib
 import logging
 import importlib.util
 from pathlib import Path
-from typing import List, Dict, Tuple, Any
+from typing import List, Dict, Tuple, Any, Callable
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
@@ -187,6 +187,12 @@ class Files:
     file = open(path, "w")
     file.write(content)
     file.close()
+
+  # Read a JSON file and return the
+  @staticmethod
+  def read_json(path: Path, fallback: str, hook: Callable[[Any], Any]) -> Any:
+    content = Files.read(path, fallback)
+    return json.loads(content, object_hook = hook)
 
   # Read a TOML file and return the dictionary
   @staticmethod
@@ -472,8 +478,7 @@ class Items:
   # Read the items file and fill the item list
   @staticmethod
   def read() -> None:
-    content = Files.read(Config.items_path, "[]")
-    Items.items = json.loads(content, object_hook = Item.from_json)
+    Items.items = Files.read_json(Config.items_path, "[]", Item.from_json)
 
   # Stringify the JSON object and save it in the items file
   @staticmethod
