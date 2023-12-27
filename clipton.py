@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-VERSION = "9.0"
+VERSION = "9.2"
 
 # Clipton is a clipboard manager for Linux
 # Repo: https://github.com/madprops/clipton
@@ -49,10 +49,10 @@ VERSION = "9.0"
 # heavy_paste = 2000
 # enable_titles = true
 # enable_converters = true
-# reverse_join = true
 # save_originals = true
 # show_date = true
 # show_num_lines = true
+# reverse_join = false
 # rofi_width = "1080px"
 
 # CONVERTERS
@@ -96,10 +96,10 @@ class Settings:
   heavy_paste: int
   enable_titles: bool
   enable_converters: bool
-  reverse_join: bool
   save_originals: bool
   show_date: bool
   show_num_lines: bool
+  reverse_join: bool
   rofi_width: str
 
   # Read the settings file
@@ -120,9 +120,6 @@ class Settings:
     # If enabled, the text can be converted
     Settings.enable_converters = data.get("enable_converters", True)
 
-    # If enabled, the join function will reverse the order of the items
-    Settings.reverse_join = data.get("reverse_join", False)
-
     # If enabled, the original text is saved before the converted text
     Settings.save_originals = data.get("save_originals", True)
 
@@ -131,6 +128,9 @@ class Settings:
 
     # Show the number of lines in the Rofi menu
     Settings.show_num_lines = data.get("show_num_lines", True)
+
+    # If enabled, the join function will reverse the order of the items
+    Settings.reverse_join = data.get("reverse_join", False)
 
     # The width of the Rofi menu (Percentage or pixels)
     Settings.rofi_width = data.get("rofi_width", "1080px")
