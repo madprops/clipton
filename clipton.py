@@ -194,7 +194,7 @@ class Utils:
 
   # Convert a number into a filled string
   @staticmethod
-  def fillnum(num: int) -> str:
+  def fill_num(num: int) -> str:
     snum = str(num)
     return snum.rjust(2, "0")
 
@@ -208,12 +208,12 @@ class Utils:
   def get_timeago(mins: int) -> str:
     if mins >= 1440:
       d = round(mins / 1440)
-      timeago = f"{Utils.fillnum(d)} day"
+      timeago = f"{Utils.fill_num(d)} day"
     elif mins >= 60:
       d = round(mins / 60)
-      timeago = f"{Utils.fillnum(d)} hrs"
+      timeago = f"{Utils.fill_num(d)} hrs"
     elif mins >= 0:
-      timeago = f"{Utils.fillnum(mins)} min"
+      timeago = f"{Utils.fill_num(mins)} min"
 
     return Utils.info(timeago, 9)
 
@@ -341,8 +341,9 @@ class Rofi:
 
       if Settings.show_num_lines:
         num_lines = str(item.num_lines)
+        num_lines = Utils.fill_num(num_lines)
         num_lines = f"Ln: {num_lines}"
-        num_lines = Utils.info(num_lines, 8)
+        num_lines = Utils.info(num_lines, 9)
 
       mins = round((date_now - item.date) / 60)
       timeago = ""
