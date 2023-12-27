@@ -30,7 +30,7 @@ It can also convert text automatically.
 
 Install `xclip` and `rofi` (Third party programs).
 
-Place `clipton.py` somewhere in your path like `/usr/bin/`.
+Place [clipton.py](clipton.py) somewhere in your path like `/usr/bin/`.
 
 Compile [copyevent.c](copyevent.c) and place `copyevent` in your path.
 
