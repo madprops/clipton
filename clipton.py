@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "20"
+VERSION = "21"
 # https://github.com/madprops/clipton
 
 import os
@@ -270,15 +270,15 @@ class Utils:
   # Run a command
   @staticmethod
   def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, \
           stdin=subprocess.PIPE, shell=True, text=True)
 
     if timeout > 0:
-      ans = proc.communicate(text, timeout=timeout)
+      stdout, stderror = proc.communicate(text, timeout=timeout)
     else:
-      ans = proc.communicate(text)
+      stdout, stderror = proc.communicate(text)
 
-    return CmdOutput(text=ans[0].strip(), code=proc.returncode)
+    return CmdOutput(text=stdout, code=proc.returncode)
 
   # Check if a program is installed
   @staticmethod
@@ -520,10 +520,7 @@ class Items:
   def add(text: str) -> None:
     text = text.rstrip()
 
-    if text == "":
-      return
-
-    if text.startswith("file://"):
+    if not text:
       return
 
     if len(text) > Settings.heavy_paste:
@@ -631,6 +628,9 @@ class Watcher:
 
       if clip and (clip != Watcher.last_clip):
         Watcher.last_clip = clip
+
+        if clip.startswith("file://"):
+          continue
 
         if clip.startswith(ORIGINAL):
           continue
