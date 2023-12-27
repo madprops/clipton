@@ -190,9 +190,13 @@ class Files:
 
   # Read a JSON file and return the
   @staticmethod
-  def read_json(path: Path, fallback: str, hook: Callable[[Any], Any]) -> Any:
+  def read_json(path: Path, hook: Callable[[Any], Any], fallback: str = "[]") -> Any:
     content = Files.read(path, fallback)
-    return json.loads(content, object_hook = hook)
+
+    if hook is not None:
+      return json.loads(content, object_hook = hook)
+    else:
+      return json.loads(content)
 
   # Read a TOML file and return the dictionary
   @staticmethod
@@ -478,7 +482,7 @@ class Items:
   # Read the items file and fill the item list
   @staticmethod
   def read() -> None:
-    Items.items = Files.read_json(Config.items_path, "[]", Item.from_json)
+    Items.items = Files.read_json(Config.items_path, Item.from_json)
 
   # Stringify the JSON object and save it in the items file
   @staticmethod
