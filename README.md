@@ -20,7 +20,7 @@ When an item is selected it is copied to the clipboard.
 
 Then you can paste it anywhere you want.
 
-It can delete indidiual items or all items.
+It can delete individual items or all items.
 
 It has some extra features like joining items.
 
