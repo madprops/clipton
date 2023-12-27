@@ -672,7 +672,7 @@ class Watcher:
           Utils.log("Too many iterations")
           exit(1)
 
-        ans = Utils.run("copyevent -s clipboard", timeout = 0)
+        ans = Utils.run("copyevent -s clipboard")
 
         if ans["code"] == 0:
           ans = Utils.run("xclip -o -sel clip", timeout = CMD_TIMEOUT)
