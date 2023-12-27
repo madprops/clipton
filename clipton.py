@@ -380,7 +380,7 @@ class Rofi:
     else:
       num = f"{num_items} Items"
 
-    prompt = Rofi.prompt(f"Clipton {VERSION} | {num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+    prompt = Rofi.prompt(f"Clipton v{VERSION} | {num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
     prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
     ans = Utils.run(prompt, "\n".join(opts))
 
