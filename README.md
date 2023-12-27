@@ -35,7 +35,7 @@ Place [clipton.py](clipton.py) somewhere in your path like `/usr/bin/`.
 
 Compile [copyevent.c](copyevent.c) and place `copyevent` in your path.
 
-Compilation command is commented at the top of the c file.
+Compilation command is commented at the top of the `c` file.
 
 Place [clipton.service](clipton.service) inside `/usr/lib/systemd/user/`.
 
