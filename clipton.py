@@ -198,6 +198,12 @@ class Files:
     else:
       return json.loads(content)
 
+  # Write to a JSON file
+  @staticmethod
+  def write_json(path: Path, data: Any, default: Callable[[Any], Any]) -> None:
+    content = json.dumps(data, default = default, indent = 2)
+    Files.write(Config.items_path, content)
+
   # Read a TOML file and return the dictionary
   @staticmethod
   def read_toml(path: Path) -> Dict[str, Any]:
@@ -487,8 +493,7 @@ class Items:
   # Stringify the JSON object and save it in the items file
   @staticmethod
   def write() -> None:
-    content = json.dumps(Items.items, default = Item.to_dict, indent = 2)
-    Files.write(Config.items_path, content)
+    Files.write_json(Config.items_path, Items.items, Item.to_dict)
 
   # When an item is selected through the Rofi menu
   @staticmethod
