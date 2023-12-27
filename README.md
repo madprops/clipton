@@ -24,6 +24,8 @@ It has some extra features like joining items.
 
 It can also convert text automatically.
 
+It only deals with text, not binary files.
+
 It has only been tested on `X11` and not `Wayland`.
 
 ## Installation
