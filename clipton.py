@@ -168,7 +168,7 @@ class Utils:
       self.match = False
       self.title = ""
 
-    def handle_starttag(self, tag: str, attributes: List[Tuple[str, str | None]]) -> None:
+    def handle_starttag(self, tag: str, attributes: List[Any]) -> None:
       self.match = tag == "title"
 
     def handle_data(self, data: str) -> None:
