@@ -212,10 +212,8 @@ class Utils:
     elif mins >= 60:
       d = round(mins / 60)
       timeago = f"{Utils.fillnum(d)} hours"
-    elif mins >= 1:
+    elif mins >= 0:
       timeago = f"{Utils.fillnum(mins)} mins"
-    elif mins == 0:
-      timeago = "just now"
 
     return Utils.info(timeago, 10)
 
