@@ -64,9 +64,7 @@ Override the settings you want to change by adding them:
 
 ```toml
 max_items = 250
-
 enable_titles = false
-
 rofi_width = "50%"
 ```
 
