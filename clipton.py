@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "24"
+VERSION = "25"
 # https://github.com/madprops/clipton
 
 import os
@@ -338,12 +338,12 @@ class Rofi:
 
   # Show the Rofi menu with the items
   @staticmethod
-  def show(items: List["Item"], selected: int = 0) -> None:
+  def show(selected: int = 0) -> None:
     opts: List[str] = []
     date_now = Utils.get_seconds()
     asterisk = f"<span> * </span>"
 
-    for item in items:
+    for item in Items.items:
       line = item.text.strip()
       line = html.escape(line)
       line = re.sub(" *\n *", "\n", line)
@@ -385,7 +385,7 @@ class Rofi:
       opt_str += line
       opts.append(opt_str)
 
-    num_items = len(items)
+    num_items = len(Items.items)
 
     if num_items == 1:
       num = "1 Item"
@@ -402,11 +402,11 @@ class Rofi:
 
       if code == 10:
         Items.delete(index)
-        Rofi.show(Items.items, index)
+        Rofi.show(index)
 
       elif code >= 11 and code <= 18:
         Items.join(index, code - 9)
-        Rofi.show(Items.items)
+        Rofi.show()
 
       elif code == 19:
         Items.confirm_delete()
@@ -608,7 +608,7 @@ class Items:
   def show() -> None:
     Utils.need("rofi")
     Items.read()
-    Rofi.show(Items.items)
+    Rofi.show()
 
 #-----------------
 # WATCHER
