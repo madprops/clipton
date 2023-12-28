@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "22"
+VERSION = "23"
 # https://github.com/madprops/clipton
 
 import os
@@ -270,22 +270,15 @@ class Utils:
   # Run a command
   @staticmethod
   def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, \
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
           stdin=subprocess.PIPE, shell=True, text=True)
 
     if timeout > 0:
-      stdout, stderror = proc.communicate(text, timeout=timeout)
+      stdout, stderr = proc.communicate(text, timeout=timeout)
     else:
-      stdout, stderror = proc.communicate(text)
+      stdout, stderr = proc.communicate(text)
 
-    code = proc.returncode
-
-    if code == 1:
-      text = ""
-    else:
-      text = stdout.strip()
-
-    return CmdOutput(text=text, code=code)
+    return CmdOutput(text=stdout.strip(), code=proc.returncode)
 
   # Check if a program is installed
   @staticmethod
@@ -619,7 +612,7 @@ class Watcher:
   last_clip: str
 
   # Time interval in seconds to check the clipboard
-  sleep_time = 1
+  sleep_time = 0.8
 
   # Start the clipboard watcher
   # This is a loop that checks the clipboard periodically
