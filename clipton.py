@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "23"
+VERSION = "24"
 # https://github.com/madprops/clipton
 
 import os
@@ -603,6 +603,13 @@ class Items:
       Items.items = keep
       Items.write()
 
+  # Show the Rofi menu
+  @staticmethod
+  def show() -> None:
+    Utils.need("rofi")
+    Items.read()
+    Rofi.show()
+
 #-----------------
 # WATCHER
 #-----------------
@@ -661,9 +668,7 @@ def main() -> None:
       exit(0)
 
   elif mode == "show":
-    Utils.need("rofi")
-    Items.read()
-    Rofi.show()
+    Items.show()
 
 # Start the program
 if __name__ == "__main__":
