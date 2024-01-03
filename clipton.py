@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "25"
+VERSION = "26"
 # https://github.com/madprops/clipton
 
 import os
@@ -35,6 +35,9 @@ class Settings:
   show_date: bool
   show_num_lines: bool
   reverse_join: bool
+  show_name: bool
+  show_num_items: bool
+  show_shortcuts: bool
   rofi_width: str
 
   # Read the settings file
@@ -63,6 +66,15 @@ class Settings:
 
     # Show the number of lines in the Rofi menu
     Settings.show_num_lines = data.get("show_num_lines", True)
+
+    # Show the name and version in the prompt
+    Settings.show_name = data.get("show_name", True)
+
+    # Show the number of items in the prompt
+    Settings.show_num_items = data.get("show_num_items", True)
+
+    # Show shortcuts in the prompt
+    Settings.show_shortcuts = data.get("show_shortcuts", True)
 
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
@@ -385,14 +397,25 @@ class Rofi:
       opt_str += line
       opts.append(opt_str)
 
-    num_items = len(Items.items)
+    p = []
 
-    if num_items == 1:
-      num = "1 Item"
-    else:
-      num = f"{num_items} Items"
+    if Settings.show_name:
+      p.append(f"Clipton v{VERSION}")
 
-    prompt = Rofi.prompt(f"Clipton v{VERSION} | {num} | Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+    if Settings.show_num_items:
+      num_items = len(Items.items)
+
+      if num_items == 1:
+        num = "1 Item"
+      else:
+        num = f"{num_items} Items"
+
+      p.append(num)
+
+    if Settings.show_shortcuts:
+      p.append(f"Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+
+    prompt = Rofi.prompt(" | ".join(p))
     prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
     ans = Utils.run(prompt, "\n".join(opts))
 
