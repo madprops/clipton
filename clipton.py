@@ -41,6 +41,8 @@ class Settings:
   url_mode: bool
   rofi_width: str
   url_icon: str
+  single_icon: str
+  multi_icon: str
 
   # Read the settings file
   # Fill the settings class with the values
@@ -89,6 +91,12 @@ class Settings:
 
     # Icon to use for URLs
     Settings.url_icon = data.get("url_icon", "🌐")
+
+    # Icon to use for items with a single line
+    Settings.single_icon = data.get("single_icon", "🟢")
+
+    # Icon to use for items with multiple lines
+    Settings.multi_icon = data.get("multi_icon", "🔴")
 
 #-----------------
 # CONFIG
@@ -405,14 +413,23 @@ class Rofi:
 
       http = line.startswith("http://")
       https = line.startswith("https://")
+      single = item.num_lines == 1
 
-      if Settings.url_mode and (http or https):
+      if Settings.url_mode and (http or https) and single:
         opt_str += re.sub(r"^(https?://)", f"{Settings.url_icon} ", line)
 
         if http:
           opt_str += "<span font='0'>http://</span>"
+
         elif https:
           opt_str += "<span font='0'>https://</span>"
+
+      elif single:
+        opt_str += f"{Settings.single_icon} {line}"
+
+      elif not single:
+        opt_str += f"{Settings.multi_icon} {line}"
+
       else:
         opt_str += line
 
