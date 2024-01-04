@@ -100,3 +100,13 @@ If the setting `save_originals` is enabled, the original text is also saved.
 It's saved as `Original :: <text>` and it's placed below the converted text.
 
 If the converted item is no longer the first item, the original is removed.
+
+## Icons
+
+There's 3 icons that appear next to the text items:
+
+A green icon means the text is a single line.
+
+A red icon means the text has multiple lines.
+
+A blue globe icon means the text is a URL.

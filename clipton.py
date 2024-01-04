@@ -38,7 +38,6 @@ class Settings:
   show_name: bool
   show_num_items: bool
   show_shortcuts: bool
-  url_mode: bool
   rofi_width: str
   url_icon: str
   single_icon: str
@@ -79,9 +78,6 @@ class Settings:
 
     # Show shortcuts in the prompt
     Settings.show_shortcuts = data.get("show_shortcuts", True)
-
-    # Replace https:// with GLOBE_ICON
-    Settings.url_mode = data.get("url_mode", True)
 
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
@@ -415,7 +411,7 @@ class Rofi:
       https = line.startswith("https://")
       single = item.num_lines == 1
 
-      if Settings.url_mode and (http or https) and single:
+      if Settings.url_icon and (http or https) and single:
         opt_str += re.sub(r"^(https?://)", f"{Settings.url_icon} ", line)
 
         if http:
@@ -425,10 +421,12 @@ class Rofi:
           opt_str += "<span font='0'>https://</span>"
 
       elif single:
-        opt_str += f"{Settings.single_icon} {line}"
+        if Settings.single_icon:
+          opt_str += f"{Settings.single_icon} {line}"
 
       elif not single:
-        opt_str += f"{Settings.multi_icon} {line}"
+        if Settings.multi_icon:
+          opt_str += f"{Settings.multi_icon} {line}"
 
       else:
         opt_str += line
