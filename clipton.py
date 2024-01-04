@@ -38,6 +38,7 @@ class Settings:
   show_name: bool
   show_num_items: bool
   show_shortcuts: bool
+  remove_http: bool
   rofi_width: str
   url_icon: str
   single_icon: str
@@ -78,6 +79,9 @@ class Settings:
 
     # Show shortcuts in the prompt
     Settings.show_shortcuts = data.get("show_shortcuts", True)
+
+    # Remove http:// or https:// from a line
+    Settings.remove_http = data.get("remove_http", True)
 
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
@@ -253,7 +257,10 @@ class Utils:
   # Get the title from a URL
   @staticmethod
   def get_title(text: str) -> str:
-    if text.startswith("https://") and not Utils.space(text):
+    http = text.startswith("http://")
+    https = text.startswith("https://")
+
+    if (http or https) and not Utils.space(text):
       if not Utils.get_url_type(text) == "text/html":
         Utils.msg("Non HTML URL")
       else:
@@ -406,23 +413,20 @@ class Rofi:
         opt_str += num_lines
 
       opt_str += "</span>"
-
-      http = line.startswith("http://")
-      https = line.startswith("https://")
       single = item.num_lines == 1
 
-      if Settings.url_icon and (http or https) and single:
-        opt_str += re.sub(r"^(https?://)", f"{Settings.url_icon} ", line)
+      if single:
+        http = line.startswith("http://")
+        https = line.startswith("https://")
 
-        if http:
-          opt_str += "<span font='0'>http://</span>"
+        if Settings.url_icon and (http or https):
+          opt_str += f"{Settings.url_icon} "
 
-        elif https:
-          opt_str += "<span font='0'>https://</span>"
+          if Settings.remove_http:
 
-      elif single:
-        if Settings.single_icon:
-          opt_str += f"{Settings.single_icon} {line}"
+        else:
+          if Settings.single_icon:
+            opt_str += f"{Settings.single_icon} {line}"
 
       elif not single:
         if Settings.multi_icon:

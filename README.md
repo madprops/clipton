@@ -103,7 +103,7 @@ If the converted item is no longer the first item, the original is removed.
 
 ## Icons
 
-There's 3 icons that appear next to the text items:
+There's 3 icons that appear next to the text items.
 
 A green icon means the text is a single line.
 
@@ -111,6 +111,8 @@ A red icon means the text has multiple lines.
 
 A blue globe icon means the text is a URL.
 
-The icons are setting and can be changed in the settings file.
+When the url icon is set
+
+The icons are settings and can be changed in the settings file.
 
 If you set them as empty ("") they won't be used.
