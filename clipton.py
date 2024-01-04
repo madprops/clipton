@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "27"
+VERSION = "28"
 # https://github.com/madprops/clipton
 
 import os
@@ -419,18 +419,23 @@ class Rofi:
       if single:
         http = line.startswith("http://")
         https = line.startswith("https://")
+        www = line.startswith("https://www.") or \
+        line.startswith("http://www.")
 
         if Settings.url_icon and (http or https):
           modified += f"{Settings.url_icon} "
 
           if Settings.remove_http:
-            modified += re.sub(r"^(https?://)", "", line)
+            modified += re.sub(r"^(https?://(www\.)?)", "", line)
 
             if http:
               modified += "<span font='0'>http://</span>"
 
             elif https:
               modified += "<span font='0'>https://</span>"
+
+            if www:
+              modified += "<span font='0'>www.</span>"
           else:
             modified += line
         else:
