@@ -693,7 +693,7 @@ class Watcher:
   last_clip: str
 
   # Time interval in seconds to check the clipboard
-  sleep_time = 0.8
+  sleep_time = 0.5
 
   # Start the clipboard watcher
   # This is a loop that checks the clipboard periodically
