@@ -391,7 +391,7 @@ class Rofi:
         if title and title != "":
           title = title.replace("\n", "").strip()
           title = html.escape(title)
-          line += f" ({title})"
+          line += f" <b>({title})</b>"
 
       opt_str = "<span>"
 
@@ -403,8 +403,16 @@ class Rofi:
 
       opt_str += "</span>"
 
-      if Settings.url_mode:
+      http = line.startswith("http://")
+      https = line.startswith("https://")
+
+      if Settings.url_mode and (http or https):
         opt_str += re.sub(r"^(https?://)", f"{Settings.url_icon} ", line)
+
+        if http:
+          opt_str += "<span font='0'>http://</span>"
+        elif https:
+          opt_str += "<span font='0'>https://</span>"
       else:
         opt_str += line
 
