@@ -423,14 +423,24 @@ class Rofi:
           opt_str += f"{Settings.url_icon} "
 
           if Settings.remove_http:
+            opt_str += re.sub(r"^(https?://)", "", line)
 
+            if http:
+              opt_str += "<span font='0'>http://</span>"
+
+            elif https:
+              opt_str += "<span font='0'>https://</span>"
         else:
           if Settings.single_icon:
             opt_str += f"{Settings.single_icon} {line}"
+          else:
+            opt_str += line
 
       elif not single:
         if Settings.multi_icon:
           opt_str += f"{Settings.multi_icon} {line}"
+        else:
+          opt_str += line
 
       else:
         opt_str += line
