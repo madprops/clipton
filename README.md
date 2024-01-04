@@ -110,3 +110,7 @@ A green icon means the text is a single line.
 A red icon means the text has multiple lines.
 
 A blue globe icon means the text is a URL.
+
+The icons are setting and can be changed in the settings file.
+
+If you set them as empty ("") they won't be used.
