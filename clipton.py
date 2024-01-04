@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "26"
+VERSION = "27"
 # https://github.com/madprops/clipton
 
 import os
@@ -38,7 +38,9 @@ class Settings:
   show_name: bool
   show_num_items: bool
   show_shortcuts: bool
+  url_mode: bool
   rofi_width: str
+  url_icon: str
 
   # Read the settings file
   # Fill the settings class with the values
@@ -76,11 +78,17 @@ class Settings:
     # Show shortcuts in the prompt
     Settings.show_shortcuts = data.get("show_shortcuts", True)
 
+    # Replace https:// with GLOBE_ICON
+    Settings.url_mode = data.get("url_mode", True)
+
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
 
     # The width of the Rofi menu (percentage or pixels)
     Settings.rofi_width = data.get("rofi_width", "1080px")
+
+    # Icon to use for URLs
+    Settings.url_icon = data.get("url_icon", "🌐")
 
 #-----------------
 # CONFIG
@@ -394,7 +402,12 @@ class Rofi:
         opt_str += num_lines
 
       opt_str += "</span>"
-      opt_str += line
+
+      if Settings.url_mode:
+        opt_str += re.sub(r"^(https?://)", f"{Settings.url_icon} ", line)
+      else:
+        opt_str += line
+
       opts.append(opt_str)
 
     p = []
