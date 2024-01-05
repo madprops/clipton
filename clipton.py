@@ -362,6 +362,23 @@ class Converters:
 #-----------------
 
 class Rofi:
+  class TextData:
+    single: bool
+    http: bool
+    https: bool
+    www: bool
+
+  # Get the text data for a line
+  @staticmethod
+  def get_text_data(item: "Item") -> "TextData":
+    data = Rofi.TextData()
+    data.single = item.num_lines == 1
+    data.http = item.text.startswith("http://")
+    data.https = item.text.startswith("https://")
+    data.www = item.text.startswith("https://www.") or \
+    item.text.startswith("http://www.")
+    return data
+
   # Get the style for the Rofi menu
   @staticmethod
   def style() -> str:
@@ -386,10 +403,12 @@ class Rofi:
       line = line.replace("\n", asterisk)
       line = re.sub(" +", " ", line)
       line = re.sub("</span> +", "</span>", line)
+
       line += Rofi.get_title(item)
       opt_str = Rofi.get_info(item)
-      line = Rofi.remove(item, line)
-      opt_str += Rofi.get_icon(item, line)
+      text_data = Rofi.get_text_data(item)
+      line = Rofi.remove(item, line, text_data)
+      opt_str += Rofi.get_icon(item, line, text_data)
       opts.append(opt_str)
 
     p = []
@@ -474,14 +493,9 @@ class Rofi:
 
   # Remove unwanted text from a line
   @staticmethod
-  def remove(item: "Item", line: str) -> str:
-    single = item.num_lines == 1
+  def remove(item: "Item", line: str, td: "TextData") -> str:
 
-    if Settings.remove_http and single:
-      http = item.text.startswith("http://")
-      https = item.text.startswith("https://")
-      www = item.text.startswith("https://www.") or \
-      item.text.startswith("http://www.")
+    if Settings.remove_http and td.single:
       removed = ""
 
       if Settings.remove_www:
@@ -493,31 +507,27 @@ class Rofi:
         line = removed
         meta = ""
 
-        if www:
+        if td.www:
           meta += "www."
 
-        if http:
+        if td.http:
           line += f"\0meta\x1fhttp:// {meta}"
-        elif https:
+        elif td.https:
           line += f"\0meta\x1fhttps:// {meta}"
 
     return line
 
   # Get the icons for a line
   @staticmethod
-  def get_icon(item: "Item", line: str) -> str:
+  def get_icon(item: "Item", line: str, td: "TextData") -> str:
     s = ""
 
     if Settings.show_icons:
-      single = item.num_lines == 1
-      http = item.text.startswith("http://")
-      https = item.text.startswith("https://")
-
-      if Settings.url_icon and (http or https):
+      if Settings.url_icon and (td.http or td.https):
         s += f"{Settings.url_icon} {line}"
-      elif Settings.single_icon and single:
+      elif Settings.single_icon and td.single:
         s += f"{Settings.single_icon} {line}"
-      elif Settings.multi_icon and (not single):
+      elif Settings.multi_icon and (not td.single):
         s += f"{Settings.multi_icon} {line}"
 
     return s
