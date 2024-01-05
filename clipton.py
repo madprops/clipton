@@ -81,6 +81,7 @@ class Settings:
     Settings.show_shortcuts = data.get("show_shortcuts", True)
 
     # Remove http:// or https:// from a line
+    # This also includes www. at the start of urls
     Settings.remove_http = data.get("remove_http", True)
 
     # If enabled, the join function will reverse the order of the items
