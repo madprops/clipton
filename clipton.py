@@ -81,8 +81,10 @@ class Settings:
     Settings.show_shortcuts = data.get("show_shortcuts", True)
 
     # Remove http:// or https:// from a line
-    # This also includes www. at the start of urls
     Settings.remove_http = data.get("remove_http", True)
+
+    # Remove www. from a line
+    Settings.remove_www = data.get("remove_www", True)
 
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
@@ -427,7 +429,10 @@ class Rofi:
           modified += f"{Settings.url_icon} "
 
           if Settings.remove_http:
-            modified += re.sub(r"^(https?://(www\.)?)", "", line)
+            if Settings.remove_www:
+              modified += re.sub(r"^(https?://(www\.)?)", "", line)
+            else:
+              modified += re.sub(r"^(https?://)", "", line)
 
             if http:
               modified += "<span font='0'>http://</span>"
@@ -437,6 +442,7 @@ class Rofi:
 
             if www:
               modified += "<span font='0'>www.</span>"
+
           else:
             modified += line
         else:
