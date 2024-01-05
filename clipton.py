@@ -40,6 +40,7 @@ class Settings:
   show_shortcuts: bool
   remove_http: bool
   remove_www: bool
+  show_icons: bool
   rofi_width: str
   url_icon: str
   single_icon: str
@@ -86,6 +87,9 @@ class Settings:
 
     # Remove www. from a line
     Settings.remove_www = data.get("remove_www", True)
+
+    # Show icons or not
+    Settings.show_icons = data.get("show_icons", True)
 
     # If enabled, the join function will reverse the order of the items
     Settings.reverse_join = data.get("reverse_join", False)
@@ -416,49 +420,41 @@ class Rofi:
 
       opt_str += "</span>"
       single = item.num_lines == 1
-      modified = ""
+      http = line.startswith("http://")
+      https = line.startswith("https://")
 
-      if single:
-        http = line.startswith("http://")
-        https = line.startswith("https://")
+      if Settings.remove_http and single:
         www = line.startswith("https://www.") or \
         line.startswith("http://www.")
+        removed = ""
 
-        if Settings.url_icon and (http or https):
-          if Settings.remove_http:
-            removed = ""
-
-            if Settings.remove_www:
-              removed += re.sub(r"^(https?://(www\.)?)", "", line)
-            else:
-              removed += re.sub(r"^(https?://)", "", line)
-
-            if removed == "":
-              modified += line
-            else:
-              modified += f"{Settings.url_icon} {removed}"
-
-              if http:
-                modified += "<span font='0'>http://</span>"
-              elif https:
-                modified += "<span font='0'>https://</span>"
-
-              if www:
-                modified += "<span font='0'>www.</span>"
-          else:
-            modified += line
-
+        if Settings.remove_www:
+          removed += re.sub(r"^(https?://(www\.)?)", "", line)
         else:
-          if Settings.single_icon:
-            modified += f"{Settings.single_icon} {line}"
-      elif not single:
-        if Settings.multi_icon:
-          modified += f"{Settings.multi_icon} {line}"
+          removed += re.sub(r"^(https?://)", "", line)
 
-      if modified == "":
-        opt_str += line
+        if removed != "":
+          line = removed
+
+          if http:
+            line += "<span font='0'>http://</span>"
+          elif https:
+            line += "<span font='0'>https://</span>"
+
+          if www:
+            line += "<span font='0'>www.</span>"
+
+      if Settings.show_icons:
+        if Settings.url_icon and (http or https):
+          opt_str += f"{Settings.url_icon} {line}"
+        elif Settings.single_icon and single:
+          opt_str += f"{Settings.single_icon} {line}"
+        elif Settings.multi_icon and (not single):
+          opt_str += f"{Settings.multi_icon} {line}"
+        else:
+          opt_str += line
       else:
-        opt_str += modified
+        opt_str += line
 
       opts.append(opt_str)
 
