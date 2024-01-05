@@ -389,44 +389,8 @@ class Rofi:
 
       line += Rofi.get_title(item)
       opt_str = Rofi.get_info(item)
-      single = item.num_lines == 1
-      http = line.startswith("http://")
-      https = line.startswith("https://")
-
-      if Settings.remove_http and single:
-        www = line.startswith("https://www.") or \
-        line.startswith("http://www.")
-        removed = ""
-
-        if Settings.remove_www:
-          removed += re.sub(r"^(https?://(www\.)?)", "", line)
-        else:
-          removed += re.sub(r"^(https?://)", "", line)
-
-        if removed != "":
-          line = removed
-          meta = ""
-
-          if www:
-            meta += "www."
-
-          if http:
-            line += f"\0meta\x1fhttp:// {meta}"
-          elif https:
-            line += f"\0meta\x1fhttps:// {meta}"
-
-      if Settings.show_icons:
-        if Settings.url_icon and (http or https):
-          opt_str += f"{Settings.url_icon} {line}"
-        elif Settings.single_icon and single:
-          opt_str += f"{Settings.single_icon} {line}"
-        elif Settings.multi_icon and (not single):
-          opt_str += f"{Settings.multi_icon} {line}"
-        else:
-          opt_str += line
-      else:
-        opt_str += line
-
+      line = Rofi.remove(item, line)
+      opt_str += Rofi.get_icon(item, line)
       opts.append(opt_str)
 
     p = []
@@ -508,6 +472,56 @@ class Rofi:
         return f" <b>({title})</b>"
 
     return ""
+
+  # Remove unwanted text from a line
+  @staticmethod
+  def remove(item: "Item", line: str) -> str:
+    single = item.num_lines == 1
+
+    if Settings.remove_http and single:
+      http = item.text.startswith("http://")
+      https = item.text.startswith("https://")
+      www = item.text.startswith("https://www.") or \
+      item.text.startswith("http://www.")
+      removed = ""
+
+      if Settings.remove_www:
+        removed += re.sub(r"^(https?://(www\.)?)", "", line)
+      else:
+        removed += re.sub(r"^(https?://)", "", line)
+
+      if removed != "":
+        line = removed
+        meta = ""
+
+        if www:
+          meta += "www."
+
+        if http:
+          line += f"\0meta\x1fhttp:// {meta}"
+        elif https:
+          line += f"\0meta\x1fhttps:// {meta}"
+
+    return line
+
+  # Get the icons for a line
+  @staticmethod
+  def get_icon(item: "Item", line: str) -> str:
+    s = ""
+
+    if Settings.show_icons:
+      single = item.num_lines == 1
+      http = item.text.startswith("http://")
+      https = item.text.startswith("https://")
+
+      if Settings.url_icon and (http or https):
+        s += f"{Settings.url_icon} {line}"
+      elif Settings.single_icon and single:
+        s += f"{Settings.single_icon} {line}"
+      elif Settings.multi_icon and (not single):
+        s += f"{Settings.multi_icon} {line}"
+
+    return s
 
 #-----------------
 # ITEMS
