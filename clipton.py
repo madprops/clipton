@@ -379,7 +379,6 @@ class TextData:
     return data
 
 class Rofi:
-
   # Get the style for the Rofi menu
   @staticmethod
   def style() -> str:
