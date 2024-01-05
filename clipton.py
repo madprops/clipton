@@ -39,6 +39,7 @@ class Settings:
   show_num_items: bool
   show_shortcuts: bool
   remove_http: bool
+  remove_www: bool
   rofi_width: str
   url_icon: str
   single_icon: str
@@ -237,11 +238,9 @@ class Utils:
     if mins >= 1440:
       d = round(mins / 1440)
       timeago = f"{Utils.fill_num(d)} day"
-
     elif mins >= 60:
       d = round(mins / 60)
       timeago = f"{Utils.fill_num(d)} hrs"
-
     elif mins >= 0:
       timeago = f"{Utils.fill_num(mins)} min"
 
@@ -436,26 +435,22 @@ class Rofi:
 
             if removed == "":
               modified += line
-
             else:
               modified += f"{Settings.url_icon} {removed}"
 
               if http:
                 modified += "<span font='0'>http://</span>"
-
               elif https:
                 modified += "<span font='0'>https://</span>"
 
               if www:
                 modified += "<span font='0'>www.</span>"
-
           else:
             modified += line
 
         else:
           if Settings.single_icon:
             modified += f"{Settings.single_icon} {line}"
-
       elif not single:
         if Settings.multi_icon:
           modified += f"{Settings.multi_icon} {line}"
@@ -500,10 +495,8 @@ class Rofi:
       elif code >= 11 and code <= 18:
         Items.join(index, code - 9)
         Rofi.show()
-
       elif code == 19:
         Items.confirm_delete()
-
       else:
         Items.select(index)
 
@@ -759,7 +752,6 @@ def main() -> None:
       Watcher.start()
     except KeyboardInterrupt:
       exit(0)
-
   elif mode == "show":
     Items.show()
 
