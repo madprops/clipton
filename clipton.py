@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "28"
+VERSION = "29"
 # https://github.com/madprops/clipton
 
 import os
@@ -435,14 +435,15 @@ class Rofi:
 
         if removed != "":
           line = removed
-
-          if http:
-            line += "<span font='0'>http://</span>"
-          elif https:
-            line += "<span font='0'>https://</span>"
+          meta = ""
 
           if www:
-            line += "<span font='0'>www.</span>"
+            meta += "www."
+
+          if http:
+            line += f"\0meta\x1fhttp:// {meta}"
+          elif https:
+            line += f"\0meta\x1fhttps:// {meta}"
 
       if Settings.show_icons:
         if Settings.url_icon and (http or https):
