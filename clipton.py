@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "29"
+VERSION = "30"
 # https://github.com/madprops/clipton
 
 import os
@@ -377,7 +377,6 @@ class Rofi:
   @staticmethod
   def show(selected: int = 0) -> None:
     opts: List[str] = []
-    date_now = Utils.get_seconds()
     asterisk = f"<span> * </span>"
 
     for item in Items.items:
@@ -387,20 +386,8 @@ class Rofi:
       line = line.replace("\n", asterisk)
       line = re.sub(" +", " ", line)
       line = re.sub("</span> +", "</span>", line)
-      num_lines = ""
-
-      if Settings.show_num_lines:
-        num_lines = Utils.fill_num(item.num_lines)
-        num_lines = f"Ln: {num_lines}"
-        num_lines = Utils.info(num_lines, 9)
-
-      mins = round((date_now - item.date) / 60)
-      timeago = ""
-
-      if Settings.show_date:
-        timeago = Utils.get_timeago(mins)
-
       title = ""
+      opt_str = ""
 
       if item.title:
         title = item.title
@@ -410,15 +397,7 @@ class Rofi:
           title = html.escape(title)
           line += f" <b>({title})</b>"
 
-      opt_str = "<span>"
-
-      if timeago:
-        opt_str += timeago
-
-      if num_lines:
-        opt_str += num_lines
-
-      opt_str += "</span>"
+      opt_str += Rofi.get_info(item)
       single = item.num_lines == 1
       http = line.startswith("http://")
       https = line.startswith("https://")
@@ -496,6 +475,34 @@ class Rofi:
         Items.confirm_delete()
       else:
         Items.select(index)
+
+  # Get the info strings for an item
+  @staticmethod
+  def get_info(item: "Item") -> str:
+    num_lines = ""
+
+    if Settings.show_num_lines:
+      num_lines = Utils.fill_num(item.num_lines)
+      num_lines = f"Ln: {num_lines}"
+      num_lines = Utils.info(num_lines, 9)
+
+    timeago = ""
+
+    if Settings.show_date:
+      date_now = Utils.get_seconds()
+      mins = round((date_now - item.date) / 60)
+      timeago = Utils.get_timeago(mins)
+
+    s = "<span>"
+
+    if timeago:
+      s += timeago
+
+    if num_lines:
+      s += num_lines
+
+    s += "</span>"
+    return s
 
 #-----------------
 # ITEMS
