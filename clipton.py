@@ -361,23 +361,24 @@ class Converters:
 # ROFI
 #-----------------
 
-class Rofi:
-  class TextData:
-    single: bool
-    http: bool
-    https: bool
-    www: bool
+class TextData:
+  single: bool
+  http: bool
+  https: bool
+  www: bool
 
   # Get the text data for a line
   @staticmethod
-  def get_text_data(item: "Item") -> "TextData":
-    data = Rofi.TextData()
+  def get(item: "Item") -> "TextData":
+    data = TextData()
     data.single = item.num_lines == 1
     data.http = item.text.startswith("http://")
     data.https = item.text.startswith("https://")
     data.www = item.text.startswith("https://www.") or \
     item.text.startswith("http://www.")
     return data
+
+class Rofi:
 
   # Get the style for the Rofi menu
   @staticmethod
@@ -406,7 +407,7 @@ class Rofi:
 
       line += Rofi.get_title(item)
       opt_str = Rofi.get_info(item)
-      text_data = Rofi.get_text_data(item)
+      text_data = TextData.get(item)
       line = Rofi.remove(item, line, text_data)
       opt_str += Rofi.get_icon(item, line, text_data)
       opts.append(opt_str)
