@@ -386,18 +386,9 @@ class Rofi:
       line = line.replace("\n", asterisk)
       line = re.sub(" +", " ", line)
       line = re.sub("</span> +", "</span>", line)
-      title = ""
-      opt_str = ""
 
-      if item.title:
-        title = item.title
-
-        if title and title != "":
-          title = title.replace("\n", "").strip()
-          title = html.escape(title)
-          line += f" <b>({title})</b>"
-
-      opt_str += Rofi.get_info(item)
+      line += Rofi.get_title(item)
+      opt_str = Rofi.get_info(item)
       single = item.num_lines == 1
       http = line.startswith("http://")
       https = line.startswith("https://")
@@ -503,6 +494,20 @@ class Rofi:
 
     s += "</span>"
     return s
+
+  # Get the title string for an item
+  @staticmethod
+  def get_title(item: "Item") -> str:
+    if item.title:
+      title = ""
+      title = item.title
+
+      if title and title != "":
+        title = title.replace("\n", "").strip()
+        title = html.escape(title)
+        return f" <b>({title})</b>"
+
+    return ""
 
 #-----------------
 # ITEMS
