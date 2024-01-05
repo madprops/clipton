@@ -494,7 +494,6 @@ class Rofi:
   # Remove unwanted text from a line
   @staticmethod
   def remove(item: "Item", line: str, td: "TextData") -> str:
-
     if Settings.remove_http and td.single:
       removed = ""
 
