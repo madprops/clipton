@@ -386,7 +386,6 @@ class Rofi:
       line = line.replace("\n", asterisk)
       line = re.sub(" +", " ", line)
       line = re.sub("</span> +", "</span>", line)
-
       line += Rofi.get_title(item)
       opt_str = Rofi.get_info(item)
       line = Rofi.remove(item, line)
