@@ -426,25 +426,32 @@ class Rofi:
         line.startswith("http://www.")
 
         if Settings.url_icon and (http or https):
-          modified += f"{Settings.url_icon} "
-
           if Settings.remove_http:
+            removed = ""
+
             if Settings.remove_www:
-              modified += re.sub(r"^(https?://(www\.)?)", "", line)
+              removed += re.sub(r"^(https?://(www\.)?)", "", line)
             else:
-              modified += re.sub(r"^(https?://)", "", line)
+              removed += re.sub(r"^(https?://)", "", line)
 
-            if http:
-              modified += "<span font='0'>http://</span>"
+            if removed == "":
+              modified += line
 
-            elif https:
-              modified += "<span font='0'>https://</span>"
+            else:
+              modified += f"{Settings.url_icon} {removed}"
 
-            if www:
-              modified += "<span font='0'>www.</span>"
+              if http:
+                modified += "<span font='0'>http://</span>"
+
+              elif https:
+                modified += "<span font='0'>https://</span>"
+
+              if www:
+                modified += "<span font='0'>www.</span>"
 
           else:
             modified += line
+
         else:
           if Settings.single_icon:
             modified += f"{Settings.single_icon} {line}"
