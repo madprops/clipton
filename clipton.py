@@ -88,7 +88,7 @@ class Settings:
     data = Files.read_toml(Config.settings_path)
     props = Settings.__annotations__
 
-    for prop, _ in props.items():
+    for prop in props.keys():
       if prop in data:
         setattr(Settings, prop, data[prop])
 
