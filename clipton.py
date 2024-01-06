@@ -27,84 +27,70 @@ CMD_TIMEOUT = 3
 #-----------------
 
 class Settings:
-  max_items: int
-  heavy_paste: int
-  enable_titles: bool
-  enable_converters: bool
-  save_originals: bool
-  show_date: bool
-  show_num_lines: bool
-  reverse_join: bool
-  show_name: bool
-  show_num_items: bool
-  show_shortcuts: bool
-  remove_http: bool
-  remove_www: bool
-  show_icons: bool
-  rofi_width: str
-  url_icon: str
-  single_icon: str
-  multi_icon: str
+  # How many items to store in the file
+  max_items: int = 1000
+
+  # Don't save text if the character length exceeds this
+  heavy_paste: int = 2000
+
+  # If enabled, the URL titles are fetched by parsing the HTML
+  enable_titles: bool = True
+
+  # If enabled, the text can be converted
+  enable_converters: bool = True
+
+  # If enabled, the original text is saved before the converted text
+  save_originals: bool = True
+
+  # Show the date/timeago in the Rofi menu
+  show_date: bool = True
+
+  # Show the number of lines in the Rofi menu
+  show_num_lines: bool = True
+
+  # Show the name and version in the prompt
+  show_name: bool = True
+
+  # Show the number of items in the prompt
+  show_num_items: bool = True
+
+  # Show shortcuts in the prompt
+  show_shortcuts: bool = True
+
+  # Remove http:// or https:// from a line
+  remove_http: bool = True
+
+  # Remove www. from a line
+  remove_www: bool = True
+
+  # Show icons or not
+  show_icons: bool = True
+
+  # If enabled, the join function will reverse the order of the items
+  reverse_join: bool = False
+
+  # The width of the Rofi menu (percentage or pixels)
+  rofi_width: str = "1080px"
+
+  # Icon to use for URLs
+  url_icon: str = "🌐"
+
+  # Icon to use for items with a single line
+  single_icon: str = "🟢"
+
+  # Icon to use for items with multiple lines
+  multi_icon: str = "🔴"
 
   # Read the settings file
   # Fill the settings class with the values
   @staticmethod
   def read() -> None:
     data = Files.read_toml(Config.settings_path)
+    props = Settings.__annotations__
 
-    # How many items to store in the file
-    Settings.max_items = data.get("max_items", 1000)
-
-    # Don't save text if the character length exceeds this
-    Settings.heavy_paste = data.get("heavy_paste", 2000)
-
-    # If enabled, the URL titles are fetched by parsing the HTML
-    Settings.enable_titles = data.get("enable_titles", True)
-
-    # If enabled, the text can be converted
-    Settings.enable_converters = data.get("enable_converters", True)
-
-    # If enabled, the original text is saved before the converted text
-    Settings.save_originals = data.get("save_originals", True)
-
-    # Show the date/timeago in the Rofi menu
-    Settings.show_date = data.get("show_date", True)
-
-    # Show the number of lines in the Rofi menu
-    Settings.show_num_lines = data.get("show_num_lines", True)
-
-    # Show the name and version in the prompt
-    Settings.show_name = data.get("show_name", True)
-
-    # Show the number of items in the prompt
-    Settings.show_num_items = data.get("show_num_items", True)
-
-    # Show shortcuts in the prompt
-    Settings.show_shortcuts = data.get("show_shortcuts", True)
-
-    # Remove http:// or https:// from a line
-    Settings.remove_http = data.get("remove_http", True)
-
-    # Remove www. from a line
-    Settings.remove_www = data.get("remove_www", True)
-
-    # Show icons or not
-    Settings.show_icons = data.get("show_icons", True)
-
-    # If enabled, the join function will reverse the order of the items
-    Settings.reverse_join = data.get("reverse_join", False)
-
-    # The width of the Rofi menu (percentage or pixels)
-    Settings.rofi_width = data.get("rofi_width", "1080px")
-
-    # Icon to use for URLs
-    Settings.url_icon = data.get("url_icon", "🌐")
-
-    # Icon to use for items with a single line
-    Settings.single_icon = data.get("single_icon", "🟢")
-
-    # Icon to use for items with multiple lines
-    Settings.multi_icon = data.get("multi_icon", "🔴")
+    for prop, _ in props.items():
+      if prop in data:
+        setattr(Settings, prop, data[prop])
 
 #-----------------
 # CONFIG
