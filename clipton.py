@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "30"
+VERSION = "32"
 # https://github.com/madprops/clipton
 
 import os
@@ -433,7 +433,7 @@ class Rofi:
     prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
     ans = Utils.run(prompt, "\n".join(opts))
 
-    if ans.text != "":
+    if ans.text:
       code = ans.code
       index = int(ans.text)
 
@@ -484,7 +484,7 @@ class Rofi:
       title = ""
       title = item.title
 
-      if title and title != "":
+      if title:
         title = title.replace("\n", "").strip()
         title = html.escape(title)
         return f" <b>({title})</b>"
@@ -502,7 +502,7 @@ class Rofi:
       else:
         removed += re.sub(r"^(https?://)", "", line)
 
-      if removed != "":
+      if removed:
         line = removed
         meta = ""
 
