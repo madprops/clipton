@@ -82,7 +82,6 @@ class Settings:
   multi_icon: str = "🔴"
 
   # Read the settings file
-  # Fill the settings class with the values
   @staticmethod
   def read() -> None:
     data = Files.read_toml(Config.settings_path)
