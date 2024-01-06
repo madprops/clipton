@@ -18,6 +18,7 @@ from typing import List, Dict, Tuple, Any, Callable, Union
 from urllib.request import urlopen
 from html.parser import HTMLParser
 from datetime import datetime
+from dataclasses import dataclass
 
 ORIGINAL = "Original :: "
 CMD_TIMEOUT = 3
@@ -26,6 +27,7 @@ CMD_TIMEOUT = 3
 # SETTINGS
 #-----------------
 
+@dataclass
 class Settings:
   # How many items to store in the file
   max_items: int = 1000
@@ -95,6 +97,7 @@ class Settings:
 # CONFIG
 #-----------------
 
+@dataclass
 class Config:
   # Path to the config directory
   config_path = Path("~/.config/clipton").expanduser()
