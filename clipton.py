@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "32"
+VERSION = "33"
 # https://github.com/madprops/clipton
 
 import os
@@ -269,12 +269,12 @@ class Utils:
   # Copy text to the clipboard
   @staticmethod
   def copy_text(text: str) -> None:
-    Utils.run("xclip -sel clip -f", text, timeout=CMD_TIMEOUT)
+    Utils.run_no_shell("xclip -sel clip -f", text, timeout=CMD_TIMEOUT)
 
   # Read the clipboard
   @staticmethod
   def read_clipboard() -> str:
-    ans = Utils.run("xclip -o -sel clip", timeout=CMD_TIMEOUT)
+    ans = Utils.run_no_shell("xclip -o -sel clip", timeout=CMD_TIMEOUT)
 
     if ans.code == 0:
       return str(ans.text)
@@ -297,6 +297,21 @@ class Utils:
   def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
           stdin=subprocess.PIPE, shell=True, text=True)
+
+    if timeout > 0:
+      stdout, stderr = proc.communicate(text, timeout=timeout)
+    else:
+      stdout, stderr = proc.communicate(text)
+
+    return CmdOutput(text=stdout.strip(), code=proc.returncode)
+
+  # Run a command without a shell
+  @staticmethod
+  def run_no_shell(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
+    args = cmd.split(" ")
+
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, \
+          stdin=subprocess.PIPE, shell=False, text=True)
 
     if timeout > 0:
       stdout, stderr = proc.communicate(text, timeout=timeout)
