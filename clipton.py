@@ -269,12 +269,12 @@ class Utils:
   # Copy text to the clipboard
   @staticmethod
   def copy_text(text: str) -> None:
-    Utils.run_no_shell("xclip -sel clip -f", text, timeout=CMD_TIMEOUT)
+    Utils.run("xclip -sel clip -f", text, timeout=CMD_TIMEOUT)
 
   # Read the clipboard
   @staticmethod
   def read_clipboard() -> str:
-    ans = Utils.run_no_shell("xclip -o -sel clip", timeout=CMD_TIMEOUT)
+    ans = Utils.run("xclip -o -sel clip", timeout=CMD_TIMEOUT)
 
     if ans.code == 0:
       return str(ans.text)
@@ -292,11 +292,13 @@ class Utils:
     text = text.ljust(amount, " ")
     return f"<b>{text}</b>"
 
-  # Run a command
+  # Run a command without a shell
   @staticmethod
   def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
-          stdin=subprocess.PIPE, shell=True, text=True)
+    args = cmd.split(" ")
+
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, \
+          stdin=subprocess.PIPE, shell=False, text=True)
 
     if timeout > 0:
       stdout, stderr = proc.communicate(text, timeout=timeout)
@@ -305,13 +307,11 @@ class Utils:
 
     return CmdOutput(text=stdout.strip(), code=proc.returncode)
 
-  # Run a command without a shell
+  # Run a command using a shell
   @staticmethod
-  def run_no_shell(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    args = cmd.split(" ")
-
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, \
-          stdin=subprocess.PIPE, shell=False, text=True)
+  def run_shell(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
+          stdin=subprocess.PIPE, shell=True, text=True)
 
     if timeout > 0:
       stdout, stderr = proc.communicate(text, timeout=timeout)
@@ -433,7 +433,7 @@ class Rofi:
 
     prompt = Rofi.prompt(" | ".join(p))
     prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
-    ans = Utils.run(prompt, "\n".join(opts))
+    ans = Utils.run_shell(prompt, "\n".join(opts))
 
     if ans.text:
       code = ans.code
@@ -611,7 +611,7 @@ class Items:
     opts = ["No", "Yes"]
     prompt = Rofi.prompt("Delete all items?")
     prompt = f"{prompt} {Rofi.style()} -selected-row 0"
-    ans = Utils.run(prompt, "\n".join(opts))
+    ans = Utils.run_shell(prompt, "\n".join(opts))
 
     if ans.text == "Yes":
       Items.delete_all()
