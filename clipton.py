@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "33"
+VERSION = "34"
 # https://github.com/madprops/clipton
 
 import os
@@ -391,7 +391,7 @@ class Rofi:
   # Get a Rofi prompt
   @staticmethod
   def prompt(s: str) -> str:
-    return f'rofi -dmenu -markup-rows -i -p "{s}"'
+    return f'rofi -inputchange-action "kb-row-first" -dmenu -markup-rows -i -p "{s}"'
 
   # Show the Rofi menu with the items
   @staticmethod
