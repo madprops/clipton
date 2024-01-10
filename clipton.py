@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "34"
+VERSION = "35"
 # https://github.com/madprops/clipton
 
 import os
@@ -67,6 +67,18 @@ class Settings:
 
   # Show icons or not
   show_icons: bool = True
+
+  # Trim the text on the left side when it's a single line
+  trim_left_single: bool = True
+
+  # Trim the text on the right side when it's a single line
+  trim_right_single: bool = True
+
+  # Trim the text on the left side when it's multiple lines
+  trim_left_multi: bool = False
+
+  # Trim the text on the right side when it's multiple lines
+  trim_right_multi: bool = True
 
   # If enabled, the join function will reverse the order of the items
   reverse_join: bool = False
@@ -305,7 +317,7 @@ class Utils:
     else:
       stdout, stderr = proc.communicate(text)
 
-    return CmdOutput(text=stdout.strip(), code=proc.returncode)
+    return CmdOutput(text=stdout, code=proc.returncode)
 
   # Run a command using a shell
   @staticmethod
@@ -326,6 +338,24 @@ class Utils:
     if shutil.which(name) is None:
       Utils.msg(f"'{name}' must be installed.")
       exit(1)
+
+  # Check how to trim the text
+  @staticmethod
+  def trim(text: str) -> str:
+    if text.count("\n") == 0:
+      if Settings.trim_left_single:
+        text = text.lstrip()
+
+      if Settings.trim_right_single:
+        text = text.rstrip()
+    else:
+      if Settings.trim_left_multi:
+        text = text.lstrip()
+
+      if Settings.trim_right_multi:
+        text = text.rstrip()
+
+    return text
 
 #-----------------
 # CONVERTERS
@@ -637,8 +667,6 @@ class Items:
   # It removes duplicates
   @staticmethod
   def add(text: str) -> None:
-    text = text.rstrip()
-
     if not text:
       return
 
@@ -666,26 +694,34 @@ class Items:
   # Get the title afterwards
   @staticmethod
   def insert(text: str) -> None:
+    def proc(txt: str) -> None:
+      Items.add(txt)
+      Items.title(txt)
+      Items.clean()
+
     original = text.startswith(ORIGINAL)
 
     if Settings.enable_converters and not original:
       converted = Converters.convert(text)
 
       if converted:
-        Utils.msg("Text Converted")
-
         if Settings.save_originals:
           Items.add(ORIGINAL + text)
 
-        Items.add(converted)
+        proc(converted)
         Utils.copy_text(converted)
-        Items.title(converted)
-        Items.clean()
+        Utils.msg("Text Converted")
         return
 
-    Items.add(text)
-    Items.title(text)
-    Items.clean()
+    trimmed = Utils.trim(text)
+
+    if trimmed != text:
+      proc(trimmed)
+      Utils.copy_text(trimmed)
+      Utils.msg("Text Trimmed")
+      return
+
+    proc(text)
 
   # Add a title to an item
   @staticmethod
