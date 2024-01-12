@@ -319,6 +319,7 @@ class Utils:
         stdout, stderr = proc.communicate(text)
     except Exception as e:
       Utils.msg(f"Command Exception: {e}")
+      return CmdOutput(text="", code=1)
 
     return CmdOutput(text=stdout, code=proc.returncode)
 
@@ -335,6 +336,7 @@ class Utils:
         stdout, stderr = proc.communicate(text)
     except Exception as e:
       Utils.msg(f"Command Exception: {e}")
+      return CmdOutput(text="", code=1)
 
     return CmdOutput(text=stdout.strip(), code=proc.returncode)
 
