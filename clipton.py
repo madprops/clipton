@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "35"
+VERSION = "36"
 # https://github.com/madprops/clipton
 
 import os
@@ -312,10 +312,13 @@ class Utils:
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, \
           stdin=subprocess.PIPE, shell=False, text=True)
 
-    if timeout > 0:
-      stdout, stderr = proc.communicate(text, timeout=timeout)
-    else:
-      stdout, stderr = proc.communicate(text)
+    try:
+      if timeout > 0:
+        stdout, stderr = proc.communicate(text, timeout=timeout)
+      else:
+        stdout, stderr = proc.communicate(text)
+    except Exception as e:
+      Utils.msg(f"Command Exception: {e}")
 
     return CmdOutput(text=stdout, code=proc.returncode)
 
@@ -325,10 +328,13 @@ class Utils:
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
           stdin=subprocess.PIPE, shell=True, text=True)
 
-    if timeout > 0:
-      stdout, stderr = proc.communicate(text, timeout=timeout)
-    else:
-      stdout, stderr = proc.communicate(text)
+    try:
+      if timeout > 0:
+        stdout, stderr = proc.communicate(text, timeout=timeout)
+      else:
+        stdout, stderr = proc.communicate(text)
+    except Exception as e:
+      Utils.msg(f"Command Exception: {e}")
 
     return CmdOutput(text=stdout.strip(), code=proc.returncode)
 
