@@ -318,7 +318,6 @@ class Utils:
 
     return CmdOutput(text=stdout, code=proc.returncode)
 
-
   # Run a command without a shell
   @staticmethod
   def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
