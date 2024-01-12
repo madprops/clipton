@@ -306,7 +306,7 @@ class Utils:
 
   # Execute a command
   @staticmethod
-  def exec(proc: Popen[Any], text: str = "", timeout: int = 0) -> CmdOutput:
+  def exec(proc: Popen[str], text: str = "", timeout: int = 0) -> CmdOutput:
     try:
       if timeout > 0:
         stdout, stderr = proc.communicate(text, timeout=timeout)
