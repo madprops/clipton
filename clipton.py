@@ -10,10 +10,10 @@ import json
 import html
 import shutil
 import time
-import subprocess
 import tomllib
 import importlib.util
 from pathlib import Path
+from subprocess import Popen, PIPE
 from typing import List, Dict, Tuple, Any, Callable, Union
 from urllib.request import urlopen
 from html.parser import HTMLParser
@@ -304,14 +304,9 @@ class Utils:
     text = text.ljust(amount, " ")
     return f"<b>{text}</b>"
 
-  # Run a command without a shell
+  # Execute a command
   @staticmethod
-  def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    args = cmd.split(" ")
-
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, \
-          stdin=subprocess.PIPE, shell=False, text=True)
-
+  def exec(proc: Popen[Any], text: str = "", timeout: int = 0) -> CmdOutput:
     try:
       if timeout > 0:
         stdout, stderr = proc.communicate(text, timeout=timeout)
@@ -323,22 +318,19 @@ class Utils:
 
     return CmdOutput(text=stdout, code=proc.returncode)
 
+
+  # Run a command without a shell
+  @staticmethod
+  def run(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
+    args = cmd.split(" ")
+    proc = Popen(args, stdout=PIPE, stdin=PIPE, shell=False, text=True)
+    return Utils.exec(proc, text, timeout)
+
   # Run a command using a shell
   @staticmethod
   def run_shell(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, \
-          stdin=subprocess.PIPE, shell=True, text=True)
-
-    try:
-      if timeout > 0:
-        stdout, stderr = proc.communicate(text, timeout=timeout)
-      else:
-        stdout, stderr = proc.communicate(text)
-    except Exception as e:
-      Utils.msg(f"Command Exception: {e}")
-      return CmdOutput(text="", code=1)
-
-    return CmdOutput(text=stdout.strip(), code=proc.returncode)
+    proc = Popen(cmd, stdout=PIPE, stdin=PIPE, shell=True, text=True)
+    return Utils.exec(proc, text, timeout)
 
   # Check if a program is installed
   @staticmethod
