@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "36"
+VERSION = "37"
 # https://github.com/madprops/clipton
 
 import os
@@ -33,7 +33,7 @@ class Settings:
   max_items: int = 1000
 
   # Don't save text if the character length exceeds this
-  heavy_paste: int = 2000
+  heavy_paste: int = 5000
 
   # If enabled, the URL titles are fetched by parsing the HTML
   enable_titles: bool = True
@@ -794,6 +794,9 @@ class Watcher:
           continue
 
         if clip.startswith(ORIGINAL):
+          continue
+
+        if len(clip) > Settings.heavy_paste:
           continue
 
         Items.read()
