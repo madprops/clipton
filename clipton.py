@@ -714,6 +714,7 @@ class Items:
         if proc(converted):
           Utils.copy_text(converted)
           Utils.msg("Text Converted")
+
         return
 
     trimmed = Utils.trim(text)
@@ -722,6 +723,7 @@ class Items:
       if proc(trimmed):
         Utils.copy_text(trimmed)
         Utils.msg("Text Trimmed")
+
       return
 
     proc(text)
