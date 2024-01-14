@@ -657,9 +657,10 @@ class Items:
 
     s = " ".join(item.text.strip() for item in item_slice)
     del Items.items[index:index_2]
-    Items.add(s)
-    Items.write()
-    Utils.copy_text(s)
+
+    if Items.add(s):
+      Items.write()
+      Utils.copy_text(s)
 
   # Add an item to the item list
   # It performs some checks
