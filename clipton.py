@@ -665,12 +665,12 @@ class Items:
   # It performs some checks
   # It removes duplicates
   @staticmethod
-  def add(text: str) -> None:
+  def add(text: str) -> bool:
     if not text:
-      return
+      return False
 
     if len(text) > Settings.heavy_paste:
-      return
+      return False
 
     item_exists = False
 
@@ -687,16 +687,20 @@ class Items:
     Items.items.insert(0, the_item)
     Items.items = Items.items[0:Settings.max_items]
     Items.write()
+    return True
 
   # Insert an item into the item list
   # Try to convert the text
   # Get the title afterwards
   @staticmethod
   def insert(text: str) -> None:
-    def proc(txt: str) -> None:
-      Items.add(txt)
+    def proc(txt: str) -> bool:
+      if not Items.add(txt):
+        return False
+
       Items.title(txt)
       Items.clean()
+      return True
 
     original = text.startswith(ORIGINAL)
 
@@ -707,17 +711,17 @@ class Items:
         if Settings.save_originals:
           Items.add(ORIGINAL + text)
 
-        proc(converted)
-        Utils.copy_text(converted)
-        Utils.msg("Text Converted")
+        if proc(converted):
+          Utils.copy_text(converted)
+          Utils.msg("Text Converted")
         return
 
     trimmed = Utils.trim(text)
 
     if trimmed != text:
-      proc(trimmed)
-      Utils.copy_text(trimmed)
-      Utils.msg("Text Trimmed")
+      if proc(trimmed):
+        Utils.copy_text(trimmed)
+        Utils.msg("Text Trimmed")
       return
 
     proc(text)
