@@ -267,10 +267,7 @@ class Utils:
     https = text.startswith("https://")
 
     if (http or https) and not Utils.space(text):
-      if not Utils.get_url_type(text) == "text/html":
-        Utils.msg("Non HTML URL")
-      else:
-        Utils.msg("Getting Title")
+      if Utils.get_url_type(text) == "text/html":
         html = str(urlopen(text).read().decode("utf-8"))
         parser = Utils.TitleParser()
         parser.feed(html)
