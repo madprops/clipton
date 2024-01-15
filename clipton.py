@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "38"
+VERSION = "39"
 # https://github.com/madprops/clipton
 
 import os
@@ -695,16 +695,15 @@ class Items:
   # Get the title afterwards
   @staticmethod
   def insert(text: str) -> None:
-    def proc(txt: str, copy: bool) -> bool:
+    def proc(txt: str, copy: bool) -> None:
       if not Items.add(txt):
-        return False
+        return
 
       if copy:
         Utils.copy_text(txt)
 
       Items.title(txt)
       Items.clean()
-      return True
 
     original = text.startswith(ORIGINAL)
 
@@ -777,7 +776,7 @@ class Watcher:
   last_clip: str
 
   # Time interval in seconds to check the clipboard
-  sleep_time = 0.75
+  sleep_time = 0.666
 
   # Start the clipboard watcher
   # This is a loop that checks the clipboard periodically
