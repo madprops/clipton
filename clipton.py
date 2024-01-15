@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "37"
+VERSION = "38"
 # https://github.com/madprops/clipton
 
 import os
@@ -695,9 +695,12 @@ class Items:
   # Get the title afterwards
   @staticmethod
   def insert(text: str) -> None:
-    def proc(txt: str) -> bool:
+    def proc(txt: str, copy: bool) -> bool:
       if not Items.add(txt):
         return False
+
+      if copy:
+        Utils.copy_text(txt)
 
       Items.title(txt)
       Items.clean()
@@ -712,22 +715,16 @@ class Items:
         if Settings.save_originals:
           Items.add(ORIGINAL + text)
 
-        if proc(converted):
-          Utils.copy_text(converted)
-          Utils.msg("Text Converted")
-
+        proc(converted, True)
         return
 
     trimmed = Utils.trim(text)
 
     if trimmed != text:
-      if proc(trimmed):
-        Utils.copy_text(trimmed)
-        Utils.msg("Text Trimmed")
-
+      proc(trimmed, True)
       return
 
-    proc(text)
+    proc(text, False)
 
   # Add a title to an item
   @staticmethod
