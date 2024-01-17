@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "39"
+VERSION = "40"
 # https://github.com/madprops/clipton
 
 import os
@@ -681,6 +681,8 @@ class Items:
 
     if not item_exists:
       the_item = Item.from_text(text)
+    else:
+      the_item.date = Utils.get_seconds()
 
     Items.items.insert(0, the_item)
     Items.items = Items.items[0:Settings.max_items]
