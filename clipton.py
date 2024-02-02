@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "40"
+VERSION = "41"
 # https://github.com/madprops/clipton
 
 import os
@@ -268,7 +268,11 @@ class Utils:
 
     if (http or https) and not Utils.space(text):
       if Utils.get_url_type(text) == "text/html":
-        html = str(urlopen(text).read().decode("utf-8"))
+        try:
+          html = str(urlopen(text).read().decode("utf-8"))
+        except:
+          return ""
+
         parser = Utils.TitleParser()
         parser.feed(html)
         return parser.title
