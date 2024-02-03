@@ -15,11 +15,12 @@ import importlib.util
 from pathlib import Path
 from subprocess import Popen, PIPE
 from typing import List, Dict, Tuple, Any, Callable, Union
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
 
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
 CMD_TIMEOUT = 3
 
@@ -254,11 +255,14 @@ class Utils:
   @staticmethod
   def get_url_type(url: str) -> str:
     try:
-      r = urlopen(url)
-      header = r.headers
-      return str(header.get_content_type())
-    except:
-      return "none"
+      request = Request(url, headers={"User-Agent": USER_AGENT})
+
+      with urlopen(request) as r:
+        header = r.headers
+        return str(header.get_content_type())
+
+    except Exception as e:
+      Utils.msg(f"URL Type Exception: {e}")
 
   # Get the title from a URL
   @staticmethod
@@ -269,12 +273,15 @@ class Utils:
     if (http or https) and not Utils.space(text):
       try:
         if Utils.get_url_type(text) == "text/html":
-          html = str(urlopen(text).read().decode("utf-8"))
-          parser = Utils.TitleParser()
-          parser.feed(html)
-          return parser.title
-      except:
-        pass
+          request = Request(text, headers={"User-Agent": USER_AGENT})
+
+          with urlopen(request) as r:
+            html = r.read().decode("utf-8")
+            parser = Utils.TitleParser()
+            parser.feed(html)
+            return parser.title
+      except Exception as e:
+        Utils.msg(f"Title Exception: {e}")
 
     return ""
 
