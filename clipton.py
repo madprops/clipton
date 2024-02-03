@@ -251,18 +251,22 @@ class Utils:
 
     return Utils.info(timeago, 9)
 
+  # Get a request object
+  @staticmethod
+  def request(url: str) -> Request:
+    return Request(url, headers={"User-Agent": USER_AGENT})
+
   # Get the content type of a URL
   @staticmethod
   def get_url_type(url: str) -> str:
     try:
-      request = Request(url, headers={"User-Agent": USER_AGENT})
-
-      with urlopen(request) as r:
+      with urlopen(Utils.request(url)) as r:
         header = r.headers
         return str(header.get_content_type())
 
     except Exception as e:
       Utils.msg(f"URL Type Exception: {e}")
+      return "none"
 
   # Get the title from a URL
   @staticmethod
@@ -273,9 +277,7 @@ class Utils:
     if (http or https) and not Utils.space(text):
       try:
         if Utils.get_url_type(text) == "text/html":
-          request = Request(text, headers={"User-Agent": USER_AGENT})
-
-          with urlopen(request) as r:
+          with urlopen(Utils.request(text)) as r:
             html = r.read().decode("utf-8")
             parser = Utils.TitleParser()
             parser.feed(html)
