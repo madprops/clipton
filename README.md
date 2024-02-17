@@ -111,8 +111,6 @@ A red icon means the text has multiple lines.
 
 A blue globe icon means the text is a URL.
 
-When the url icon is set
-
 The icons are settings and can be changed in the settings file.
 
 If you set them to an empty string they won't be used.
