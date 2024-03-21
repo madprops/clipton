@@ -35,13 +35,29 @@ and [rofi](https://archlinux.org/packages/extra/x86_64/rofi/) (Third-party progr
 
 `sudo pacman -S xclip rofi`
 
+### Automatic
+
+You can install it through `pipx`:
+
+```sh
+pipx install git+https://github.com/madprops/clipton --force
+```
+
+This should provide the `clipton` command.
+
+And it should copy the systemd service file.
+
+### Manual
+
 Clone this repo somewhere:
 
 `git clone --depth=1 https://github.com/madprops/clipton`
 
 Place [clipton.py](clipton.py) in `/usr/bin/clipton`.
 
-Place [clipton.service](clipton.service) inside `/usr/lib/systemd/user/`.
+Place [clipton.service](clipton.service) inside `~/.config/systemd/user/`.
+
+### Usage
 
 Start the watcher with `systemctl --user start clipton`.
 

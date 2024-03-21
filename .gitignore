@@ -1,1 +1,7 @@
-.mypy_cache
+venv/*
+output/*
+*.pyc
+__pycache__/
+.mypy_cache/
+Clipton.egg-info/
+build/
