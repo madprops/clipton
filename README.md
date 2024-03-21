@@ -30,10 +30,12 @@ It has only been tested on `X11` and not `Wayland`.
 
 ## Installation
 
-Install [xclip](https://archlinux.org/packages/extra/x86_64/xclip/)
+First install [xclip](https://archlinux.org/packages/extra/x86_64/xclip/)
 and [rofi](https://archlinux.org/packages/extra/x86_64/rofi/) (Third-party programs):
 
 `sudo pacman -S xclip rofi`
+
+These are needed for clipboard capabilities and to display the interface.
 
 ### Automatic
 
