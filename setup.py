@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 import json
+import subprocess
 
 with open("manifest.json", "r") as file:
     manifest = json.load(file)
@@ -35,6 +36,8 @@ WantedBy=graphical.target
 
     with open(service_file, "w") as f:
         f.write(content)
+
+    subprocess.run(["systemctl", "--user", "daemon-reload"])
 
 setup(
     name = title,
