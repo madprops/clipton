@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-VERSION = "43"
-# https://github.com/madprops/clipton
-
 import os
 import re
 import sys
@@ -10,15 +7,19 @@ import json
 import html
 import shutil
 import time
+import socket
 import tomllib
 import importlib.util
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import List, Dict, Tuple, Any, Callable, Union
+from typing import List, Dict, Any, Callable
 from urllib.request import Request, urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
+
+VERSION = "45"
+# https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
@@ -435,7 +436,7 @@ class Rofi:
   @staticmethod
   def show(selected: int = 0) -> None:
     opts: List[str] = []
-    asterisk = f"<span> * </span>"
+    asterisk = "<span> * </span>"
 
     for item in Items.items:
       line = item.text.strip()
@@ -467,7 +468,7 @@ class Rofi:
       p.append(num)
 
     if Settings.show_shortcuts:
-      p.append(f"Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
+      p.append("Alt+1 Delete | Alt+(2-9) Join | Alt+0 Clear")
 
     prompt = Rofi.prompt(" | ".join(p))
     prompt = f"{prompt} -format i {Rofi.style()} -selected-row {selected}"
@@ -825,6 +826,9 @@ class Watcher:
 
 # Main function
 def main() -> None:
+  # Set a timeout for all socket operations
+  socket.setdefaulttimeout(10)
+
   Config.setup()
   Settings.read()
   mode = "show"
