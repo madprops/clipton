@@ -24,6 +24,7 @@ VERSION = "45"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
 CMD_TIMEOUT = 3
+SOCKET_TIMEOUT = 6
 
 #-----------------
 # SETTINGS
@@ -827,7 +828,7 @@ class Watcher:
 # Main function
 def main() -> None:
   # Set a timeout for all socket operations
-  socket.setdefaulttimeout(CMD_TIMEOUT)
+  socket.setdefaulttimeout(SOCKET_TIMEOUT)
 
   Config.setup()
   Settings.read()
