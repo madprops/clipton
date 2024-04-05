@@ -827,7 +827,7 @@ class Watcher:
 # Main function
 def main() -> None:
   # Set a timeout for all socket operations
-  socket.setdefaulttimeout(10)
+  socket.setdefaulttimeout(CMD_TIMEOUT)
 
   Config.setup()
   Settings.read()
