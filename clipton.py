@@ -18,7 +18,7 @@ from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
 
-VERSION = "46"
+VERSION = "47"
 # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -570,8 +570,9 @@ class Rofi:
         s += f"{Settings.single_icon} {line}"
       elif Settings.multi_icon and (not td.single):
         s += f"{Settings.multi_icon} {line}"
-    else:
-      s += line
+
+    if not s:
+      s = line
 
     return s
 
