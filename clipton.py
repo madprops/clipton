@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import annotations
 
 import os
 import re
@@ -12,13 +13,14 @@ import tomllib
 import importlib.util
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import List, Dict, Any, Callable
+from typing import Any, ClassVar
+from collections.abc import Callable
 from urllib.request import Request, urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
 
-VERSION = "47"
+VERSION = "50"
 # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -105,7 +107,7 @@ class Settings:
         data = Files.read_toml(Config.settings_path)
         props = Settings.__annotations__
 
-        for prop in props.keys():
+        for prop in props:
             if prop in data:
                 setattr(Settings, prop, data[prop])
 
@@ -151,7 +153,7 @@ class Files:
     # Read a file and return the content
     @staticmethod
     def read(path: Path, fallback: str = "") -> str:
-        file = open(path, "r")
+        file = path.open("r")
         content = file.read().strip()
 
         if not content:
@@ -163,19 +165,21 @@ class Files:
     # Write to a file
     @staticmethod
     def write(path: Path, content: str) -> None:
-        file = open(path, "w")
+        file = path.open("w")
         file.write(content)
         file.close()
 
     # Read a JSON file and return the
     @staticmethod
-    def read_json(path: Path, hook: Callable[[Any], Any], fallback: str = "[]") -> Any:
+    def read_json(
+        path: Path, hook: Callable[[Any], Any] | None, fallback: str = "[]"
+    ) -> Any:
         content = Files.read(path, fallback)
 
         if hook is not None:
             return json.loads(content, object_hook=hook)
-        else:
-            return json.loads(content)
+
+        return json.loads(content)
 
     # Write to a JSON file
     @staticmethod
@@ -185,8 +189,8 @@ class Files:
 
     # Read a TOML file and return the dictionary
     @staticmethod
-    def read_toml(path: Path) -> Dict[str, Any]:
-        with open(path, "rb") as file:
+    def read_toml(path: Path) -> dict[str, Any]:
+        with path.open("rb") as file:
             return tomllib.load(file)
 
     # Create a file
@@ -223,7 +227,7 @@ class Utils:
             self.match = False
             self.title = ""
 
-        def handle_starttag(self, tag: str, attributes: List[Any]) -> None:
+        def handle_starttag(self, tag: str, attributes: list[Any]) -> None:
             self.match = tag == "title"
 
         def handle_data(self, data: str) -> None:
@@ -315,7 +319,7 @@ class Utils:
     # Print text
     @staticmethod
     def msg(text: str) -> None:
-        print(f"\033[92mClipton:\033[0m {text}")
+        print(f"\033[92mClipton:\033[0m {text}")  # noqa: T201
 
     # Add a spaced info string
     @staticmethod
@@ -389,7 +393,7 @@ class Converters:
         py_files = [file for file in files if file.endswith(".py")]
 
         for file in py_files:
-            module_name = os.path.splitext(file)[0]
+            module_name = Path(file).stem
             module_path = Path(Config.converters_path / file)
             spec = importlib.util.spec_from_file_location(module_name, module_path)
 
@@ -424,7 +428,7 @@ class TextData:
 
     # Get the text data for a line
     @staticmethod
-    def get(item: "Item") -> "TextData":
+    def get(item: Item) -> TextData:
         data = TextData()
         data.single = item.num_lines == 1
         data.http = item.text.startswith("http://")
@@ -454,7 +458,7 @@ class Rofi:
     # Show the Rofi menu with the items
     @staticmethod
     def show(selected: int = 0) -> None:
-        opts: List[str] = []
+        opts: list[str] = []
         asterisk = "<span> * </span>"
 
         for item in Items.items:
@@ -513,7 +517,7 @@ class Rofi:
 
     # Get the info strings for an item
     @staticmethod
-    def get_info(item: "Item") -> str:
+    def get_info(item: Item) -> str:
         num_lines = ""
 
         if Settings.show_num_lines:
@@ -541,7 +545,7 @@ class Rofi:
 
     # Get the title string for an item
     @staticmethod
-    def get_title(item: "Item") -> str:
+    def get_title(item: Item) -> str:
         if item.title:
             title = ""
             title = item.title
@@ -555,7 +559,7 @@ class Rofi:
 
     # Remove unwanted text from a line
     @staticmethod
-    def remove(item: "Item", line: str, td: "TextData") -> str:
+    def remove(item: Item, line: str, td: TextData) -> str:
         if Settings.remove_http and td.single:
             removed = ""
 
@@ -580,7 +584,7 @@ class Rofi:
 
     # Get the icons for a line
     @staticmethod
-    def get_icon(item: "Item", line: str, td: "TextData") -> str:
+    def get_icon(item: Item, line: str, td: TextData) -> str:
         s = ""
 
         if Settings.show_icons:
@@ -616,7 +620,7 @@ class Item:
 
     # Create an item from a JSON object
     @staticmethod
-    def from_json(obj: Dict[str, Any]) -> "Item":
+    def from_json(obj: dict[str, Any]) -> Item:
         item = Item()
         item.text = obj["text"]
         item.date = obj["date"]
@@ -626,7 +630,7 @@ class Item:
 
     # Create an item from text
     @staticmethod
-    def from_text(text: str, title: str = "") -> "Item":
+    def from_text(text: str, title: str = "") -> Item:
         item = Item()
         item.text = text
         item.date = Utils.get_seconds()
@@ -635,13 +639,13 @@ class Item:
         return item
 
     # Convert an item to a dictionary
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return self.__dict__
 
 
 class Items:
     # List with all the items
-    items: List[Item] = []
+    items: ClassVar[list[Item]] = []
 
     # Read the items file and fill the item list
     @staticmethod
