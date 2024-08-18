@@ -134,3 +134,7 @@ The icons are settings and can be changed in the settings file.
 If you set them to an empty string they won't be used.
 
 You can disable all icons by setting `show_icons` to `false`.
+
+## Copy Title
+
+When a url item has a title, you can copy it by using `Shift + Enter`.
