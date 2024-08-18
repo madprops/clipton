@@ -12,8 +12,10 @@ version = manifest["version"]
 
 package_data = {}
 
+
 def _post_install():
     _create_service_file()
+
 
 def _create_service_file():
     path_to_bin = Path(f"~/.local/bin/{program}").expanduser().resolve()
@@ -39,14 +41,15 @@ WantedBy=graphical.target
 
     subprocess.run(["systemctl", "--user", "daemon-reload"])
 
+
 setup(
-    name = title,
-    version = version,
-    packages = find_packages(where="."),
-    package_dir = {"": "."},
-    package_data = package_data,
+    name=title,
+    version=version,
+    packages=find_packages(where="."),
+    package_dir={"": "."},
+    package_data=package_data,
     py_modules=[program],
-    entry_points = {
+    entry_points={
         "console_scripts": [
             f"{program}={program}:main",
         ],
