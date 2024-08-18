@@ -7,6 +7,7 @@ def convert(text: str) -> str:
         regex = re.compile(
             "^https:\/\/music\.youtube\.com\/watch\?v=(?P<video_id>[\w-]+)[^ \n]*$"
         )
+
         match = regex.search(text)
 
         if match and match.group("video_id"):
@@ -17,6 +18,7 @@ def convert(text: str) -> str:
         regex = re.compile(
             "^https:\/\/music\.youtube\.com\/playlist\?list=(?P<list_id>[\w-]+)[^ \n]*$"
         )
+
         match = regex.search(text)
 
         if match and match.group("list_id"):

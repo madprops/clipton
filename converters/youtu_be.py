@@ -6,6 +6,7 @@ def convert(text: str) -> str:
     regex = re.compile(
         r"^https:\/\/youtu.be\/(?P<video_id>[\w-]+)(\?t=(?P<timestamp>[\d]+))?[^ \n]*$"
     )
+
     match = regex.search(text)
 
     if match and match.group("video_id"):
