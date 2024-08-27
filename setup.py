@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 import subprocess
 
-with open("manifest.json", "r") as file:
+with Path("manifest.json").open("r") as file:
     manifest = json.load(file)
 
 title = manifest["title"]
@@ -34,12 +34,11 @@ WantedBy=graphical.target
     service_dir = Path("~/.config/systemd/user").expanduser().resolve()
     service_dir.mkdir(parents=True, exist_ok=True)
     service_file = Path(service_dir, f"{program}.service").expanduser().resolve()
-    print(service_file)
 
-    with open(service_file, "w") as f:
+    with service_file.open("w") as f:
         f.write(content)
 
-    subprocess.run(["systemctl", "--user", "daemon-reload"])
+    subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
 
 
 setup(

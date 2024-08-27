@@ -20,7 +20,7 @@ from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
 
-VERSION = "50"
+VERSION = "51"
 # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"

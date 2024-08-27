@@ -5,7 +5,7 @@ import re
 def convert(text: str) -> str:
     if "watch?v" in text:
         regex = re.compile(
-            "^https:\/\/music\.youtube\.com\/watch\?v=(?P<video_id>[\w-]+)[^ \n]*$"
+            r"^https:\/\/music\.youtube\.com\/watch\?v=(?P<video_id>[\w-]+)[^ \n]*$"
         )
 
         match = regex.search(text)
@@ -16,7 +16,7 @@ def convert(text: str) -> str:
 
     if "playlist?list" in text:
         regex = re.compile(
-            "^https:\/\/music\.youtube\.com\/playlist\?list=(?P<list_id>[\w-]+)[^ \n]*$"
+            r"^https:\/\/music\.youtube\.com\/playlist\?list=(?P<list_id>[\w-]+)[^ \n]*$"
         )
 
         match = regex.search(text)

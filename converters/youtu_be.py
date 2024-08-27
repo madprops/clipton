@@ -15,7 +15,7 @@ def convert(text: str) -> str:
 
         if timestamp:
             return f"https://www.youtube.com/watch?v={video_id}&t={timestamp}s"
-        else:
-            return f"https://www.youtube.com/watch?v={video_id}"
+
+        return f"https://www.youtube.com/watch?v={video_id}"
 
     return ""
