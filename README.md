@@ -39,7 +39,9 @@ These are needed for clipboard capabilities and to display the interface.
 
 ### Automatic
 
-You can install it through `pipx`:
+If you are on Arch you can use the [AUR package](https://aur.archlinux.org/packages/clipton-git).
+
+You can also install it through `pipx`:
 
 ```sh
 pipx install git+https://github.com/madprops/clipton --force
