@@ -141,4 +141,4 @@ You can disable all icons by setting `show_icons` to `false`.
 
 ## Copy Title
 
-When a url item has a title, you can copy it by using `Shift + Enter`.
+When a URL item has a title, you can copy it by using `Shift + Enter`.
