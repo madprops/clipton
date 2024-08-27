@@ -57,7 +57,7 @@ Clone this repo somewhere:
 
 `git clone --depth=1 https://github.com/madprops/clipton`
 
-Place [clipton.py](clipton.py) in `/usr/bin/clipton`.
+Place [clipton.py](clipton.py) in `/usr/bin/clipton` or somewhere in your path.
 
 Place [clipton.service](clipton.service) inside `~/.config/systemd/user/`.
 
