@@ -61,6 +61,8 @@ Place [clipton.py](clipton.py) in `/usr/bin/clipton`.
 
 Place [clipton.service](clipton.service) inside `~/.config/systemd/user/`.
 
+Reload: `systemctl --user daemon-reload`
+
 ### Usage
 
 Start the watcher with `systemctl --user start clipton`.
