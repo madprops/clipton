@@ -20,7 +20,7 @@ from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
 
-VERSION = "51"
+VERSION = "52"
 # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -131,6 +131,46 @@ class Config:
     # Converters path
     converters_path = config_path / Path("converters")
 
+    # Display system (xorg or wayland)
+    display = "xorg"  # Default to xorg
+
+    # Detect the display system
+    @staticmethod
+    def detect_display() -> str:
+        # Check for Wayland session
+        if os.environ.get("WAYLAND_DISPLAY"):
+            return "wayland"
+
+        # Check XDG_SESSION_TYPE environment variable
+        session_type = os.environ.get("XDG_SESSION_TYPE")
+        if session_type == "wayland":
+            return "wayland"
+        elif session_type == "x11":
+            return "xorg"
+
+        # Check DISPLAY environment variable (X11)
+        if os.environ.get("DISPLAY"):
+            return "xorg"
+
+        # Fall back to checking running processes
+        try:
+            # Check for Wayland compositor processes
+            wayland_check = Utils.run("pgrep -f 'wayland|weston|sway|gnome-shell'", timeout=2)
+
+            if wayland_check.code == 0 and wayland_check.text.strip():
+                return "wayland"
+
+            # Check for X server process
+            xorg_check = Utils.run("pgrep -f 'Xorg|X11'", timeout=2)
+
+            if xorg_check.code == 0 and xorg_check.text.strip():
+                return "xorg"
+        except Exception:
+            pass
+
+        # Default to xorg if detection fails
+        return "xorg"
+
     # Create the config directory and files
     @staticmethod
     def setup() -> None:
@@ -142,6 +182,19 @@ class Config:
 
         Files.touch(Config.items_path)
         Files.touch(Config.settings_path)
+
+        # Set the display system
+        Config.display = Config.detect_display()
+
+        if Config.display == "xorg":
+            Utils.need("xclip")
+            Config.clipboard_copy = "xclip -sel clip -f"
+            Config.clipboard_paste = "xclip -o -sel clip"
+        elif Config.display == "wayland":
+            Utils.need("wl-copy")
+            Utils.need("wl-paste")
+            Config.clipboard_copy = "wl-copy"
+            Config.clipboard_paste = "wl-paste"
 
 
 # -----------------
@@ -304,12 +357,12 @@ class Utils:
     # Copy text to the clipboard
     @staticmethod
     def copy_text(text: str) -> None:
-        Utils.run("xclip -sel clip -f", text, timeout=CMD_TIMEOUT)
+        Utils.run(Config.clipboard_copy, text, timeout=CMD_TIMEOUT)
 
     # Read the clipboard
     @staticmethod
     def read_clipboard() -> str:
-        ans = Utils.run("xclip -o -sel clip", timeout=CMD_TIMEOUT)
+        ans = Utils.run(Config.clipboard_paste, timeout=CMD_TIMEOUT)
 
         if ans.code == 0:
             return str(ans.text)
@@ -836,7 +889,6 @@ class Watcher:
     # It detects clipboard changes and adds to the item list
     @staticmethod
     def start() -> None:
-        Utils.need("xclip")
         Watcher.last_clip = Utils.read_clipboard()
         Utils.msg("Watcher Started")
 
