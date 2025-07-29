@@ -143,6 +143,7 @@ class Config:
 
         # Check XDG_SESSION_TYPE environment variable
         session_type = os.environ.get("XDG_SESSION_TYPE")
+
         if session_type == "wayland":
             return "wayland"
         elif session_type == "x11":
@@ -157,13 +158,13 @@ class Config:
             # Check for Wayland compositor processes
             wayland_check = Utils.run("pgrep -f 'wayland|weston|sway|gnome-shell'", timeout=2)
 
-            if wayland_check.code == 0 and wayland_check.text.strip():
+            if (wayland_check.code == 0) and wayland_check.text.strip():
                 return "wayland"
 
             # Check for X server process
             xorg_check = Utils.run("pgrep -f 'Xorg|X11'", timeout=2)
 
-            if xorg_check.code == 0 and xorg_check.text.strip():
+            if (xorg_check.code == 0) and xorg_check.text.strip():
                 return "xorg"
         except Exception:
             pass
