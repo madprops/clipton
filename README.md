@@ -33,9 +33,21 @@ It has only been tested on `X11` and not `Wayland`.
 First install [xclip](https://archlinux.org/packages/extra/x86_64/xclip/)
 and [rofi](https://archlinux.org/packages/extra/x86_64/rofi/) (Third-party programs):
 
-`sudo pacman -S xclip rofi`
+### Requirements
 
-These are needed for clipboard capabilities and to display the interface.
+For xorg:
+
+>xclip
+
+>clipnotify
+
+For wayland:
+
+>wl-copy
+
+>wl-paste
+
+These should be in your package manager.
 
 ### Automatic
 
