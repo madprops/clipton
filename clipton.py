@@ -8,11 +8,13 @@ import json
 import html
 import shutil
 import time
+import shlex
 import socket
 import tomllib
 import importlib.util
-from pathlib import Path
+import subprocess
 from subprocess import Popen, PIPE
+from pathlib import Path
 from typing import Any, ClassVar
 from collections.abc import Callable
 from urllib.request import Request, urlopen
@@ -20,7 +22,7 @@ from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
 
-VERSION = "52"
+VERSION = "53"
 # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -100,6 +102,12 @@ class Settings:
 
     # Icon to use for items with multiple lines
     multi_icon: str = "🔴"
+
+    # Show a notification popup on clipboard change
+    feedback: bool = False
+
+    # Amount of chars to show in the feedback
+    feedback_length: int = 280
 
     # Read the settings file
     @staticmethod
@@ -189,6 +197,7 @@ class Config:
 
         if Config.display == "xorg":
             Utils.need("xclip")
+            Utils.need("clipnotify")
             Config.clipboard_copy = "xclip -sel clip -f"
             Config.clipboard_paste = "xclip -o -sel clip"
         elif Config.display == "wayland":
@@ -401,6 +410,15 @@ class Utils:
         args = cmd.split(" ")
         proc = Popen(args, stdout=PIPE, stdin=PIPE, shell=False, text=True)
         return Utils.exec(proc, text, timeout)
+
+    # Run a command (alt)
+    @staticmethod
+    def run_with_args(cmd: str, text: str = "", timeout: int = 0) -> CmdOutput:
+        base_args = shlex.split(cmd)
+        additional_args = [text] if text else []
+        final_args = base_args + additional_args
+        proc = Popen(final_args, stdout=PIPE, stderr=PIPE, shell=False, text=True)
+        return Utils.exec(proc, "", timeout)
 
     # Run a command using a shell
     @staticmethod
@@ -879,40 +897,75 @@ class Items:
 
 
 class Watcher:
-    # The last text that was copied
-    last_clip: str
+    @staticmethod
+    def on_new_clip(clip: str) -> None:
+        if (not clip) or (clip == Watcher.last_clip):
+            return
 
-    # Time interval in seconds to check the clipboard
-    sleep_time = 0.666
+        if clip.startswith("file://") or clip.startswith(ORIGINAL):
+            return
 
-    # Start the clipboard watcher
-    # This is a loop that checks the clipboard periodically
-    # It detects clipboard changes and adds to the item list
+        if len(clip) > Settings.heavy_paste:
+            return
+
+        Watcher.last_clip = clip
+
+        Items.read()
+        Items.insert(clip)
+
+        Utils.msg(f"New clip detected: {len(clip)} bytes")
+
+        if Settings.feedback:
+            try:
+                Watcher.feedback(clip)
+            except Exception as e:
+                Utils.msg(f"Feedback Exception: {e}")
+
+    @staticmethod
+    def feedback(clip) -> None:
+        num_lines = clip.count("\n")
+
+        fv = clip[:Settings.feedback_length].strip()
+        fv = re.sub(r"\n+", " 👾 ", fv)
+        fv = re.sub(r"\s+", " ", fv)
+
+        text = f"Length: {len(clip)} | Lines: {num_lines}\n{fv}"
+        Utils.run_with_args("notify-send", text=text)
+
     @staticmethod
     def start() -> None:
         Watcher.last_clip = Utils.read_clipboard()
         Utils.msg("Watcher Started")
 
+        if Config.display == "xorg":
+            Watcher.xorg()
+        elif Config.display == "wayland":
+            Watcher.wayland()
+
+    @staticmethod
+    def xorg() -> None:
         while True:
+            subprocess.run(["clipnotify", "-s", "clipboard"])
             clip = Utils.read_clipboard()
+            Watcher.on_new_clip(clip)
 
-            if clip and (clip != Watcher.last_clip):
-                Watcher.last_clip = clip
+    @staticmethod
+    def wayland() -> None:
+        watch_command = ["wl-paste", "--watch", "echo"]
+        watcher = subprocess.Popen(watch_command, stdout=subprocess.PIPE, text=True)
 
-                if clip.startswith("file://"):
-                    continue
+        while True:
+            watcher.stdout.readline()
 
-                if clip.startswith(ORIGINAL):
-                    continue
+            result = subprocess.run(
+                ["wl-paste", "--no-newline"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
-                if len(clip) > Settings.heavy_paste:
-                    continue
-
-                Items.read()
-                Items.insert(clip)
-
-            # Very important
-            time.sleep(Watcher.sleep_time)
+            clip = result.stdout
+            Watcher.on_new_clip(clip)
 
 
 # -----------------
