@@ -7,7 +7,6 @@ import sys
 import json
 import html
 import shutil
-import time
 import shlex
 import socket
 import tomllib
@@ -154,7 +153,8 @@ class Config:
 
         if session_type == "wayland":
             return "wayland"
-        elif session_type == "x11":
+
+        if session_type == "x11":
             return "xorg"
 
         # Check DISPLAY environment variable (X11)
@@ -164,7 +164,9 @@ class Config:
         # Fall back to checking running processes
         try:
             # Check for Wayland compositor processes
-            wayland_check = Utils.run("pgrep -f 'wayland|weston|sway|gnome-shell'", timeout=2)
+            wayland_check = Utils.run(
+                "pgrep -f 'wayland|weston|sway|gnome-shell'", timeout=2
+            )
 
             if (wayland_check.code == 0) and wayland_check.text.strip():
                 return "wayland"
@@ -902,7 +904,7 @@ class Watcher:
         if (not clip) or (clip == Watcher.last_clip):
             return
 
-        if clip.startswith("file://") or clip.startswith(ORIGINAL):
+        if clip.startswith(("file://", ORIGINAL)):
             return
 
         if len(clip) > Settings.heavy_paste:
@@ -925,7 +927,7 @@ class Watcher:
     def feedback(clip) -> None:
         num_lines = clip.count("\n")
 
-        fv = clip[:Settings.feedback_length].strip()
+        fv = clip[: Settings.feedback_length].strip()
         fv = re.sub(r"\n+", " 👾 ", fv)
         fv = re.sub(r"\s+", " ", fv)
 
@@ -945,7 +947,7 @@ class Watcher:
     @staticmethod
     def xorg() -> None:
         while True:
-            subprocess.run(["clipnotify", "-s", "clipboard"])
+            subprocess.run(["clipnotify", "-s", "clipboard"], check=True)
             clip = Utils.read_clipboard()
             Watcher.on_new_clip(clip)
 
