@@ -6,6 +6,7 @@ import re
 import sys
 import json
 import html
+import time
 import shutil
 import shlex
 import socket
@@ -20,9 +21,9 @@ from urllib.request import Request, urlopen
 from html.parser import HTMLParser
 from datetime import datetime
 from dataclasses import dataclass
+from collections import deque
 
-VERSION = "53"
-# https://github.com/madprops/clipton
+VERSION = "54"  # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
@@ -947,27 +948,53 @@ class Watcher:
     @staticmethod
     def xorg() -> None:
         while True:
+            # This is a blocking call, if it fails the program will exit
+            # A similar restart logic could be applied here if needed
             subprocess.run(["clipnotify", "-s", "clipboard"], check=True)
             clip = Utils.read_clipboard()
             Watcher.on_new_clip(clip)
 
     @staticmethod
     def wayland() -> None:
-        watch_command = ["wl-paste", "--watch", "echo"]
-        watcher = subprocess.Popen(watch_command, stdout=subprocess.PIPE, text=True)
+        MAX_FAILURES_PER_MINUTE = 5
+        FAILURE_WINDOW_SECONDS = 60
+        failure_timestamps = deque()
 
         while True:
-            watcher.stdout.readline()
+            current_time = time.time()
 
-            result = subprocess.run(
-                ["wl-paste", "--no-newline"],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
+            while failure_timestamps and ((current_time - failure_timestamps[0]) > FAILURE_WINDOW_SECONDS):
+                failure_timestamps.popleft()
 
-            clip = result.stdout
-            Watcher.on_new_clip(clip)
+            if len(failure_timestamps) >= MAX_FAILURES_PER_MINUTE:
+                Utils.msg(f"Wayland watcher failed too many times. Stopping.")
+                break
+
+            try:
+                Utils.msg("Starting Wayland watcher process...")
+                watch_command = ["wl-paste", "--watch", "echo"]
+                watcher_process = subprocess.Popen(watch_command, stdout=subprocess.PIPE, text=True)
+
+                for _ in watcher_process.stdout:
+                    result = subprocess.run(
+                        ["wl-paste", "--no-newline"],
+                        capture_output=True,
+                        text=True,
+                        check=True,
+                    )
+
+                    clip = result.stdout
+                    Watcher.on_new_clip(clip)
+
+                watcher_process.wait()
+
+                if watcher_process.returncode != 0:
+                    raise subprocess.CalledProcessError(watcher_process.returncode, watch_command)
+
+            except (subprocess.CalledProcessError, FileNotFoundError) as e:
+                Utils.msg(f"Wayland watcher failed: {e}. Will attempt to restart.")
+                failure_timestamps.append(time.time())
+                time.sleep(2)
 
 
 # -----------------
