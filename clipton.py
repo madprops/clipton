@@ -23,7 +23,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from collections import deque
 
-VERSION = "54"  # https://github.com/madprops/clipton
+VERSION = "55"  # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
@@ -956,45 +956,78 @@ class Watcher:
 
     @staticmethod
     def wayland() -> None:
-        MAX_FAILURES_PER_MINUTE = 5
-        FAILURE_WINDOW_SECONDS = 60
-        failure_timestamps = deque()
+            MAX_FAILURES_PER_MINUTE = 5
+            FAILURE_WINDOW_SECONDS = 60
+            failure_timestamps = deque()
 
-        while True:
-            current_time = time.time()
+            while True:
+                current_time = time.time()
 
-            while failure_timestamps and ((current_time - failure_timestamps[0]) > FAILURE_WINDOW_SECONDS):
-                failure_timestamps.popleft()
+                # Clear out old failure records
+                while failure_timestamps and ((current_time - failure_timestamps[0]) > FAILURE_WINDOW_SECONDS):
+                    failure_timestamps.popleft()
 
-            if len(failure_timestamps) >= MAX_FAILURES_PER_MINUTE:
-                Utils.msg(f"Wayland watcher failed too many times. Stopping.")
-                break
+                # If the watcher fails too often, stop trying to restart it
+                if len(failure_timestamps) >= MAX_FAILURES_PER_MINUTE:
+                    Utils.msg("Wayland watcher has failed too many times and will not be restarted.")
+                    break
 
-            try:
-                Utils.msg("Starting Wayland watcher process...")
-                watch_command = ["wl-paste", "--watch", "echo"]
-                watcher_process = subprocess.Popen(watch_command, stdout=subprocess.PIPE, text=True)
+                watcher_process = None
 
-                for _ in watcher_process.stdout:
-                    result = subprocess.run(
-                        ["wl-paste", "--no-newline"],
-                        capture_output=True,
+                try:
+                    Utils.msg("Starting Wayland clipboard watcher...")
+                    watch_command = ["wl-paste", "--watch", "echo"]
+
+                    watcher_process = subprocess.Popen(
+                        watch_command,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
                         text=True,
-                        check=True,
                     )
 
-                    clip = result.stdout
-                    Watcher.on_new_clip(clip)
+                    if watcher_process.stdout is None:
+                        raise RuntimeError("Failed to get stdout from watcher process.")
 
-                watcher_process.wait()
+                    # This loop waits for a notification that the clipboard has changed
+                    for _ in watcher_process.stdout:
+                        paste_proc = subprocess.run(
+                            ["wl-paste", "--no-newline"],
+                            capture_output=True,
+                            text=True,
+                            check=False,  # Don't raise an exception if this fails
+                        )
 
-                if watcher_process.returncode != 0:
-                    raise subprocess.CalledProcessError(watcher_process.returncode, watch_command)
+                        # If getting the clipboard content fails, log the error but
+                        # keep the watcher running for the next event.
+                        if paste_proc.returncode != 0:
+                            Utils.msg("Failed to read clipboard content. Skipping update.")
+                            continue
 
-            except (subprocess.CalledProcessError, FileNotFoundError) as e:
-                Utils.msg(f"Wayland watcher failed: {e}. Will attempt to restart.")
-                failure_timestamps.append(time.time())
-                time.sleep(2)
+                        clip = paste_proc.stdout
+                        Watcher.on_new_clip(clip)
+
+                    # The watcher process is designed to run forever.
+                    # If we exit the loop, it means the process has terminated unexpectedly.
+                    return_code = watcher_process.wait()
+                    stderr = watcher_process.stderr.read().strip()
+                    error_msg = f"Watcher process terminated with code {return_code}."
+
+                    if stderr:
+                        error_msg += f" Stderr: {stderr}"
+
+                    raise RuntimeError(error_msg)
+
+                except (RuntimeError, OSError) as e:
+                    # OSError handles errors like 'wl-paste' not being found.
+                    # RuntimeError handles our explicit "process terminated" error.
+                    Utils.msg(f"Wayland watcher error: {e}. Attempting restart...")
+                    failure_timestamps.append(time.time())
+                    time.sleep(2) # Wait a couple of seconds before restarting
+                finally:
+                    # Ensure the process is cleaned up if an unexpected error occurs
+                    if watcher_process and watcher_process.poll() is None:
+                        watcher_process.kill()
+                        watcher_process.wait()
 
 
 # -----------------
