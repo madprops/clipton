@@ -23,12 +23,13 @@ from datetime import datetime
 from dataclasses import dataclass
 from collections import deque
 
-VERSION = "55"  # https://github.com/madprops/clipton
+VERSION = "56"  # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
 CMD_TIMEOUT = 3
 SOCKET_TIMEOUT = 6
+MAX_TEXT = 200
 
 # -----------------
 # SETTINGS
@@ -538,6 +539,7 @@ class Rofi:
 
         for item in Items.items:
             line = item.text.strip()
+            line = line[0:MAX_TEXT]
             line = html.escape(line)
             line = re.sub(" *\n *", "\n", line)
             line = line.replace("\n", asterisk)
