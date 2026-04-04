@@ -6,57 +6,70 @@
   };
 
   outputs = {self, nixpkgs}: let
-    supportedSystems = ["x86_64-linux" "aarch64-linux"];
+    supportedSystems = [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    pkgsFor = system: import nixpkgs {inherit system;};
   in {
-    packages = forAllSystems (system: let
-      pkgs = pkgsFor system;
-      # Read the manifest directly in Nix to avoid hardcoding version/name
-      manifest = builtins.fromJSON (builtins.readFile ./manifest.json);
-    in {
-      default = pkgs.python3Packages.buildPythonApplication {
-        pname = manifest.program;
-        version = manifest.version;
+    packages = forAllSystems (system:
+      let
+        pkgs = import nixpkgs {inherit system;};
 
-        src = ./.;
+        # Read the manifest directly in Nix so we know the program name
+        manifest = builtins.fromJSON (builtins.readFile ./manifest.json);
+      in {
+        default = pkgs.python3Packages.buildPythonApplication {
+          pname = manifest.program;
+          version = manifest.version;
 
-        # 1. Patch out the sandbox-violating post-install step before building
-        postPatch = ''
-          sed -i 's/_post_install()//g' setup.py
-        '';
+          # Tell Nix to use the modern build system for setup.py
+          pyproject = true;
+          build-system = [
+            pkgs.python3Packages.setuptools
+          ];
 
-        # 2. Recreate the systemd service file the "Nix Way" inside the package output
-        postInstall = ''
-          mkdir -p $out/lib/systemd/user
-          cat > $out/lib/systemd/user/${manifest.program}.service <<EOF
-          [Unit]
-          Description=Daemon for ${manifest.title} (Clipboard Manager)
+          src = ./.;
 
-          [Service]
-          Type=simple
-          ExecStart=$out/bin/${manifest.program} watcher
+          propagatedBuildInputs = with pkgs.python3Packages; [
+            # Add any python dependencies your app needs here
+          ];
 
-          [Install]
-          WantedBy=graphical.target
-          EOF
-        '';
+          preBuild = ''
+            export FAKE_HOME=$(mktemp -d)
+            export HOME=$FAKE_HOME
 
-        propagatedBuildInputs = with pkgs.python3Packages; [
-          setuptools
-          # Add any other Python dependencies (like pyperclip, dbus-python) here
-        ];
-      };
-    });
+            # Strip the systemctl command from setup.py so it doesn't crash the isolated sandbox
+            sed -i '/subprocess\.run(.*systemctl.*/d' setup.py
+          '';
 
-    devShells = forAllSystems (system: let
-      pkgs = pkgsFor system;
-    in {
-      default = pkgs.mkShell {
-        packages = with pkgs; [
-          python3
-        ];
-      };
-    });
+          # Intercept the generated file before the sandbox is destroyed
+          postInstall = ''
+            # 1. Create the systemd user directory in the Nix store
+            mkdir -p $out/lib/systemd/user
+
+            # 2. Copy the service file that setup.py generated in our fake home
+            cp $FAKE_HOME/.config/systemd/user/${manifest.program}.service $out/lib/systemd/user/
+
+            # 3. Fix the broken ExecStart path.
+            # setup.py wrote ExecStart=/build/tmp.../.local/bin/clipton.
+            # We rewrite it to point to the actual Nix store binary: $out/bin/clipton
+            sed -i "s|$FAKE_HOME/.local/bin/|$out/bin/|g" $out/lib/systemd/user/${manifest.program}.service
+          '';
+        };
+      });
+
+    devShells = forAllSystems (system:
+      let
+        pkgs = import nixpkgs {inherit system;};
+      in {
+        default = pkgs.mkShell {
+          packages = [
+            pkgs.python3
+            pkgs.python3Packages.pip
+            pkgs.python3Packages.virtualenv
+          ];
+        };
+      });
   };
 }
