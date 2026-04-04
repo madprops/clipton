@@ -23,7 +23,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from collections import deque
 
-VERSION = "56"  # https://github.com/madprops/clipton
+VERSION = "57"  # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
@@ -978,7 +978,7 @@ class Watcher:
 
                 try:
                     Utils.msg("Starting Wayland clipboard watcher...")
-                    watch_command = ["wl-paste", "--watch", "echo"]
+                    watch_command = ["wl-paste", "--watch", "sh", "-c", "cat > /dev/null; echo"]
 
                     watcher_process = subprocess.Popen(
                         watch_command,

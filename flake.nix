@@ -22,39 +22,48 @@
         default = pkgs.python3Packages.buildPythonApplication {
           pname = manifest.program;
           version = manifest.version;
-
-          # Tell Nix to use the modern build system for setup.py
           pyproject = true;
+
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+
           build-system = [
             pkgs.python3Packages.setuptools
           ];
 
           src = ./.;
 
-          propagatedBuildInputs = with pkgs.python3Packages; [
-            # Add any python dependencies your app needs here
+          # These are runtime dependencies the script calls via subprocess
+          buildInputs = with pkgs; [
+            wl-clipboard
+            rofi
+            libnotify
           ];
 
           preBuild = ''
             export FAKE_HOME=$(mktemp -d)
             export HOME=$FAKE_HOME
-
-            # Strip the systemctl command from setup.py so it doesn't crash the isolated sandbox
             sed -i '/subprocess\.run(.*systemctl.*/d' setup.py
           '';
 
-          # Intercept the generated file before the sandbox is destroyed
           postInstall = ''
-            # 1. Create the systemd user directory in the Nix store
             mkdir -p $out/lib/systemd/user
-
-            # 2. Copy the service file that setup.py generated in our fake home
             cp $FAKE_HOME/.config/systemd/user/${manifest.program}.service $out/lib/systemd/user/
 
-            # 3. Fix the broken ExecStart path.
-            # setup.py wrote ExecStart=/build/tmp.../.local/bin/clipton.
-            # We rewrite it to point to the actual Nix store binary: $out/bin/clipton
+            # Fix the ExecStart path
             sed -i "s|$FAKE_HOME/.local/bin/|$out/bin/|g" $out/lib/systemd/user/${manifest.program}.service
+
+            # Instead of hardcoding wayland-1, we tell systemd to wait for the session
+            # environment to be imported. This is much more stable on NixOS.
+            sed -i '/\[Service\]/a Environment=PYTHONUNBUFFERED=1' $out/lib/systemd/user/${manifest.program}.service
+
+            # We add this to ensure the service restarts if the compositor isn't ready yet
+            sed -i '/\[Service\]/a RestartSec=3' $out/lib/systemd/user/${manifest.program}.service
+          '';
+
+          postFixup = ''
+            # This ensures clipton always finds its tools without needing them in your global PATH
+            wrapProgram $out/bin/${manifest.program} \
+              --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.wl-clipboard pkgs.rofi pkgs.libnotify ]}
           '';
         };
       });
