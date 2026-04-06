@@ -23,7 +23,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from collections import deque
 
-VERSION = "57"  # https://github.com/madprops/clipton
+VERSION = "58"  # https://github.com/madprops/clipton
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 ORIGINAL = "Original :: "
@@ -42,7 +42,7 @@ class Settings:
     max_items: int = 1000
 
     # Don't save text if the character length exceeds this
-    heavy_paste: int = 5000
+    heavy_paste: int = 50000
 
     # If enabled, the URL titles are fetched by parsing the HTML
     enable_titles: bool = True
